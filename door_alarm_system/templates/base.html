@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="U                <ul class="navbar-nav">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eDomos - {% block title %}{% endblock %}</title>
+    <!-- Preload FontAwesome for faster loading -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}?v=2.2">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern.css') }}?v=2.2">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary professional-nav">
+        <div class="container-fluid">
+            <a class="navbar-brand professional-brand" href="{{ url_for('dashboard') }}">
+                <div class="brand-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 2C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V4C20 2.89543 19.1046 2 18 2H6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 2V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="15.5" cy="8.5" r="1" fill="currentColor"/>
+                        <path d="M8 8H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M8 6H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-main">eDomos</span>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto d-flex justify-content-start">
+                    <!-- Dashboard -->
+                    {% if 'dashboard' in permissions %}
+                    <li class="nav-item mx-2">
+                        <a class="nav-link nav-link-vertical" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-home nav-icon"></i>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- Event Log -->
+                    {% if 'event_log' in permissions %}
+                    <li class="nav-item mx-2">
+                        <a class="nav-link nav-link-vertical" href="{{ url_for('event_log') }}">
+                            <i class="fas fa-list nav-icon"></i>
+                            <span class="nav-text">Events</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- Reports -->
+                    {% if 'report' in permissions %}
+                    <li class="nav-item mx-2">
+                        <a class="nav-link nav-link-vertical" href="{{ url_for('reports') }}">
+                            <i class="fas fa-file-alt nav-icon"></i>
+                            <span class="nav-text">Reports</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- Analytics -->
+                    {% if 'analytics' in permissions %}
+                    <li class="nav-item mx-2">
+                        <a class="nav-link nav-link-vertical" href="{{ url_for('analytics') }}">
+                            <i class="fas fa-chart-bar nav-icon"></i>
+                            <span class="nav-text">Analytics</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- Insights (Admin Only) -->
+                    {% if current_user.is_admin %}
+                    <li class="nav-item mx-2">
+                        <a class="nav-link nav-link-vertical" href="{{ url_for('analytics_advanced') }}">
+                            <i class="fas fa-chart-line nav-icon"></i>
+                            <span class="nav-text">Insights</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- Quality & Compliance (Admin Only) -->
+                    {% if current_user.is_admin %}
+                    <li class="nav-item dropdown mx-2">
+                        <a class="nav-link nav-link-vertical dropdown-toggle" href="#" id="qualityDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-certificate nav-icon"></i>
+                            <span class="nav-text">Quality</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="qualityDropdown">
+                            <li class="dropdown-header">
+                                <i class="fas fa-shield-alt me-2"></i>Quality Management System
+                            </li>
+                            <li><a class="dropdown-item" href="{{ url_for('validation_dashboard') }}">
+                                <i class="fas fa-vial me-2"></i>Validation Testing (IQ/OQ/PQ)
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('change_control_dashboard') }}">
+                                <i class="fas fa-exchange-alt me-2"></i>Change Control
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('training_dashboard') }}">
+                                <i class="fas fa-graduation-cap me-2"></i>Training Management
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="dropdown-header">
+                                <i class="fas fa-pen-fancy me-2"></i>21 CFR Part 11
+                            </li>
+                            <li><a class="dropdown-item" href="{{ url_for('electronic_signatures') }}">
+                                <i class="fas fa-signature me-2"></i>Electronic Signatures
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blockchain') }}">
+                                <i class="fas fa-list-alt me-2"></i>Audit Trail
+                            </a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- Blockchain (Admin Only) -->
+                    {% if current_user.is_admin %}
+                    <li class="nav-item dropdown mx-2">
+                        <a class="nav-link nav-link-vertical dropdown-toggle" href="#" id="blockchainDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-link nav-icon"></i>
+                            <span class="nav-text">Blockchain</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="blockchainDropdown">
+                            <li class="dropdown-header">
+                                <i class="fas fa-cubes me-2"></i>Technical Verification
+                            </li>
+                            <li><a class="dropdown-item" href="{{ url_for('blockchain') }}">
+                                <i class="fas fa-chart-line me-2"></i>Verification Dashboard
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('blockchain_demo') }}">
+                                <i class="fas fa-desktop me-2"></i>Customer Demo
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('hipaa_compliance') }}">
+                                <i class="fas fa-certificate me-2"></i>Compliance Report
+                            </a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- Settings & Administration -->
+                    {% if current_user.is_admin or 'admin' in permissions %}
+                    <li class="nav-item dropdown mx-2">
+                        <a class="nav-link nav-link-vertical dropdown-toggle" href="#" id="settingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-cog nav-icon"></i>
+                            <span class="nav-text">Settings</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="settingsDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('company_profile') }}">
+                                    <i class="fas fa-building me-2"></i>Company Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('user_management') }}">
+                                    <i class="fas fa-users me-2"></i>User Management
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('admin_panel') }}">
+                                    <i class="fas fa-sliders-h me-2"></i>System Configuration
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+                
+                <!-- Right-side navigation -->
+                <ul class="navbar-nav">
+                    <!-- Help & Support -->
+                    <li class="nav-item dropdown mx-2">
+                        <a class="nav-link nav-link-vertical dropdown-toggle" href="#" id="helpDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-question-circle nav-icon"></i>
+                            <span class="nav-text">Help</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="helpDropdown">
+                            <li class="dropdown-header">
+                                <i class="fas fa-book me-2"></i>Documentation
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="showUserGuide(); return false;">
+                                    <i class="fas fa-book-open me-2"></i>User Guide
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="showQuickStart(); return false;">
+                                    <i class="fas fa-rocket me-2"></i>Quick Start Guide
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="showFAQ(); return false;">
+                                    <i class="fas fa-question me-2"></i>FAQ
+                                </a>
+                            </li>
+                            
+                            <li><hr class="dropdown-divider"></li>
+                            
+                            <li class="dropdown-header">
+                                <i class="fas fa-life-ring me-2"></i>Support
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="showSystemInfo(); return false;">
+                                    <i class="fas fa-info-circle me-2"></i>System Information
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="contactSupport(); return false;">
+                                    <i class="fas fa-headset me-2"></i>Contact Support
+                                </a>
+                            </li>
+                            
+                            <li><hr class="dropdown-divider"></li>
+                            
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="showAbout(); return false;">
+                                    <i class="fas fa-building me-2"></i>About eDOMOS
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- User Profile -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle user-profile-dropdown" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i> 
+                            <span class="user-name">{{ current_user.username }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li class="dropdown-header">
+                                <i class="fas fa-user me-2"></i>{{ current_user.username }}
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('my_profile') }}">
+                                    <i class="fas fa-id-card me-2"></i>My Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('preferences') }}">
+                                    <i class="fas fa-sliders-h me-2"></i>Preferences
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                    <i class="fas fa-key me-2"></i>Change Password
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+    
+    <main class="container-fluid mt-4">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ messages[0] }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='js/socket.js') }}"></script>
+    
+    <script>
+        // Real-time WebSocket functionality (event-driven updates)
+        function updateWebSocketStatus(connected) {
+            const statusElement = document.getElementById('live-status');
+            if (statusElement) {
+                if (connected) {
+                    statusElement.innerHTML = '<i class="fas fa-wifi"></i> Real-time';
+                    statusElement.className = 'badge bg-success';
+                } else {
+                    statusElement.innerHTML = '<i class="fas fa-wifi"></i> Reconnecting...';
+                    statusElement.className = 'badge bg-warning';
+                }
+            }
+        }
+        
+
+        
+
+        
+        // Enhanced notification system
+        function showNotification(message, type = 'info', duration = 3000) {
+            const toastContainer = document.getElementById('toast-container') || createToastContainer();
+            
+            const typeColors = {
+                'success': 'bg-success',
+                'error': 'bg-danger',
+                'warning': 'bg-warning',
+                'info': 'bg-info'
+            };
+            
+            const typeIcons = {
+                'success': 'fas fa-check-circle',
+                'error': 'fas fa-exclamation-circle',
+                'warning': 'fas fa-exclamation-triangle',
+                'info': 'fas fa-info-circle'
+            };
+            
+            const toastHtml = `
+                <div class="toast align-items-center text-white ${typeColors[type]} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="${typeIcons[type]} me-2"></i>${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            const toastElement = toastContainer.lastElementChild;
+            
+            if (typeof bootstrap !== 'undefined' && bootstrap.Toast) {
+                const toast = new bootstrap.Toast(toastElement, { delay: duration });
+                toast.show();
+                
+                toastElement.addEventListener('hidden.bs.toast', () => {
+                    toastElement.remove();
+                });
+            } else {
+                setTimeout(() => toastElement.remove(), duration);
+            }
+        }
+        
+        function createToastContainer() {
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            container.className = 'toast-container position-fixed top-0 end-0 p-3';
+            container.style.zIndex = '9999';
+            document.body.appendChild(container);
+            return container;
+        }
+        
+        // Initialize page functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Browser-specific fixes for Chromium and other browsers
+            detectBrowserAndApplyFixes();
+        });
+        
+        // Browser detection and compatibility fixes
+        function detectBrowserAndApplyFixes() {
+            const isChromium = window.chrome && window.chrome.runtime;
+            const isFirefox = typeof InstallTrigger !== 'undefined';
+            const isEdge = window.navigator.userAgent.indexOf('Edge') > -1;
+            
+            console.log('🌐 Browser detection:', {
+                chromium: isChromium,
+                firefox: isFirefox,
+                edge: isEdge
+            });
+            
+            // Chromium-specific fixes for caching and WebSocket issues
+            if (isChromium) {
+                console.log('🔧 Applying Chromium-specific fixes...');
+                
+                // Force cache refresh for API calls
+                const originalFetch = window.fetch;
+                window.fetch = function(url, options = {}) {
+                    if (url.includes('/api/') || url.includes('/statistics')) {
+                        const separator = url.includes('?') ? '&' : '?';
+                        url += separator + '_t=' + Date.now();
+                    }
+                    return originalFetch(url, options);
+                };
+                
+                // Add periodic cache clear for WebSocket stability
+                setInterval(() => {
+                    if ('caches' in window) {
+                        caches.keys().then(names => {
+                            names.forEach(name => {
+                                if (name.includes('socket') || name.includes('api')) {
+                                    caches.delete(name);
+                                }
+                            });
+                        });
+                    }
+                }, 300000); // Every 5 minutes
+            }
+            
+            // Add manual refresh helper function
+            window.forcePageRefresh = function() {
+                console.log('🔄 Force refreshing page...');
+                window.location.reload(true); // Force reload from server
+            };
+            
+            // Add keyboard shortcut for manual refresh (Ctrl+Shift+R)
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+                    e.preventDefault();
+                    window.forcePageRefresh();
+                }
+            });
+        }
+        
+        // ============================================
+        // HELP MENU FUNCTIONS
+        // ============================================
+        
+        function showUserGuide() {
+            const userGuideHTML = `
+                <div class="modal fade" id="userGuideModal" tabindex="-1">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                        <div class="modal-content bg-dark text-light">
+                            <div class="modal-header border-secondary bg-gradient-primary">
+                                <h5 class="modal-title"><i class="fas fa-book-open me-2"></i>eDOMOS User Guide</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="list-group" id="user-guide-nav" role="tablist">
+                                            <a class="list-group-item list-group-item-action active bg-secondary text-white" data-bs-toggle="list" href="#guide-overview">
+                                                <i class="fas fa-home me-2"></i>Overview
+                                            </a>
+                                            <a class="list-group-item list-group-item-action bg-secondary text-white" data-bs-toggle="list" href="#guide-dashboard">
+                                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                            </a>
+                                            <a class="list-group-item list-group-item-action bg-secondary text-white" data-bs-toggle="list" href="#guide-events">
+                                                <i class="fas fa-list me-2"></i>Event Log
+                                            </a>
+                                            <a class="list-group-item list-group-item-action bg-secondary text-white" data-bs-toggle="list" href="#guide-analytics">
+                                                <i class="fas fa-chart-bar me-2"></i>Analytics
+                                            </a>
+                                            <a class="list-group-item list-group-item-action bg-secondary text-white" data-bs-toggle="list" href="#guide-reports">
+                                                <i class="fas fa-file-alt me-2"></i>Reports
+                                            </a>
+                                            <a class="list-group-item list-group-item-action bg-secondary text-white" data-bs-toggle="list" href="#guide-settings">
+                                                <i class="fas fa-cog me-2"></i>Settings
+                                            </a>
+                                            <a class="list-group-item list-group-item-action bg-secondary text-white" data-bs-toggle="list" href="#guide-troubleshooting">
+                                                <i class="fas fa-wrench me-2"></i>Troubleshooting
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div class="tab-content">
+                                            <div class="tab-pane fade show active" id="guide-overview">
+                                                <h4><i class="fas fa-info-circle text-primary me-2"></i>System Overview</h4>
+                                                <p>Welcome to <strong>eDOMOS v2.1</strong> - Electronic Door Monitoring & Security System.</p>
+                                                <div class="alert alert-info">
+                                                    <i class="fas fa-lightbulb me-2"></i>
+                                                    <strong>Key Features:</strong>
+                                                    <ul class="mb-0 mt-2">
+                                                        <li>Real-time door status monitoring</li>
+                                                        <li>Automated alarm triggering</li>
+                                                        <li>Comprehensive event logging</li>
+                                                        <li>Advanced analytics and reporting</li>
+                                                        <li>Email notifications</li>
+                                                        <li>Multi-user access control</li>
+                                                    </ul>
+                                                </div>
+                                                <h5 class="mt-4">System Requirements</h5>
+                                                <ul>
+                                                    <li>Modern web browser (Chrome, Firefox, Edge, Safari)</li>
+                                                    <li>Network connection to the eDOMOS server</li>
+                                                    <li>Valid user credentials</li>
+                                                </ul>
+                                            </div>
+                                            
+                                            <div class="tab-pane fade" id="guide-dashboard">
+                                                <h4><i class="fas fa-tachometer-alt text-primary me-2"></i>Dashboard</h4>
+                                                <p>The Dashboard is your central command center for monitoring door status and system health.</p>
+                                                
+                                                <h5 class="mt-4">Status Cards</h5>
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <div class="card bg-secondary">
+                                                            <div class="card-body">
+                                                                <h6><i class="fas fa-door-open text-info"></i> Door Status</h6>
+                                                                <p class="small mb-0">Shows real-time door state (Open/Closed) with timestamp of last change.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="card bg-secondary">
+                                                            <div class="card-body">
+                                                                <h6><i class="fas fa-bell text-warning"></i> Alarm Status</h6>
+                                                                <p class="small mb-0">Indicates if alarm is active. Red LED blinks when triggered.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="card bg-secondary">
+                                                            <div class="card-body">
+                                                                <h6><i class="fas fa-clock text-success"></i> Timer Status</h6>
+                                                                <p class="small mb-0">Shows countdown timer and auto-alarm trigger setting.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="card bg-secondary">
+                                                            <div class="card-body">
+                                                                <h6><i class="fas fa-list text-primary"></i> Event Statistics</h6>
+                                                                <p class="small mb-0">Total events recorded in the system database.</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <h5 class="mt-4">Quick Actions</h5>
+                                                <ul>
+                                                    <li><strong>Manual Alarm Test:</strong> Click "Trigger Alarm" to test the audio alarm</li>
+                                                    <li><strong>Stop Alarm:</strong> Click "Stop Alarm" to silence an active alarm</li>
+                                                    <li><strong>View Recent Events:</strong> Scroll down to see the latest activity</li>
+                                                </ul>
+                                            </div>
+                                            
+                                            <div class="tab-pane fade" id="guide-events">
+                                                <h4><i class="fas fa-list text-primary me-2"></i>Event Log</h4>
+                                                <p>The Event Log provides a comprehensive history of all door and alarm activities.</p>
+                                                
+                                                <h5 class="mt-3">Event Types</h5>
+                                                <table class="table table-dark table-sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Type</th>
+                                                            <th>Description</th>
+                                                            <th>Icon</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Door Opened</td>
+                                                            <td>Door sensor detected opening</td>
+                                                            <td><i class="fas fa-door-open text-info"></i></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Door Closed</td>
+                                                            <td>Door sensor detected closing</td>
+                                                            <td><i class="fas fa-door-closed text-success"></i></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Alarm Triggered</td>
+                                                            <td>Alarm activated due to timer or manual trigger</td>
+                                                            <td><i class="fas fa-bell text-danger"></i></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Timer Set</td>
+                                                            <td>Countdown timer configured</td>
+                                                            <td><i class="fas fa-clock text-warning"></i></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                
+                                                <h5 class="mt-4">Filtering & Search</h5>
+                                                <ul>
+                                                    <li>Use the search bar to find specific events</li>
+                                                    <li>Filter by event type using dropdown menu</li>
+                                                    <li>Select date range for focused analysis</li>
+                                                    <li>Export events to CSV for external analysis</li>
+                                                </ul>
+                                            </div>
+                                            
+                                            <div class="tab-pane fade" id="guide-analytics">
+                                                <h4><i class="fas fa-chart-bar text-primary me-2"></i>Analytics</h4>
+                                                <p>Analyze door usage patterns, alarm frequency, and system performance metrics.</p>
+                                                
+                                                <h5 class="mt-3">Available Metrics</h5>
+                                                <div class="alert alert-secondary">
+                                                    <ul class="mb-0">
+                                                        <li><strong>Door Usage:</strong> Open/close frequency by day, week, or month</li>
+                                                        <li><strong>Open Duration:</strong> Average time door remains open</li>
+                                                        <li><strong>Alarm Frequency:</strong> Number of alarm triggers over time</li>
+                                                        <li><strong>Response Time:</strong> Time taken to close door after alarm</li>
+                                                        <li><strong>Peak Hours:</strong> Busiest times for door activity</li>
+                                                    </ul>
+                                                </div>
+                                                
+                                                <h5 class="mt-4">Using Charts</h5>
+                                                <ul>
+                                                    <li>Hover over chart elements for detailed information</li>
+                                                    <li>Click legend items to show/hide data series</li>
+                                                    <li>Use date range selector to adjust time period</li>
+                                                    <li>Export charts as images for presentations</li>
+                                                </ul>
+                                            </div>
+                                            
+                                            <div class="tab-pane fade" id="guide-reports">
+                                                <h4><i class="fas fa-file-alt text-primary me-2"></i>Reports</h4>
+                                                <p>Generate comprehensive reports for auditing and compliance purposes.</p>
+                                                
+                                                <h5 class="mt-3">Report Types</h5>
+                                                <ol>
+                                                    <li><strong>Event Summary Report:</strong> Overview of all events in a time period</li>
+                                                    <li><strong>Alarm Report:</strong> Detailed alarm history and response times</li>
+                                                    <li><strong>Compliance Report:</strong> Door security audit trail</li>
+                                                </ol>
+                                                
+                                                <h5 class="mt-4">Generating Reports</h5>
+                                                <ol>
+                                                    <li>Select report type from dropdown</li>
+                                                    <li>Choose start and end dates</li>
+                                                    <li>Select event types to include</li>
+                                                    <li>Choose format (PDF or CSV)</li>
+                                                    <li>Click "Generate Report"</li>
+                                                </ol>
+                                                
+                                                <div class="alert alert-info mt-3">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <strong>Tip:</strong> PDF reports include company branding and are ideal for formal documentation.
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="tab-pane fade" id="guide-settings">
+                                                <h4><i class="fas fa-cog text-primary me-2"></i>Settings & Administration</h4>
+                                                <p>Configure system parameters, manage users, and customize company profile.</p>
+                                                
+                                                <h5 class="mt-3">Company Profile</h5>
+                                                <ul>
+                                                    <li>Upload company logo for reports</li>
+                                                    <li>Set company name and contact information</li>
+                                                    <li>Configure door location details</li>
+                                                </ul>
+                                                
+                                                <h5 class="mt-4">User Management</h5>
+                                                <ul>
+                                                    <li><strong>Create Users:</strong> Add new users with specific permissions</li>
+                                                    <li><strong>Edit Permissions:</strong> Control access to different features</li>
+                                                    <li><strong>Delete Users:</strong> Remove inactive user accounts</li>
+                                                </ul>
+                                                
+                                                <h5 class="mt-4">System Configuration</h5>
+                                                <ul>
+                                                    <li><strong>Timer Duration:</strong> Set auto-alarm trigger delay (seconds)</li>
+                                                    <li><strong>Email Alerts:</strong> Configure SMTP settings for notifications</li>
+                                                    <li><strong>Recipient List:</strong> Add/remove email addresses for alerts</li>
+                                                </ul>
+                                                
+                                                <div class="alert alert-warning mt-3">
+                                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                                    <strong>Admin Access Required:</strong> These features are only available to administrator accounts.
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="tab-pane fade" id="guide-troubleshooting">
+                                                <h4><i class="fas fa-wrench text-primary me-2"></i>Troubleshooting</h4>
+                                                
+                                                <h5 class="mt-3">Common Issues</h5>
+                                                
+                                                <div class="accordion accordion-flush" id="troubleshootAccordion">
+                                                    <div class="accordion-item bg-secondary">
+                                                        <h2 class="accordion-header">
+                                                            <button class="accordion-button collapsed bg-secondary text-white" type="button" data-bs-toggle="collapse" data-bs-target="#trouble1">
+                                                                Door status not updating
+                                                            </button>
+                                                        </h2>
+                                                        <div id="trouble1" class="accordion-collapse collapse" data-bs-parent="#troubleshootAccordion">
+                                                            <div class="accordion-body text-light">
+                                                                <strong>Solution:</strong>
+                                                                <ol>
+                                                                    <li>Refresh your browser (Ctrl+F5)</li>
+                                                                    <li>Check network connection</li>
+                                                                    <li>Verify WebSocket connection (look for "Real-time" badge)</li>
+                                                                    <li>Contact administrator if issue persists</li>
+                                                                </ol>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="accordion-item bg-secondary">
+                                                        <h2 class="accordion-header">
+                                                            <button class="accordion-button collapsed bg-secondary text-white" type="button" data-bs-toggle="collapse" data-bs-target="#trouble2">
+                                                                Alarm not triggering
+                                                            </button>
+                                                        </h2>
+                                                        <div id="trouble2" class="accordion-collapse collapse" data-bs-parent="#troubleshootAccordion">
+                                                            <div class="accordion-body text-light">
+                                                                <strong>Solution:</strong>
+                                                                <ol>
+                                                                    <li>Check if timer is properly set</li>
+                                                                    <li>Test alarm manually from dashboard</li>
+                                                                    <li>Verify audio file is uploaded</li>
+                                                                    <li>Check GPIO connections on Raspberry Pi</li>
+                                                                </ol>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="accordion-item bg-secondary">
+                                                        <h2 class="accordion-header">
+                                                            <button class="accordion-button collapsed bg-secondary text-white" type="button" data-bs-toggle="collapse" data-bs-target="#trouble3">
+                                                                Email alerts not received
+                                                            </button>
+                                                        </h2>
+                                                        <div id="trouble3" class="accordion-collapse collapse" data-bs-parent="#troubleshootAccordion">
+                                                            <div class="accordion-body text-light">
+                                                                <strong>Solution:</strong>
+                                                                <ol>
+                                                                    <li>Verify SMTP settings in System Configuration</li>
+                                                                    <li>Check spam/junk folder</li>
+                                                                    <li>Confirm recipient email addresses are correct</li>
+                                                                    <li>Test email configuration from settings page</li>
+                                                                </ol>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="accordion-item bg-secondary">
+                                                        <h2 class="accordion-header">
+                                                            <button class="accordion-button collapsed bg-secondary text-white" type="button" data-bs-toggle="collapse" data-bs-target="#trouble4">
+                                                                Cannot login
+                                                            </button>
+                                                        </h2>
+                                                        <div id="trouble4" class="accordion-collapse collapse" data-bs-parent="#troubleshootAccordion">
+                                                            <div class="accordion-body text-light">
+                                                                <strong>Solution:</strong>
+                                                                <ol>
+                                                                    <li>Verify username and password are correct</li>
+                                                                    <li>Check CAPS LOCK is off</li>
+                                                                    <li>Clear browser cache and cookies</li>
+                                                                    <li>Contact administrator for password reset</li>
+                                                                </ol>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <h5 class="mt-4">Getting Help</h5>
+                                                <p>If you continue experiencing issues:</p>
+                                                <ul>
+                                                    <li>Contact your system administrator</li>
+                                                    <li>Email support: <a href="mailto:support@bsmscitech.com">support@bsmscitech.com</a></li>
+                                                    <li>Check system logs (admin access required)</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove old modal if exists
+            const oldModal = document.getElementById('userGuideModal');
+            if (oldModal) oldModal.remove();
+            
+            // Add new modal
+            document.body.insertAdjacentHTML('beforeend', userGuideHTML);
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('userGuideModal'));
+            modal.show();
+        }
+        
+        function showQuickStart() {
+            const quickStartHTML = `
+                <div class="modal fade" id="quickStartModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+                        <div class="modal-content bg-dark text-light">
+                            <div class="modal-header border-secondary bg-gradient-success">
+                                <h5 class="modal-title"><i class="fas fa-rocket me-2"></i>Quick Start Guide</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-success">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Welcome to eDOMOS!</strong> Follow these steps to get started quickly.
+                                </div>
+                                
+                                <h5><i class="fas fa-1 me-2 text-primary"></i>Dashboard Overview</h5>
+                                <p>Your central hub for monitoring door status and system health in real-time.</p>
+                                <ul>
+                                    <li><strong>Status Cards:</strong> View door state, alarm status, and timer</li>
+                                    <li><strong>Quick Actions:</strong> Test alarm, view events, check system info</li>
+                                    <li><strong>Real-time Updates:</strong> Automatic refresh every 3 seconds</li>
+                                </ul>
+                                
+                                <hr class="border-secondary">
+                                
+                                <h5><i class="fas fa-2 me-2 text-info"></i>Monitor Door Activity</h5>
+                                <p>Track all door events and access history.</p>
+                                <ul>
+                                    <li>Navigate to <strong>Events</strong> from the top menu</li>
+                                    <li>View complete event log with timestamps</li>
+                                    <li>Filter by event type and date range</li>
+                                    <li>Export data for external analysis</li>
+                                </ul>
+                                
+                                <hr class="border-secondary">
+                                
+                                <h5><i class="fas fa-3 me-2 text-warning"></i>Analyze Performance</h5>
+                                <p>Use analytics to understand door usage patterns.</p>
+                                <ul>
+                                    <li>Click <strong>Analytics</strong> in the navigation bar</li>
+                                    <li>View door usage frequency and open duration</li>
+                                    <li>Track alarm triggers and response times</li>
+                                    <li>Identify peak hours and trends</li>
+                                </ul>
+                                
+                                <hr class="border-secondary">
+                                
+                                <h5><i class="fas fa-4 me-2 text-danger"></i>Generate Reports</h5>
+                                <p>Create professional reports for auditing and compliance.</p>
+                                <ul>
+                                    <li>Go to <strong>Reports</strong> section</li>
+                                    <li>Select date range and event types</li>
+                                    <li>Choose format: PDF (with branding) or CSV (data only)</li>
+                                    <li>Download and share with stakeholders</li>
+                                </ul>
+                                
+                                <hr class="border-secondary">
+                                
+                                <h5><i class="fas fa-5 me-2 text-success"></i>Configure Settings</h5>
+                                <p class="mb-2">Customize system behavior (Admin only).</p>
+                                <ul>
+                                    <li><strong>Company Profile:</strong> Add logo, name, contact details</li>
+                                    <li><strong>User Management:</strong> Create users and assign permissions</li>
+                                    <li><strong>System Config:</strong> Set timer duration and email alerts</li>
+                                </ul>
+                                
+                                <div class="alert alert-info mt-4">
+                                    <i class="fas fa-lightbulb me-2"></i>
+                                    <strong>Pro Tip:</strong> Use keyboard shortcut <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd> to force refresh if data isn't updating.
+                                </div>
+                                
+                                <div class="text-center mt-4">
+                                    <button type="button" class="btn btn-primary" onclick="$('#quickStartModal').modal('hide'); showUserGuide();">
+                                        <i class="fas fa-book-open me-2"></i>View Full User Guide
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove old modal if exists
+            const oldModal = document.getElementById('quickStartModal');
+            if (oldModal) oldModal.remove();
+            
+            // Add new modal
+            document.body.insertAdjacentHTML('beforeend', quickStartHTML);
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('quickStartModal'));
+            modal.show();
+        }
+        
+        function showFAQ() {
+            showNotification('FAQ Section - Coming Soon! Common questions and answers will be available.', 'info', 5000);
+        }
+        
+        function showSystemInfo() {
+            const systemInfoHTML = `
+                <div class="modal fade" id="systemInfoModal" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-light">
+                            <div class="modal-header border-secondary">
+                                <h5 class="modal-title"><i class="fas fa-info-circle me-2"></i>System Information</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-dark table-sm">
+                                    <tr><th>System:</th><td>eDOMOS v2.1</td></tr>
+                                    <tr><th>Type:</th><td>Door Alarm Monitoring System</td></tr>
+                                    <tr><th>Server:</th><td>http://192.168.31.227:5000</td></tr>
+                                    <tr><th>User:</th><td>{{ current_user.username }}</td></tr>
+                                    <tr><th>Browser:</th><td id="browserInfo"></td></tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove old modal if exists
+            const oldModal = document.getElementById('systemInfoModal');
+            if (oldModal) oldModal.remove();
+            
+            // Add new modal
+            document.body.insertAdjacentHTML('beforeend', systemInfoHTML);
+            
+            // Set browser info
+            document.getElementById('browserInfo').textContent = navigator.userAgent.split('(')[1].split(')')[0];
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('systemInfoModal'));
+            modal.show();
+        }
+        
+        function contactSupport() {
+            const supportHTML = `
+                <div class="modal fade" id="supportModal" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-light">
+                            <div class="modal-header border-secondary">
+                                <h5 class="modal-title"><i class="fas fa-headset me-2"></i>Contact Support</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Email:</strong> <a href="mailto:support@bsmscitech.com">support@bsmscitech.com</a></p>
+                                <p><strong>Phone:</strong> Contact your system administrator</p>
+                                <p><strong>Documentation:</strong> Check the User Guide for common solutions</p>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const oldModal = document.getElementById('supportModal');
+            if (oldModal) oldModal.remove();
+            
+            document.body.insertAdjacentHTML('beforeend', supportHTML);
+            const modal = new bootstrap.Modal(document.getElementById('supportModal'));
+            modal.show();
+        }
+        
+        function showAbout() {
+            const aboutHTML = `
+                <div class="modal fade" id="aboutModal" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-light">
+                            <div class="modal-header border-secondary bg-gradient-primary">
+                                <h5 class="modal-title"><i class="fas fa-building me-2"></i>About eDOMOS</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <h3 class="mb-3">eDOMOS v2.1</h3>
+                                <p class="lead">Electronic Door Monitoring & Security System</p>
+                                <hr class="border-secondary">
+                                <p><strong>Developed by:</strong> BSM SciTech</p>
+                                <p><strong>Year:</strong> 2025</p>
+                                <p class="mt-4">A comprehensive solution for door security monitoring, real-time alerts, and analytics.</p>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const oldModal = document.getElementById('aboutModal');
+            if (oldModal) oldModal.remove();
+            
+            document.body.insertAdjacentHTML('beforeend', aboutHTML);
+            const modal = new bootstrap.Modal(document.getElementById('aboutModal'));
+            modal.show();
+        }
+        
+        // ============================================
+        // USER PROFILE FUNCTIONS
+        // ============================================
+        
+    </script>
+    
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="changePasswordModalLabel">
+                        <i class="fas fa-key me-2"></i>Change Password
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="passwordAlert" class="alert d-none" role="alert"></div>
+                    
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control bg-dark text-light border-secondary" 
+                                       id="currentPassword" required autocomplete="current-password">
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('currentPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control bg-dark text-light border-secondary" 
+                                       id="newPassword" required autocomplete="new-password" minlength="6">
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('newPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted">Minimum 6 characters</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control bg-dark text-light border-secondary" 
+                                       id="confirmPassword" required autocomplete="new-password" minlength="6">
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('confirmPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="passwordStrength" class="mb-3"></div>
+                    </form>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitPasswordChange()">
+                        <i class="fas fa-save me-1"></i>Change Password
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    // Password visibility toggle
+    function togglePasswordVisibility(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector('i');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+    
+    // Password strength indicator
+    document.getElementById('newPassword')?.addEventListener('input', function() {
+        const password = this.value;
+        const strengthDiv = document.getElementById('passwordStrength');
+        
+        if (password.length === 0) {
+            strengthDiv.innerHTML = '';
+            return;
+        }
+        
+        let strength = 0;
+        let feedback = '';
+        
+        if (password.length >= 6) strength++;
+        if (password.length >= 8) strength++;
+        if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+        if (/\d/.test(password)) strength++;
+        if (/[^a-zA-Z0-9]/.test(password)) strength++;
+        
+        if (strength < 2) {
+            feedback = '<div class="text-danger"><i class="fas fa-times-circle me-1"></i>Weak password</div>';
+        } else if (strength < 4) {
+            feedback = '<div class="text-warning"><i class="fas fa-exclamation-circle me-1"></i>Moderate password</div>';
+        } else {
+            feedback = '<div class="text-success"><i class="fas fa-check-circle me-1"></i>Strong password</div>';
+        }
+        
+        strengthDiv.innerHTML = feedback;
+    });
+    
+    // Submit password change
+    async function submitPasswordChange() {
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        // Validation
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            showPasswordAlert('Please fill in all fields', 'danger');
+            return;
+        }
+        
+        if (newPassword.length < 6) {
+            showPasswordAlert('New password must be at least 6 characters', 'danger');
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            showPasswordAlert('New passwords do not match', 'danger');
+            return;
+        }
+        
+        if (currentPassword === newPassword) {
+            showPasswordAlert('New password must be different from current password', 'danger');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    current_password: currentPassword,
+                    new_password: newPassword
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showPasswordAlert(data.message, 'success');
+                
+                // Clear form
+                document.getElementById('changePasswordForm').reset();
+                document.getElementById('passwordStrength').innerHTML = '';
+                
+                // Close modal after 2 seconds
+                setTimeout(() => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
+                    modal.hide();
+                    document.getElementById('passwordAlert').classList.add('d-none');
+                }, 2000);
+            } else {
+                showPasswordAlert(data.error || 'Failed to change password', 'danger');
+            }
+        } catch (error) {
+            console.error('Error changing password:', error);
+            showPasswordAlert('Failed to change password', 'danger');
+        }
+    }
+    
+    function showPasswordAlert(message, type) {
+        const alert = document.getElementById('passwordAlert');
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+        alert.classList.remove('d-none');
+        
+        if (type === 'success') {
+            setTimeout(() => {
+                alert.classList.add('d-none');
+            }, 3000);
+        }
+    }
+    
+    // Clear form when modal is closed
+    document.getElementById('changePasswordModal')?.addEventListener('hidden.bs.modal', function() {
+        document.getElementById('changePasswordForm').reset();
+        document.getElementById('passwordStrength').innerHTML = '';
+        document.getElementById('passwordAlert').classList.add('d-none');
+    });
+    </script>
+    
+    <!-- Socket.IO for real-time events -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='js/socket.js') }}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

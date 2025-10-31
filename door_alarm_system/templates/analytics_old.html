@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-chart-bar me-2"></i>Analytics</h2>
+            <p class="text-muted">Visual analytics and statistics of door alarm system</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-pie-chart me-2"></i>Events by Type</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="eventTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-line-chart me-2"></i>Events - Last 7 Days</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="eventDayChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-table me-2"></i>Summary Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Event Type</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event_type, count in events_by_type %}
+                                <tr>
+                                    <td>
+                                        {% if event_type == 'door_open' %}
+                                        <span class="badge bg-info">Door Open</span>
+                                        {% elif event_type == 'door_close' %}
+                                        <span class="badge bg-success">Door Close</span>
+                                        {% elif event_type == 'alarm_triggered' %}
+                                        <span class="badge bg-danger">Alarm Triggered</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ event_type }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Analytics Page Specific Styling */
+.table tbody td {
+    color: #f8fafc !important; /* White text for count numbers */
+}
+
+.table thead th {
+    color: #f8fafc !important; /* White text for headers */
+}
+
+/* Equal height for chart cards */
+.row.mb-4 .card {
+    height: 100%;
+}
+
+.row.mb-4 .card-body {
+    height: 400px; /* Fixed height for chart containers */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.row.mb-4 canvas {
+    max-height: 100%;
+    max-width: 100%;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+<!-- HTML comment to prevent VS Code JavaScript parsing errors -->
+<script type="text/template" id="chart-data">
+{
+    "eventsData": {
+        "labels": [{% for event_type, count in events_by_type %}"{{ event_type }}"{% if not loop.last %},{% endif %}{% endfor %}],
+        "data": [{% for event_type, count in events_by_type %}{{ count }}{% if not loop.last %},{% endif %}{% endfor %}]
+    },
+    "daysData": {
+        "labels": [{% for day, count in events_by_day %}"{{ day }}"{% if not loop.last %},{% endif %}{% endfor %}],
+        "data": [{% for day, count in events_by_day %}{{ count }}{% if not loop.last %},{% endif %}{% endfor %}]
+    }
+}
+</script>
+<script>
+// Initialize charts when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Parse data from template script
+    const chartDataElement = document.getElementById('chart-data');
+    const chartData = JSON.parse(chartDataElement.textContent);
+    
+    // Initialize charts with parsed data
+    initializeCharts(chartData.eventsData, chartData.daysData);
+});
+</script>
+{% endblock %}

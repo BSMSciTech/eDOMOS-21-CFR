@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}{{ module.module_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.module-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.content-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #0d6efd;
+}
+
+.completion-record {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.completion-record.expired {
+    background: #fff3cd;
+    border-left: 3px solid #ffc107;
+}
+
+.completion-record.valid {
+    background: #d1e7dd;
+    border-left: 3px solid #198754;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Back Button -->
+    <a href="{{ url_for('training_modules') }}" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="fas fa-arrow-left me-2"></i>Back to Modules
+    </a>
+
+    <!-- Module Header -->
+    <div class="module-header">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h2 class="mb-2">
+                    <i class="fas fa-graduation-cap me-2"></i>
+                    {{ module.module_name }}
+                </h2>
+                <p class="mb-3">{{ module.description }}</p>
+                <div class="d-flex gap-3">
+                    <span>
+                        <i class="fas fa-code-branch me-1"></i>
+                        Version {{ module.version }}
+                    </span>
+                    <span>
+                        <i class="fas fa-calendar-alt me-1"></i>
+                        Valid for {{ module.validity_period_days }} days
+                    </span>
+                    <span>
+                        <i class="fas fa-users me-1"></i>
+                        {{ module.training_records|length }} completion(s)
+                    </span>
+                    {% if module.created_at %}
+                    <span>
+                        <i class="fas fa-clock me-1"></i>
+                        Created {{ module.created_at.strftime('%Y-%m-%d') }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            <div>
+                {% if module.is_active %}
+                <span class="badge bg-success" style="font-size: 1rem; padding: 0.5rem 1rem;">Active</span>
+                {% else %}
+                <span class="badge bg-secondary" style="font-size: 1rem; padding: 0.5rem 1rem;">Inactive</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Module Content -->
+            <div class="content-section">
+                <div class="section-title">
+                    <i class="fas fa-file-alt me-2"></i>Training Content
+                </div>
+                <div>
+                    {{ module.content|safe }}
+                </div>
+            </div>
+
+            <!-- Requirements -->
+            {% if module.required_for_roles %}
+            <div class="content-section">
+                <div class="section-title">
+                    <i class="fas fa-user-tag me-2"></i>Role Requirements
+                </div>
+                <p class="mb-0">
+                    This training is required for the following roles: 
+                    <strong>{{ module.required_for_roles }}</strong>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <!-- User's Status -->
+            {% set user_record = namespace(found=None) %}
+            {% for record in module.training_records %}
+                {% if record.user_id == current_user.id %}
+                    {% set user_record.found = record %}
+                {% endif %}
+            {% endfor %}
+
+            <div class="content-section">
+                <div class="section-title">
+                    <i class="fas fa-user-check me-2"></i>Your Status
+                </div>
+                
+                {% if user_record.found %}
+                    {% if user_record.found.is_expired() %}
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-exclamation-triangle me-2"></i>Training Expired</h6>
+                        <p class="mb-2">
+                            <strong>Completed:</strong> {{ user_record.found.completed_date.strftime('%Y-%m-%d') }}<br>
+                            <strong>Expired:</strong> {{ user_record.found.expiration_date.strftime('%Y-%m-%d') }}
+                        </p>
+                        {% if user_record.found.score is not none %}
+                        <p class="mb-2">
+                            <strong>Score:</strong> {{ user_record.found.score }}%
+                        </p>
+                        {% endif %}
+                        <a href="{{ url_for('complete_training', module_id=module.id) }}" 
+                           class="btn btn-warning btn-sm w-100">
+                            <i class="fas fa-redo me-2"></i>Renew Training
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-check-circle me-2"></i>Training Valid</h6>
+                        <p class="mb-2">
+                            <strong>Completed:</strong> {{ user_record.found.completed_date.strftime('%Y-%m-%d') }}<br>
+                            <strong>Expires:</strong> {{ user_record.found.expiration_date.strftime('%Y-%m-%d') }}
+                        </p>
+                        {% if user_record.found.score is not none %}
+                        <p class="mb-2">
+                            <strong>Score:</strong> {{ user_record.found.score }}%
+                        </p>
+                        {% endif %}
+                        {% if user_record.found.signature %}
+                        <p class="mb-0 small">
+                            <i class="fas fa-signature me-1"></i>
+                            Electronically signed
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle me-2"></i>Not Completed</h6>
+                        <p class="mb-2">You have not completed this training module yet.</p>
+                        {% if module.is_active %}
+                        <a href="{{ url_for('complete_training', module_id=module.id) }}" 
+                           class="btn btn-primary btn-sm w-100">
+                            <i class="fas fa-play me-2"></i>Start Training
+                        </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Admin Actions -->
+            {% if current_user.is_admin %}
+            <div class="content-section">
+                <div class="section-title">
+                    <i class="fas fa-tools me-2"></i>Admin Actions
+                </div>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('edit_training_module', module_id=module.id) }}" 
+                       class="btn btn-outline-primary">
+                        <i class="fas fa-edit me-2"></i>Edit Module
+                    </a>
+                    <a href="{{ url_for('assign_training') }}?module_id={{ module.id }}" 
+                       class="btn btn-outline-secondary">
+                        <i class="fas fa-user-plus me-2"></i>Assign to Users
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Module Info -->
+            <div class="content-section">
+                <div class="section-title">
+                    <i class="fas fa-info-circle me-2"></i>Module Information
+                </div>
+                <table class="table table-sm mb-0">
+                    <tr>
+                        <td><strong>Version:</strong></td>
+                        <td>{{ module.version }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Validity:</strong></td>
+                        <td>{{ module.validity_period_days }} days</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Status:</strong></td>
+                        <td>
+                            {% if module.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if module.created_by %}
+                    <tr>
+                        <td><strong>Created By:</strong></td>
+                        <td>{{ module.creator.username if module.creator else 'N/A' }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if module.created_at %}
+                    <tr>
+                        <td><strong>Created:</strong></td>
+                        <td>{{ module.created_at.strftime('%Y-%m-%d') }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completion Records (Admin Only) -->
+    {% if current_user.is_admin and module.training_records %}
+    <div class="content-section mt-4">
+        <div class="section-title">
+            <i class="fas fa-chart-line me-2"></i>Completion Records
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Completed Date</th>
+                        <th>Expiration Date</th>
+                        <th>Score</th>
+                        <th>Status</th>
+                        <th>E-Signature</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in module.training_records|sort(attribute='completed_date', reverse=True) %}
+                    <tr class="{% if record.is_expired() %}table-warning{% endif %}">
+                        <td>
+                            <i class="fas fa-user me-2"></i>
+                            {{ record.user.username if record.user else 'Unknown' }}
+                        </td>
+                        <td>{{ record.completed_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ record.expiration_date.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if record.score is not none %}
+                                {{ record.score }}%
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if record.is_expired() %}
+                            <span class="badge bg-warning text-dark">Expired</span>
+                            {% else %}
+                            <span class="badge bg-success">Valid</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if record.signature %}
+                            <i class="fas fa-check-circle text-success" 
+                               title="Signed by {{ record.user.username }}"></i>
+                            {% else %}
+                            <i class="fas fa-times-circle text-muted"></i>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

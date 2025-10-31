@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+
+{% block title %}{{ change.change_number }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.change-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.info-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #0d6efd;
+}
+
+.timeline-item {
+    border-left: 3px solid #dee2e6;
+    padding-left: 1.5rem;
+    padding-bottom: 1.5rem;
+    position: relative;
+}
+
+.timeline-item::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: white;
+    border: 3px solid #0d6efd;
+    border-radius: 50%;
+    position: absolute;
+    left: -7.5px;
+    top: 0;
+}
+
+.timeline-item:last-child {
+    border-left-color: transparent;
+}
+
+.signature-box {
+    background: #f8f9fa;
+    border-left: 4px solid #198754;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Back Button -->
+    <a href="{{ url_for('change_control_dashboard') }}" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+
+    <!-- Change Header -->
+    <div class="change-header">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h2 class="mb-2">{{ change.change_number }}</h2>
+                <h4 class="mb-3">{{ change.title }}</h4>
+                <div class="d-flex gap-3 flex-wrap">
+                    <span>
+                        <i class="fas fa-tag me-1"></i>
+                        {{ change.change_type|title }}
+                    </span>
+                    <span>
+                        <i class="fas fa-user me-1"></i>
+                        {{ change.requestor.username if change.requestor else 'Unknown' }}
+                    </span>
+                    <span>
+                        <i class="fas fa-calendar me-1"></i>
+                        {{ change.requested_date.strftime('%Y-%m-%d %H:%M') }}
+                    </span>
+                </div>
+            </div>
+            <div class="text-end">
+                <span class="badge 
+                    {% if change.priority == 'critical' %}bg-danger
+                    {% elif change.priority == 'high' %}bg-warning text-dark
+                    {% elif change.priority == 'medium' %}bg-info
+                    {% else %}bg-secondary{% endif %}" 
+                    style="font-size: 1rem; padding: 0.5rem 1rem;">
+                    {{ change.priority|upper }}
+                </span>
+                <br><br>
+                <span class="badge 
+                    {% if change.status == 'pending' %}bg-warning text-dark
+                    {% elif change.status == 'approved' %}bg-success
+                    {% elif change.status == 'implemented' %}bg-info
+                    {% else %}bg-danger{% endif %}" 
+                    style="font-size: 1rem; padding: 0.5rem 1rem;">
+                    {{ change.status|title }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Description -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-file-alt me-2"></i>Description
+                </div>
+                <p style="white-space: pre-wrap;">{{ change.description }}</p>
+            </div>
+
+            <!-- Justification -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-lightbulb me-2"></i>Business Justification
+                </div>
+                <p style="white-space: pre-wrap;">{{ change.justification }}</p>
+            </div>
+
+            <!-- Impact Assessment -->
+            {% if change.impact_assessment or change.affected_systems or change.rollback_plan %}
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Impact Assessment
+                </div>
+                
+                {% if change.impact_assessment %}
+                <div class="mb-3">
+                    <strong>Risk Analysis:</strong>
+                    <p style="white-space: pre-wrap;">{{ change.impact_assessment }}</p>
+                </div>
+                {% endif %}
+
+                {% if change.affected_systems %}
+                <div class="mb-3">
+                    <strong>Affected Systems:</strong>
+                    <p>{{ change.affected_systems }}</p>
+                </div>
+                {% endif %}
+
+                {% if change.rollback_plan %}
+                <div class="mb-3">
+                    <strong>Rollback Plan:</strong>
+                    <p style="white-space: pre-wrap;">{{ change.rollback_plan }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Timeline -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-history me-2"></i>Change Timeline
+                </div>
+
+                <div class="timeline-item">
+                    <h6>Change Requested</h6>
+                    <p class="mb-1">
+                        By {{ change.requestor.username if change.requestor else 'Unknown' }}
+                    </p>
+                    <small class="text-muted">
+                        {{ change.requested_date.strftime('%Y-%m-%d %H:%M:%S') }}
+                    </small>
+                </div>
+
+                {% if change.approved_date %}
+                <div class="timeline-item">
+                    <h6>
+                        {% if change.status == 'rejected' %}Change Rejected{% else %}Change Approved{% endif %}
+                    </h6>
+                    <p class="mb-1">
+                        By {{ change.approver.username if change.approver else 'Unknown' }}
+                    </p>
+                    <small class="text-muted">
+                        {{ change.approved_date.strftime('%Y-%m-%d %H:%M:%S') }}
+                    </small>
+                    
+                    {% if change.approval_signature %}
+                    <div class="signature-box">
+                        <i class="fas fa-signature me-2"></i>
+                        <strong>Electronic Signature:</strong>
+                        <br>
+                        <small>Hash: {{ change.approval_signature.signature_hash[:16] }}...</small>
+                        <br>
+                        <small>Reason: {{ change.approval_signature.reason }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if change.implemented_date %}
+                <div class="timeline-item">
+                    <h6>Change Implemented</h6>
+                    <p class="mb-1">
+                        By {{ change.implementer.username if change.implementer else 'Unknown' }}
+                    </p>
+                    <small class="text-muted">
+                        {{ change.implemented_date.strftime('%Y-%m-%d %H:%M:%S') }}
+                    </small>
+                    
+                    {% if change.implementation_signature %}
+                    <div class="signature-box">
+                        <i class="fas fa-signature me-2"></i>
+                        <strong>Electronic Signature:</strong>
+                        <br>
+                        <small>Hash: {{ change.implementation_signature.signature_hash[:16] }}...</small>
+                        <br>
+                        <small>Reason: {{ change.implementation_signature.reason }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Actions -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-tasks me-2"></i>Actions
+                </div>
+
+                {% if can_approve %}
+                <a href="{{ url_for('approve_change_request', change_id=change.id) }}" 
+                   class="btn btn-primary w-100 mb-2">
+                    <i class="fas fa-clipboard-check me-2"></i>Review & Approve
+                </a>
+                {% endif %}
+
+                {% if can_implement %}
+                <a href="{{ url_for('implement_change_request', change_id=change.id) }}" 
+                   class="btn btn-success w-100 mb-2">
+                    <i class="fas fa-check-circle me-2"></i>Mark as Implemented
+                </a>
+                {% endif %}
+
+                <a href="{{ url_for('change_control_list') }}" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-list me-2"></i>View All Changes
+                </a>
+            </div>
+
+            <!-- Details -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-info-circle me-2"></i>Details
+                </div>
+
+                <table class="table table-sm mb-0">
+                    <tr>
+                        <td><strong>Change Number:</strong></td>
+                        <td>{{ change.change_number }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Type:</strong></td>
+                        <td>{{ change.change_type|title }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Priority:</strong></td>
+                        <td>
+                            <span class="badge 
+                                {% if change.priority == 'critical' %}bg-danger
+                                {% elif change.priority == 'high' %}bg-warning text-dark
+                                {% elif change.priority == 'medium' %}bg-info
+                                {% else %}bg-secondary{% endif %}">
+                                {{ change.priority|title }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Status:</strong></td>
+                        <td>
+                            <span class="badge 
+                                {% if change.status == 'pending' %}bg-warning text-dark
+                                {% elif change.status == 'approved' %}bg-success
+                                {% elif change.status == 'implemented' %}bg-info
+                                {% else %}bg-danger{% endif %}">
+                                {{ change.status|title }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% if change.version_before %}
+                    <tr>
+                        <td><strong>Version Before:</strong></td>
+                        <td>{{ change.version_before }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if change.version_after %}
+                    <tr>
+                        <td><strong>Version After:</strong></td>
+                        <td>{{ change.version_after }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+            </div>
+
+            <!-- Compliance -->
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-shield-alt me-2"></i>Compliance
+                </div>
+                <div class="small">
+                    <p class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        21 CFR Part 11 Compliant
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-signature text-success me-2"></i>
+                        Electronic Signatures: 
+                        {{ (1 if change.approval_signature else 0) + (1 if change.implementation_signature else 0) }}
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-link text-success me-2"></i>
+                        Blockchain Audit Trail
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

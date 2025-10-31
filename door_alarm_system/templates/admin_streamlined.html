@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - System Settings{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Professional Admin Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-md border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="mb-1">
+                                <i class="fas fa-user-shield text-primary me-2"></i>
+                                Administration Panel
+                            </h1>
+                            <p class="text-muted mb-0">System Configuration & Security Settings</p>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <div class="text-center">
+                                <div class="h3 mb-0 fw-bold text-primary">{{ users|length }}</div>
+                                <small class="text-muted">Total Users</small>
+                            </div>
+                            <div class="text-center">
+                                <div class="h3 mb-0 fw-bold text-success">{{ users|selectattr('is_admin')|list|length }}</div>
+                                <small class="text-muted">Administrators</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Settings Section -->
+    <div class="row mb-4">
+        <!-- Timer Configuration -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-primary">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>Timer Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Configure the alarm timer duration for door open events</p>
+                    <form method="POST" action="{{ url_for('admin_settings') }}">
+                        {{ settings_form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ settings_form.timer_duration.label(class="form-label fw-bold") }}
+                            <div class="input-group">
+                                {{ settings_form.timer_duration(class="form-control", style="border: 2px solid var(--border-medium)") }}
+                                <span class="input-group-text">seconds</span>
+                            </div>
+                            <small class="text-muted">How long to wait before triggering alarm when door is opened</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-save me-2"></i>Save Timer Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anomaly Detection Configuration -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Anomaly Detection Settings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Configure business hours for odd-hours anomaly detection</p>
+                    <form method="POST" action="{{ url_for('admin_settings') }}">
+                        {{ settings_form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Business Hours Start</label>
+                            <input type="time" class="form-control" id="businessHoursStart" name="business_hours_start" value="{{ business_hours_start or '09:00' }}" style="border: 2px solid var(--border-medium)">
+                            <small class="text-muted">Start of normal business hours (24-hour format)</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Business Hours End</label>
+                            <input type="time" class="form-control" id="businessHoursEnd" name="business_hours_end" value="{{ business_hours_end or '17:00' }}" style="border: 2px solid var(--border-medium)">
+                            <small class="text-muted">End of normal business hours (24-hour format)</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-info w-100">
+                            <i class="fas fa-save me-2"></i>Save Anomaly Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Configuration -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">
+                        <i class="fas fa-envelope me-2"></i>Email Notification Settings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Configure email alerts for security events</p>
+                    <form method="POST" action="{{ url_for('admin_settings') }}">
+                        {{ settings_form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ settings_form.sender_email.label(class="form-label fw-bold") }}
+                            {{ settings_form.sender_email(class="form-control", placeholder="your-email@gmail.com", style="border: 2px solid var(--border-medium)") }}
+                            <small class="text-muted">Gmail address for sending notifications</small>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ settings_form.app_password.label(class="form-label fw-bold") }}
+                            {{ settings_form.app_password(class="form-control", placeholder="xxxx xxxx xxxx xxxx", style="border: 2px solid var(--border-medium)") }}
+                            <small class="text-muted">
+                                <a href="https://myaccount.google.com/apppasswords" target="_blank" class="text-decoration-none">
+                                    Generate Gmail App Password
+                                    <i class="fas fa-external-link-alt ms-1"></i>
+                                </a>
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ settings_form.recipient_emails.label(class="form-label fw-bold") }}
+                            {{ settings_form.recipient_emails(class="form-control", placeholder="admin@example.com, security@example.com", rows=2, style="border: 2px solid var(--border-medium)") }}
+                            <small class="text-muted">Comma-separated list of email addresses to receive alerts</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="fas fa-save me-2"></i>Save Email Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Access Links Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success">
+                    <h5 class="mb-0">
+                        <i class="fas fa-link me-2"></i>Quick Access Links
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- User Management -->
+                        <div class="col-md-4">
+                            <a href="{{ url_for('user_management') }}" class="text-decoration-none">
+                                <div class="card border-primary h-100 hover-card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                                        <h5 class="card-title">User Management</h5>
+                                        <p class="card-text text-muted">Create, edit, and manage user accounts & profiles</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Company Profile -->
+                        <div class="col-md-4">
+                            <a href="{{ url_for('company_profile') }}" class="text-decoration-none">
+                                <div class="card border-warning h-100 hover-card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-building fa-3x text-warning mb-3"></i>
+                                        <h5 class="card-title">Company Profile</h5>
+                                        <p class="card-text text-muted">Update company info, logo & door system details</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- System Logs -->
+                        <div class="col-md-4">
+                            <a href="{{ url_for('event_log') }}" class="text-decoration-none">
+                                <div class="card border-success h-100 hover-card">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-file-alt fa-3x text-success mb-3"></i>
+                                        <h5 class="card-title">Event Logs</h5>
+                                        <p class="card-text text-muted">View system events and security logs</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Information Section -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header" style="background: var(--gradient-dark); color: white;">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>System Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold text-muted">System Version:</td>
+                                <td>eDOMOS v2.1</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-muted">Database:</td>
+                                <td>SQLite</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-muted">Server Status:</td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle me-1"></i>Running
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-muted">GPIO Status:</td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-microchip me-1"></i>Active
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Status -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header" style="background: var(--gradient-danger); color: white;">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>Security Status
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold text-muted">Authentication:</td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-lock me-1"></i>Enabled
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-muted">Password Hashing:</td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-key me-1"></i>bcrypt
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-muted">Active Sessions:</td>
+                                <td>{{ users|length }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-muted">Last Login:</td>
+                                <td>{{ current_user.last_login.strftime('%Y-%m-%d %H:%M') if current_user.last_login else 'N/A' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom styling for this page */
+.hover-card {
+    transition: all var(--transition-base);
+    cursor: pointer;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-header.bg-primary,
+.card-header.bg-success,
+.card-header.bg-warning,
+.card-header.bg-danger {
+    color: white !important;
+}
+
+.input-group-text {
+    background-color: var(--gray-100);
+    border: 2px solid var(--border-medium);
+    border-left: none;
+}
+
+.form-control:focus + .input-group-text {
+    border-color: var(--primary-500);
+}
+
+.table td {
+    padding: 0.75rem 0.5rem;
+}
+
+.table td:first-child {
+    width: 50%;
+}
+</style>
+
+<script>
+// Form validation and user feedback
+document.addEventListener('DOMContentLoaded', function() {
+    // Add success message if settings were saved
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+        showAlert('Settings saved successfully!', 'success');
+    }
+    
+    // Form validation
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+                submitBtn.disabled = true;
+            }
+        });
+    });
+});
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('.row'));
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

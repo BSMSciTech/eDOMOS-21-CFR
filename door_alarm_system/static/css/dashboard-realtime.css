@@ -1,0 +1,227 @@
+/* Real-Time Dashboard Update Animations */
+
+.status-value {
+    transition: all 0.3s ease-in-out;
+}
+
+.updated {
+    animation: updatePulse 1s ease-in-out;
+    transform: scale(1.05);
+}
+
+@keyframes updatePulse {
+    0% {
+        background-color: transparent;
+        transform: scale(1);
+    }
+    50% {
+        background-color: rgba(0, 184, 148, 0.2);
+        transform: scale(1.05);
+    }
+    100% {
+        background-color: transparent;
+        transform: scale(1);
+    }
+}
+
+.status-success {
+    color: #00b894 !important;
+    font-weight: 600;
+}
+
+.status-warning {
+    color: #e17055 !important;
+    font-weight: 600;
+}
+
+.status-danger {
+    color: #d63031 !important;
+    font-weight: 600;
+}
+
+/* Connection Status Indicator */
+#connection-status {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Counter Animation */
+.counter-updating {
+    color: #0984e3;
+    font-weight: bold;
+    animation: counterUpdate 0.3s ease-in-out;
+}
+
+@keyframes counterUpdate {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Real-time indicator pulse */
+.realtime-active {
+    position: relative;
+}
+
+.realtime-active::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background-color: #00b894;
+    border-radius: 50%;
+    animation: realtimePulse 2s infinite;
+}
+
+@keyframes realtimePulse {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Dashboard card updates */
+.dashboard-card.updating {
+    border: 2px solid #00b894;
+    box-shadow: 0 0 15px rgba(0, 184, 148, 0.3);
+    transition: all 0.3s ease-in-out;
+}
+
+.last-updated {
+    font-size: 0.75rem;
+    color: #636e72;
+    font-style: italic;
+    margin-top: 0.5rem;
+}
+
+/* Status panel animations */
+.status-panel {
+    transition: all 0.3s ease-in-out;
+}
+
+.status-panel.updating {
+    box-shadow: 0 4px 8px rgba(0, 184, 148, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Status indicator bars with smooth transitions */
+.status-indicator-bar {
+    transition: all 0.5s ease-in-out;
+}
+
+.status-indicator-bar.safe {
+    background: linear-gradient(90deg, #00b894, #55efc4);
+}
+
+.status-indicator-bar.warning {
+    background: linear-gradient(90deg, #e17055, #fdcb6e);
+}
+
+.status-indicator-bar.danger {
+    background: linear-gradient(90deg, #d63031, #ff7675);
+}
+
+.status-indicator-bar.primary {
+    background: linear-gradient(90deg, #0984e3, #74b9ff);
+}
+
+.status-indicator-bar.info {
+    background: linear-gradient(90deg, #00cec9, #81ecec);
+}
+
+/* Hero Section Status Indicator Real-time Updates */
+.status-indicator {
+    transition: all 0.4s ease-in-out;
+}
+
+.status-indicator.status-updated {
+    animation: heroStatusUpdate 1s ease-in-out;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+}
+
+@keyframes heroStatusUpdate {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(255, 255, 255, 0.6);
+    }
+    25% {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.9);
+    }
+    75% {
+        transform: scale(1.01);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(255, 255, 255, 0.6);
+    }
+}
+
+/* Enhanced hero status indicator transitions */
+.status-indicator.secure {
+    transition: all 0.4s ease-in-out;
+}
+
+.status-indicator.alert {
+    transition: all 0.4s ease-in-out;
+}
+
+/* Icon transition animations */
+.status-indicator i {
+    transition: all 0.3s ease-in-out;
+}
+
+.status-indicator.status-updated i {
+    animation: iconSpin 0.6s ease-in-out;
+}
+
+@keyframes iconSpin {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.1);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+/* Pulse effect for real-time updates */
+.status-indicator.realtime-pulse {
+    animation: statusPulse 2s infinite;
+}
+
+@keyframes statusPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}

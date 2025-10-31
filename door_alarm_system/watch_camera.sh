@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "🎥 Camera Capture Monitor - Waiting for door events..."
+echo "================================================"
+echo ""
+echo "✅ Camera is ready and initialized"
+echo "📸 Resolution: 1920x1080 Full HD"
+echo "💾 Storage: static/captures/"
+echo ""
+echo "👉 OPEN THE DOOR to trigger image capture!"
+echo ""
+echo "Monitoring logs..."
+echo "================================================"
+echo ""
+
+tail -f /home/bsm/WebApp/eDOMOS-v2.1/door_alarm_system/camera_live.log | grep --line-buffered -E "(DOOR OPENED|DOOR CLOSED|IMAGE CAPTURED|📸|Attempting to capture)"

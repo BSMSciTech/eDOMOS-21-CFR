@@ -1,0 +1,878 @@
+{% extends "base.html" %}
+
+{% block title %}Event Log{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Clean text-only styling */
+.event-table-container {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.badge {
+    font-weight: 500;
+}
+
+/* Column width optimization */
+#eventsTable th:nth-child(1),
+#eventsTable td:nth-child(1) {
+    width: 15px;
+    min-width: 15px;
+    max-width: 15px;
+    font-size: 10px;
+    padding: 4px;
+}
+
+#eventsTable th:nth-child(2),
+#eventsTable td:nth-child(2) {
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+}
+
+#eventsTable th:nth-child(3),
+#eventsTable td:nth-child(3) {
+    width: auto;
+    min-width: 100px;
+}
+
+#eventsTable th:nth-child(4),
+#eventsTable td:nth-child(4) {
+    width: 220px;
+    min-width: 220px;
+    white-space: nowrap;
+}
+
+#eventsTable th:nth-child(5),
+#eventsTable td:nth-child(5) {
+    width: 130px;
+    min-width: 130px;
+    max-width: 130px;
+    text-align: center;
+    padding: 10px;
+}
+
+/* Image thumbnail styling */
+.event-image-thumbnail {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 2px solid #dee2e6;
+}
+
+.event-image-thumbnail:hover {
+    transform: scale(1.1);
+    border-color: #0d6efd;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.no-image-placeholder {
+    width: 80px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 4px;
+    color: #6c757d;
+    font-size: 12px;
+}
+
+/* Lightbox modal styling */
+.image-lightbox {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+}
+
+.image-lightbox.active {
+    display: flex;
+}
+
+.lightbox-content {
+    max-width: 90%;
+    max-height: 90%;
+    position: relative;
+}
+
+.lightbox-image {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.lightbox-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: #fff;
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0 10px;
+}
+
+.lightbox-close:hover {
+    color: #ff0000;
+}
+
+.lightbox-info {
+    position: absolute;
+    bottom: -60px;
+    left: 0;
+    color: #fff;
+    font-size: 14px;
+}
+
+.lightbox-info i {
+    margin-right: 8px;
+}
+
+/* Fade-in animation for dynamically loaded images */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// User preferences and date formatting - defined in extra_js block
+{% endblock %}
+
+{% block content %}
+<script>
+// Lightbox functions - must be defined before onclick handlers
+function openLightbox(imagePath, eventType, timestamp, hash) {
+    console.log('🖼️ Opening lightbox:', imagePath);
+    
+    const lightbox = document.getElementById('imageLightbox');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxEventType = document.getElementById('lightboxEventType');
+    const lightboxTimestamp = document.getElementById('lightboxTimestamp');
+    const lightboxHash = document.getElementById('lightboxHash');
+    
+    if (!lightbox) {
+        console.error('❌ Lightbox element not found!');
+        return;
+    }
+    
+    lightboxImage.src = imagePath;
+    lightboxEventType.textContent = eventType.replace('_', ' ').toUpperCase();
+    lightboxTimestamp.textContent = timestamp;
+    lightboxHash.textContent = hash + '...';
+    
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    console.log('✅ Lightbox opened');
+}
+
+function closeLightbox(event) {
+    if (event.target.id === 'imageLightbox' || event.target.className === 'lightbox-close') {
+        const lightbox = document.getElementById('imageLightbox');
+        lightbox.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const lightbox = document.getElementById('imageLightbox');
+        if (lightbox && lightbox.classList.contains('active')) {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    }
+});
+</script>
+
+<div class="container-fluid">
+    <!-- Professional Event Log Header -->
+    <div class="event-log-header-section">
+        <div class="event-header-content">
+            <div class="event-icon">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="event-title-section">
+                <h1 class="event-title">EVENT LOG CENTER</h1>
+                <p class="event-subtitle">Complete System Activity & Event History</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card event-log-main-card">
+                <div class="card-header event-log-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-history me-2"></i>All Events</h5>
+                        <div class="event-controls">
+                            <span id="live-indicator" class="badge bg-success ms-2">
+                                LIVE
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body event-log-body">
+                    <div class="table-responsive event-table-container">
+                        <table id="eventsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Event Type</th>
+                                    <th>Description</th>
+                                    <th>Timestamp</th>
+                                    <th>Image</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eventTableBody">
+                                {% if events %}
+                                    {% for event in events %}
+                                    <tr data-event-id="{{ event.id }}">
+                                        <td><span class="event-id">#{{ event.id }}</span></td>
+                                        <td>
+                                            {% if event.event_type == 'door_open' %}
+                                            <span class="badge bg-info">Door Open</span>
+                                            {% elif event.event_type == 'door_close' %}
+                                            <span class="badge bg-success">Door Close</span>
+                                            {% elif event.event_type == 'alarm_triggered' %}
+                                            <span class="badge bg-danger">Alarm Triggered</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">{{ event.event_type.replace('_', ' ').title() }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="event-description">{{ event.description }}</td>
+                                        <td class="event-timestamp">
+                                            {{ event.timestamp | format_datetime(user_date_format, user_time_format) }}
+                                        </td>
+                                        <td class="event-image-cell">
+                                            {% if event.image_path %}
+                                            <img src="/{{ event.image_path }}?v={{ event.id }}" 
+                                                 class="event-image-thumbnail" 
+                                                 alt="Event capture" 
+                                                 onclick="openLightbox('/{{ event.image_path }}?v={{ event.id }}', '{{ event.event_type }}', '{{ event.timestamp }}', '{{ event.image_hash[:16] if event.image_hash else '' }}')"
+                                                 title="Click to enlarge">
+                                            {% else %}
+                                            <div class="no-image-placeholder">
+                                                <i class="fas fa-camera-slash"></i>
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5">
+                                            <div class="event-log-empty">
+                                                <div class="event-log-empty-icon">
+                                                    <i class="fas fa-inbox"></i>
+                                                </div>
+                                                <div class="event-log-empty-title">No Events Found</div>
+                                                <div class="event-log-empty-subtitle">
+                                                    Events will appear here as they occur in the system
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    
+                    <!-- Professional Pagination -->
+                    {% if pagination.pages > 1 %}
+                    <div class="event-pagination">
+                        <nav aria-label="Event log pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if pagination.has_prev %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('event_log', page=pagination.prev_num) }}">
+                                        <i class="fas fa-chevron-left me-2"></i>Previous
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% for page_num in range(1, pagination.pages + 1) %}
+                                <li class="page-item {{ 'active' if page_num == pagination.page else '' }}">
+                                    <a class="page-link" href="{{ url_for('event_log', page=page_num) }}">{{ page_num }}</a>
+                                </li>
+                                {% endfor %}
+
+                                {% if pagination.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('event_log', page=pagination.next_num) }}">
+                                        Next<i class="fas fa-chevron-right ms-2"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Lightbox Modal -->
+<div id="imageLightbox" class="image-lightbox" onclick="closeLightbox(event)">
+    <div class="lightbox-content">
+        <button class="lightbox-close" onclick="closeLightbox(event)">&times;</button>
+        <img id="lightboxImage" class="lightbox-image" src="" alt="Event capture">
+        <div class="lightbox-info">
+            <div><i class="fas fa-tag"></i><span id="lightboxEventType"></span></div>
+            <div><i class="fas fa-clock"></i><span id="lightboxTimestamp"></span></div>
+            <div><i class="fas fa-fingerprint"></i>Hash: <span id="lightboxHash"></span></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// User preferences for date/time formatting
+const USER_DATE_FORMAT = '{{ user_date_format }}';
+const USER_TIME_FORMAT = '{{ user_time_format }}';
+
+// Function to format timestamp according to user preferences
+function formatUserTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    
+    // Date format mapping
+    const dateFormats = {
+        'YYYY-MM-DD': (d) => {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        },
+        'DD/MM/YYYY': (d) => {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${day}/${month}/${year}`;
+        },
+        'MM/DD/YYYY': (d) => {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${month}/${day}/${year}`;
+        },
+        'DD-MM-YYYY': (d) => {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${day}-${month}-${year}`;
+        }
+    };
+    
+    // Time format mapping
+    const timeFormats = {
+        '24h': (d) => {
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            const seconds = String(d.getSeconds()).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        },
+        '12h': (d) => {
+            let hours = d.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            const seconds = String(d.getSeconds()).padStart(2, '0');
+            return `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+        }
+    };
+    
+    const dateFormatter = dateFormats[USER_DATE_FORMAT] || dateFormats['YYYY-MM-DD'];
+    const timeFormatter = timeFormats[USER_TIME_FORMAT] || timeFormats['24h'];
+    
+    return `${dateFormatter(date)} ${timeFormatter(date)}`;
+}
+
+// Event Log Auto-Refresh Component
+class EventLogAutoRefresh {
+    constructor() {
+        this.refreshInterval = null;
+        this.refreshRate = 3000; // 3 seconds
+        this.isAutoRefreshEnabled = true;
+        this.lastEventId = 0;
+        this.newEventsCount = 0;
+        this.isWebSocketConnected = false;
+        this.webSocketEventIds = new Set(); // Track events delivered via WebSocket
+        this.currentPage = {{ pagination.page }};
+        this.init();
+    }
+    
+    init() {
+        console.log('🔄 Event Log Auto-Refresh Component Initialized');
+        console.log('  ├─ Refresh Rate: 3 seconds');
+        console.log('  ├─ Current Page: ' + this.currentPage);
+        
+        // Only enable auto-refresh on page 1
+        if (this.currentPage === 1) {
+            console.log('  ├─ Auto-refresh: ENABLED (Page 1)');
+            console.log('  ├─ Client-side event adding: ENABLED');
+            console.log('  └─ New events will be added dynamically');
+            this.getCurrentEventId();
+            this.startAutoRefresh();
+            this.setupWebSocketFallback();
+        } else {
+            console.log('  ├─ Auto-refresh: DISABLED (Page ' + this.currentPage + ')');
+            console.log('  └─ Only server-rendered events will be shown');
+            this.isAutoRefreshEnabled = false;
+            this.updateLiveIndicator(false);
+        }
+        
+        this.updateLastRefreshTime();
+    }
+        }
+        
+        this.updateLastRefreshTime();
+    }
+    
+    getCurrentEventId() {
+        const rows = document.querySelectorAll('#eventTableBody tr[data-event-id]');
+        if (rows.length > 0) {
+            const firstRow = rows[0];
+            const eventId = parseInt(firstRow.getAttribute('data-event-id'));
+            this.lastEventId = eventId || 0;
+            console.log('📊 Server-rendered events found, latest ID:', this.lastEventId);
+            console.log('📊 Total server-rendered events:', rows.length);
+            
+            // List first few server-rendered event IDs for debugging
+            const firstFewIds = Array.from(rows).slice(0, 3).map(row => row.getAttribute('data-event-id'));
+            console.log('📊 First few server event IDs:', firstFewIds);
+        } else {
+            console.log('📊 No server-rendered events found, starting with lastEventId = 0');
+            this.lastEventId = 0;
+        }
+    }
+    
+    startAutoRefresh() {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+        }
+        
+        this.refreshInterval = setInterval(() => {
+            if (this.isAutoRefreshEnabled) {
+                this.checkForNewEvents();
+            }
+        }, this.refreshRate);
+        
+        console.log('✅ Auto-refresh started (every 3 seconds)');
+        this.updateLiveIndicator(true);
+    }
+    
+    stopAutoRefresh() {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+            this.refreshInterval = null;
+        }
+        console.log('⏸️ Auto-refresh paused');
+        this.updateLiveIndicator(false);
+    }
+    
+    async checkForNewEvents() {
+        try {
+            console.log('🔍 Checking for new events since ID:', this.lastEventId);
+            
+            const response = await fetch(`/api/events?since=${this.lastEventId}&per_page=50`);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.events && data.events.length > 0) {
+                console.log(`📥 Found ${data.events.length} new events`);
+                this.processNewEvents(data.events);
+                this.newEventsCount += data.events.length;
+            } else {
+                console.log('📋 No new events found');
+            }
+            
+            this.updateLastRefreshTime();
+            
+        } catch (error) {
+            console.error('❌ Error checking for new events:', error);
+            this.handleRefreshError(error);
+        }
+    }
+    
+    processNewEvents(events) {
+        const tbody = document.getElementById('eventTableBody');
+        if (!tbody) {
+            console.error('❌ Event table body not found');
+            return;
+        }
+
+        // Sort events by ID (newest first)
+        events.sort((a, b) => b.id - a.id);
+
+        let addedCount = 0;
+        events.forEach(event => {
+            console.log(`🔍 Processing event ID ${event.id}: ${event.event_type} (lastEventId: ${this.lastEventId})`);
+            
+            // Check if event already exists in table
+            const existingRow = tbody.querySelector(`tr[data-event-id="${event.id}"]`);
+            if (existingRow) {
+                console.log(`⚠️ Event ${event.id} already exists in table, skipping`);
+                return;
+            }
+            
+            // Check if we've seen this event from WebSocket
+            if (this.webSocketEventIds.has(event.id)) {
+                console.log(`⚠️ Event ${event.id} already received via WebSocket, skipping duplicate`);
+                return;
+            }
+            
+            // Add event to table
+            console.log(`➕ Adding event ${event.id} to table`);
+            this.addEventToTable(event);
+            addedCount++;
+            
+            // Update lastEventId
+            this.lastEventId = Math.max(this.lastEventId, event.id);
+        });
+
+        // Remove excess rows (keep only first 100)
+        const rows = tbody.querySelectorAll('tr[data-event-id]');
+        if (rows.length > 100) {
+            for (let i = 100; i < rows.length; i++) {
+                rows[i].remove();
+            }
+        }
+
+        // Clean up old WebSocket event IDs to prevent memory leaks
+        if (this.webSocketEventIds.size > 200) {
+            const oldestEvents = Array.from(this.webSocketEventIds).sort((a, b) => a - b).slice(0, 100);
+            oldestEvents.forEach(id => this.webSocketEventIds.delete(id));
+            console.log('🧹 Cleaned up old WebSocket event IDs');
+        }
+
+        if (addedCount > 0) {
+            console.log(`✅ Added ${addedCount} new events to table`);
+        }
+    }    addEventToTable(event) {
+        const tbody = document.getElementById('eventTableBody');
+        
+        // Enhanced duplicate detection with debugging
+        const existingRows = tbody.querySelectorAll(`tr[data-event-id="${event.id}"]`);
+        if (existingRows.length > 0) {
+            console.log(`⚠️ Event ID ${event.id} already exists in table (${existingRows.length} copies found), skipping`);
+            console.log('   Existing row details:');
+            existingRows.forEach((row, index) => {
+                const existingId = row.querySelector('.event-id')?.textContent || 'N/A';
+                const existingType = row.querySelector('.badge')?.textContent.trim() || 'N/A';
+                const existingDesc = row.querySelector('.event-description')?.textContent || 'N/A';
+                console.log(`     ${index + 1}. ID: ${existingId}, Type: ${existingType}, Desc: ${existingDesc}`);
+            });
+            return;
+        }
+        
+        // Double-check all existing event IDs for debugging
+        const allRows = tbody.querySelectorAll('tr[data-event-id]');
+        const existingIds = Array.from(allRows).map(row => row.getAttribute('data-event-id'));
+        console.log(`🔍 Adding event ${event.id}. Current table has ${allRows.length} events:`, existingIds.slice(0, 5));
+        
+        // Create badge based on event type
+        let badge = this.createEventBadge(event.event_type);
+        
+        // Create image cell HTML
+        let imageCell = '';
+        console.log(`🖼️ Creating image cell for event ${event.id}:`);
+        console.log(`   - event.image_path: "${event.image_path}"`);
+        console.log(`   - event.has_image: ${event.has_image}`);
+        
+        if (event.image_path) {
+            const imageHash = event.image_hash ? event.image_hash.substring(0, 16) : '';
+            // Add cache buster to prevent browser from showing cached images
+            const cacheBuster = new Date().getTime();
+            const imageSrc = `/${event.image_path}?v=${cacheBuster}`;
+            console.log(`   ✅ Image will be displayed: ${imageSrc}`);
+            imageCell = `
+                <img src="${imageSrc}" 
+                     class="event-image-thumbnail" 
+                     alt="Event capture" 
+                     onclick="openLightbox('${imageSrc}', '${event.event_type}', '${event.timestamp}', '${imageHash}')"
+                     title="Click to enlarge">
+            `;
+        } else {
+            console.log(`   ⏳ No image yet, showing loading spinner`);
+            // Show loading spinner for new events waiting for image capture
+            imageCell = `
+                <div class="no-image-placeholder">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+            `;
+        }
+        
+        // Create new row with highlight
+        const newRow = document.createElement('tr');
+        newRow.className = 'table-success animate__animated animate__fadeInDown';
+        newRow.setAttribute('data-event-id', event.id);
+
+        newRow.innerHTML = `
+            <td><span class="event-id">#${event.id}</span></td>
+            <td>${badge}</td>
+            <td class="event-description">${event.description}</td>
+            <td class="event-timestamp">
+                <i class="fas fa-clock me-1 opacity-50"></i>
+                ${formatUserTimestamp(event.timestamp)}
+                <small class="badge bg-primary ms-2">NEW</small>
+            </td>
+            <td class="event-image-cell">${imageCell}</td>
+        `;
+        
+        // Insert at the top of the table
+        tbody.insertBefore(newRow, tbody.firstChild);
+        
+        // Remove highlight and "NEW" badge after 5 seconds
+        setTimeout(() => {
+            newRow.classList.remove('table-success', 'animate__animated', 'animate__fadeInDown');
+            const newBadge = newRow.querySelector('.badge.bg-primary');
+            if (newBadge) {
+                newBadge.remove();
+            }
+        }, 5000);
+        
+        console.log(`✅ Successfully added event ${event.id} (${event.event_type}) to table`);
+    }
+    
+    debugTableState() {
+        const tbody = document.getElementById('eventTableBody');
+        const allRows = tbody.querySelectorAll('tr[data-event-id]');
+        
+        console.log('=== EVENT TABLE DEBUG STATE ===');
+        console.log(`Total rows: ${allRows.length}`);
+        
+        const eventData = Array.from(allRows).map(row => {
+            const eventId = row.getAttribute('data-event-id');
+            const displayId = row.querySelector('.event-id')?.textContent || 'N/A';
+            const eventType = row.querySelector('.badge')?.textContent.trim() || 'N/A';
+            return { eventId, displayId, eventType };
+        });
+        
+        console.table(eventData.slice(0, 10)); // Show first 10 events
+        
+        // Check for duplicates
+        const eventIds = eventData.map(e => e.eventId);
+        const duplicates = eventIds.filter((id, index) => eventIds.indexOf(id) !== index);
+        
+        if (duplicates.length > 0) {
+            console.log('🚨 DUPLICATES FOUND:', [...new Set(duplicates)]);
+        } else {
+            console.log('✅ No duplicates found');
+        }
+        
+        console.log('=== END DEBUG STATE ===');
+    }
+    
+    removeDuplicates() {
+        const tbody = document.getElementById('eventTableBody');
+        const allRows = tbody.querySelectorAll('tr[data-event-id]');
+        const seenIds = new Set();
+        let removedCount = 0;
+        
+        console.log('🧹 Starting duplicate cleanup...');
+        
+        // Keep first occurrence of each ID, remove duplicates
+        allRows.forEach(row => {
+            const eventId = row.getAttribute('data-event-id');
+            if (seenIds.has(eventId)) {
+                console.log(`🗑️ Removing duplicate event ID: ${eventId}`);
+                row.remove();
+                removedCount++;
+            } else {
+                seenIds.add(eventId);
+            }
+        });
+        
+        console.log(`✅ Cleanup complete - removed ${removedCount} duplicates`);
+        return removedCount;
+    }
+    
+    // Popup notifications disabled - no popups will appear
+    
+    createEventBadge(eventType) {
+        const badges = {
+            'door_open': '<span class="badge bg-info"><i class="fas fa-door-open me-1"></i>Door Open</span>',
+            'door_close': '<span class="badge bg-success"><i class="fas fa-door-closed me-1"></i>Door Close</span>',
+            'alarm_triggered': '<span class="badge bg-danger"><i class="fas fa-exclamation-triangle me-1"></i>Alarm Triggered</span>'
+        };
+        
+        return badges[eventType] || `<span class="badge bg-secondary"><i class="fas fa-info-circle me-1"></i>${eventType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>`;
+    }
+    
+    updateLastRefreshTime() {
+        const lastUpdateEl = document.getElementById('last-update');
+        if (lastUpdateEl) {
+            lastUpdateEl.textContent = new Date().toLocaleTimeString();
+        }
+    }
+    
+    updateLiveIndicator(isLive) {
+        const indicator = document.getElementById('live-indicator');
+        if (indicator) {
+            if (this.currentPage !== 1) {
+                // Show page indicator instead of live status on other pages
+                indicator.className = 'badge bg-secondary ms-2';
+                indicator.innerHTML = '<i class="fas fa-file-alt" style="font-size: 8px;"></i> PAGE ' + this.currentPage;
+            } else if (isLive) {
+                indicator.className = 'badge bg-success ms-2';
+                indicator.innerHTML = '<i class="fas fa-circle" style="font-size: 8px;"></i> LIVE';
+            } else {
+                indicator.className = 'badge bg-warning ms-2';
+                indicator.innerHTML = '<i class="fas fa-pause" style="font-size: 8px;"></i> PAUSED';
+            }
+        }
+    }
+    
+    handleRefreshError(error) {
+        const indicator = document.getElementById('live-indicator');
+        if (indicator) {
+            indicator.className = 'badge bg-danger ms-2';
+            indicator.innerHTML = '<i class="fas fa-exclamation-triangle" style="font-size: 8px;"></i> ERROR';
+        }
+        
+        // Try to restart after 10 seconds
+        setTimeout(() => {
+            if (this.isAutoRefreshEnabled) {
+                this.startAutoRefresh();
+            }
+        }, 10000);
+    }
+    
+    setupWebSocketFallback() {
+        // Use WebSocket as primary, polling as fallback
+        if (typeof socket !== 'undefined' && socket) {
+            this.isWebSocketConnected = false;
+            
+            socket.on('connect', () => {
+                console.log('📡 WebSocket connected - reducing polling frequency');
+                this.isWebSocketConnected = true;
+                // Reduce polling frequency when WebSocket is connected
+                this.refreshRate = 10000; // 10 seconds instead of 3
+                this.startAutoRefresh();
+            });
+            
+            socket.on('new_event', (data) => {
+                console.log('📡 WebSocket event received in AutoRefresh:', data.event?.event_type, 'ID:', data.event?.id);
+                
+                if (data.event) {
+                    const eventId = data.event.id;
+                    
+                    // Track this event ID to prevent duplicates from polling
+                    this.webSocketEventIds.add(eventId);
+                    console.log('✅ Tracked WebSocket event ID:', eventId);
+                    
+                    // Update lastEventId if this is newer
+                    if (eventId > this.lastEventId) {
+                        this.lastEventId = eventId;
+                        console.log('🔄 Updated lastEventId to:', this.lastEventId);
+                    }
+                    
+                    // socket.js will handle adding the row and polling for image
+                    // We just need to track the ID here to prevent duplicates
+                }
+            });
+            
+            socket.on('disconnect', () => {
+                console.log('🔄 WebSocket disconnected, increasing polling frequency');
+                this.isWebSocketConnected = false;
+                this.refreshRate = 3000; // Back to 3 seconds
+                this.startAutoRefresh();
+                this.updateLiveIndicator(true); // Still live via polling
+            });
+        }
+    }
+    
+    toggle() {
+        this.isAutoRefreshEnabled = !this.isAutoRefreshEnabled;
+        
+        if (this.isAutoRefreshEnabled) {
+            this.startAutoRefresh();
+        } else {
+            this.stopAutoRefresh();
+        }
+        
+        this.updateToggleButton();
+    }
+    
+    updateToggleButton() {
+        const toggleText = document.getElementById('toggle-text');
+        const toggleIcon = document.getElementById('toggle-icon');
+        
+        if (toggleText && toggleIcon) {
+            if (this.isAutoRefreshEnabled) {
+                toggleText.textContent = 'Pause Auto-Refresh';
+                toggleIcon.className = 'fas fa-pause me-1';
+            } else {
+                toggleText.textContent = 'Resume Auto-Refresh';
+                toggleIcon.className = 'fas fa-play me-1';
+            }
+        }
+    }
+    
+    // Manual refresh method removed - no longer needed since client-side event adding is disabled
+}
+
+// Global functions for button controls
+let eventLogRefresh;
+
+function toggleAutoRefresh() {
+    if (eventLogRefresh) {
+        eventLogRefresh.toggle();
+    }
+}
+
+// Manual refresh functions removed - no longer needed since client-side event adding is disabled
+
+
+
+// Simple initialization - no complex font loading
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Event Log page loaded - initializing...');
+    
+    // Initialize the auto-refresh component immediately
+    eventLogRefresh = new EventLogAutoRefresh();
+    
+    // Make it globally accessible for debugging
+    window.eventLogRefresh = eventLogRefresh;
+    
+    // Global debug functions
+    window.debugEventTable = () => eventLogRefresh.debugTableState();
+    window.removeDuplicateEvents = () => eventLogRefresh.removeDuplicates();
+    
+    console.log('✅ Auto-refresh component ready');
+    console.log('📋 Debug commands:');
+    console.log('   eventLogRefresh.toggle() - control auto-refresh');
+    console.log('   debugEventTable() - show table state and duplicates');
+    console.log('   removeDuplicateEvents() - clean up any visible duplicates');
+});
+</script>
+
+<!-- Socket.IO is loaded by base template, real-time updates handled by socket.js -->
+{% endblock %}

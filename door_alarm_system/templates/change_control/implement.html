@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}Implement {{ change.change_number }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.implementation-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #0d6efd;
+}
+
+.change-summary {
+    background: #d1e7dd;
+    border-left: 4px solid #198754;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.signature-box {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="mb-4">
+                <a href="{{ url_for('view_change_request', change_id=change.id) }}" 
+                   class="btn btn-outline-secondary btn-sm mb-3">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Change Request
+                </a>
+                <h2 class="mb-1">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Mark Change as Implemented
+                </h2>
+                <p class="text-muted">{{ change.change_number }} - Electronic Signature Required</p>
+            </div>
+
+            <!-- Change Summary -->
+            <div class="change-summary">
+                <h5 class="mb-3">{{ change.title }}</h5>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <small class="text-muted">Requested by:</small><br>
+                        <strong>{{ change.requestor.username if change.requestor else 'Unknown' }}</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Approved by:</small><br>
+                        <strong>{{ change.approver.username if change.approver else 'Unknown' }}</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Approved on:</small><br>
+                        <strong>{{ change.approved_date.strftime('%Y-%m-%d') if change.approved_date else 'N/A' }}</strong>
+                    </div>
+                </div>
+                <div class="alert alert-success mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    This change request has been approved and is ready for implementation.
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Change Details -->
+                    <div class="implementation-section">
+                        <div class="section-title">
+                            <i class="fas fa-file-alt me-2"></i>Change Details
+                        </div>
+                        
+                        <h6>Description:</h6>
+                        <p style="white-space: pre-wrap;">{{ change.description }}</p>
+
+                        {% if change.version_before or change.version_after %}
+                        <h6>Version Information:</h6>
+                        <p>
+                            <strong>From:</strong> {{ change.version_before or 'N/A' }}
+                            <i class="fas fa-arrow-right mx-2"></i>
+                            <strong>To:</strong> {{ change.version_after or 'TBD' }}
+                        </p>
+                        {% endif %}
+
+                        {% if change.affected_systems %}
+                        <h6>Affected Systems:</h6>
+                        <p>{{ change.affected_systems }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Implementation Form -->
+                    <div class="implementation-section">
+                        <div class="section-title">
+                            <i class="fas fa-tasks me-2"></i>Implementation Details
+                        </div>
+
+                        <form method="POST" id="implementForm">
+                            <div class="mb-3">
+                                <label for="implementation_notes" class="form-label">
+                                    <strong>Implementation Notes</strong>
+                                </label>
+                                <textarea class="form-control" id="implementation_notes" 
+                                          name="implementation_notes" rows="5"
+                                          placeholder="Describe what was done to implement this change, any issues encountered, testing performed, etc."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="version_after" class="form-label">
+                                    <strong>Final Version</strong>
+                                </label>
+                                <input type="text" class="form-control" id="version_after" 
+                                       name="version_after" 
+                                       value="{{ change.version_after or '' }}"
+                                       placeholder="e.g., 2.2.0">
+                                <small class="text-muted">Update the version number if needed</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="signature_reason" class="form-label">
+                                    <strong>Signature Meaning/Reason <span class="text-danger">*</span></strong>
+                                </label>
+                                <textarea class="form-control" id="signature_reason" 
+                                          name="signature_reason" rows="2" required
+                                          placeholder="Per 21 CFR §11.200(a), explain the meaning and reason for signing..."></textarea>
+                                <small class="text-muted">Required by 21 CFR Part 11 §11.200(a)</small>
+                            </div>
+
+                            <div class="signature-box">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-key me-2"></i>Authenticate Your Signature
+                                </h6>
+                                
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">
+                                        <strong>Your Password <span class="text-danger">*</span></strong>
+                                    </label>
+                                    <input type="password" class="form-control" id="password" 
+                                           name="password" required 
+                                           placeholder="Enter your password to sign">
+                                    <small class="text-light">
+                                        Your password is required to create a legally binding electronic signature
+                                    </small>
+                                </div>
+
+                                <div class="small opacity-75">
+                                    <p class="mb-1">
+                                        <i class="fas fa-signature me-2"></i>
+                                        <strong>Implemented by:</strong> {{ current_user.username }}
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="fas fa-calendar me-2"></i>
+                                        <strong>Date/Time:</strong> <span id="currentDateTime"></span>
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="fas fa-network-wired me-2"></i>
+                                        <strong>IP Address:</strong> {{ request.remote_addr }}
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="fas fa-fingerprint me-2"></i>
+                                        <strong>Hash Type:</strong> SHA-256
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-lightbulb me-2"></i>Implementation Checklist</h6>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="checklist1">
+                                    <label class="form-check-label small" for="checklist1">
+                                        All changes have been implemented as described
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="checklist2">
+                                    <label class="form-check-label small" for="checklist2">
+                                        Testing has been completed successfully
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="checklist3">
+                                    <label class="form-check-label small" for="checklist3">
+                                        Documentation has been updated
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="checklist4">
+                                    <label class="form-check-label small" for="checklist4">
+                                        Rollback plan is confirmed and ready
+                                    </label>
+                                </div>
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input" type="checkbox" id="checklist5">
+                                    <label class="form-check-label small" for="checklist5">
+                                        Stakeholders have been notified
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Legal Notice:</strong> By signing this implementation record, you are 
+                                confirming that the change has been successfully implemented according to the 
+                                approved specifications. This action creates a legally binding electronic signature 
+                                under 21 CFR Part 11 and will be recorded in the blockchain audit trail.
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-signature me-2"></i>Sign & Mark as Implemented
+                                </button>
+                                <a href="{{ url_for('view_change_request', change_id=change.id) }}" 
+                                   class="btn btn-outline-secondary btn-lg">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Change Info -->
+                    <div class="implementation-section">
+                        <div class="section-title">
+                            <i class="fas fa-info-circle me-2"></i>Change Information
+                        </div>
+                        <table class="table table-sm mb-0">
+                            <tr>
+                                <td><strong>Change Number:</strong></td>
+                                <td>{{ change.change_number }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Type:</strong></td>
+                                <td>{{ change.change_type|title }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Priority:</strong></td>
+                                <td>
+                                    <span class="badge 
+                                        {% if change.priority == 'critical' %}bg-danger
+                                        {% elif change.priority == 'high' %}bg-warning text-dark
+                                        {% elif change.priority == 'medium' %}bg-info
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ change.priority|title }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status:</strong></td>
+                                <td>
+                                    <span class="badge bg-success">Approved</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Compliance -->
+                    <div class="implementation-section">
+                        <div class="section-title">
+                            <i class="fas fa-shield-alt me-2"></i>Compliance
+                        </div>
+                        <p class="small mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            21 CFR Part 11 Compliant
+                        </p>
+                        <p class="small mb-2">
+                            <i class="fas fa-signature text-success me-2"></i>
+                            Electronic Signature Required
+                        </p>
+                        <p class="small mb-0">
+                            <i class="fas fa-link text-success me-2"></i>
+                            Blockchain Audit Trail
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update date/time
+function updateDateTime() {
+    const now = new Date();
+    const formatted = now.toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+    document.getElementById('currentDateTime').textContent = formatted;
+}
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+// Form validation
+document.getElementById('implementForm').addEventListener('submit', function(e) {
+    const reason = document.getElementById('signature_reason').value.trim();
+    const password = document.getElementById('password').value;
+    
+    if (!reason) {
+        e.preventDefault();
+        alert('Signature reason is required');
+        return false;
+    }
+    
+    if (!password) {
+        e.preventDefault();
+        alert('Password is required');
+        return false;
+    }
+    
+    // Check if all checklist items are checked
+    const checkboxes = document.querySelectorAll('[id^="checklist"]');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    
+    if (!allChecked) {
+        if (!confirm('Not all checklist items are checked. Are you sure you want to continue?')) {
+            e.preventDefault();
+            return false;
+        }
+    }
+    
+    if (!confirm('Are you sure the change has been fully implemented? This action will create a legally binding electronic signature.')) {
+        e.preventDefault();
+        return false;
+    }
+});
+</script>
+{% endblock %}

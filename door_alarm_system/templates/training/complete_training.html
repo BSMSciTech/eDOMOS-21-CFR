@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Complete Training - {{ module.module_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.training-content {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.signature-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.signature-icon {
+    font-size: 3rem;
+    opacity: 0.3;
+}
+
+.completion-checklist {
+    list-style: none;
+    padding: 0;
+}
+
+.completion-checklist li {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: white;
+    border-radius: 6px;
+    border-left: 4px solid #28a745;
+}
+
+.completion-checklist li i {
+    color: #28a745;
+    margin-right: 0.5rem;
+}
+
+.already-completed {
+    background-color: #d4edda;
+    border-left: 4px solid #28a745;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="mb-4">
+                <a href="{{ url_for('training_dashboard') }}" class="btn btn-outline-secondary btn-sm mb-3">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+                <h2 class="mb-1">
+                    <i class="fas fa-book-reader me-2"></i>
+                    {{ module.module_name }}
+                </h2>
+                <p class="text-muted">Version {{ module.version }} | Valid for {{ module.validity_period_days }} days</p>
+            </div>
+
+            <!-- Already Completed Notice -->
+            {% if existing_record and not existing_record.is_expired() %}
+            <div class="already-completed">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle fa-2x me-3"></i>
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1">Training Already Completed</h5>
+                        <p class="mb-0">
+                            You completed this training on <strong>{{ existing_record.completed_date.strftime('%B %d, %Y') }}</strong>.
+                            It expires on <strong>{{ existing_record.expiration_date.strftime('%B %d, %Y') }}</strong>.
+                        </p>
+                    </div>
+                    {% if existing_record.signature_id %}
+                    <span class="badge bg-success" style="font-size: 1rem; padding: 0.75rem 1rem;">
+                        <i class="fas fa-signature me-2"></i>Electronically Signed
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% elif existing_record and existing_record.is_expired() %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Training Expired!</strong> Your previous completion expired on 
+                <strong>{{ existing_record.expiration_date.strftime('%B %d, %Y') }}</strong>. 
+                Please complete the training again to renew your certification.
+            </div>
+            {% endif %}
+
+            <!-- Training Content -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Training Material
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="text-primary mb-3">Description</h6>
+                    <p>{{ module.description }}</p>
+
+                    <hr>
+
+                    <h6 class="text-primary mb-3">Training Content</h6>
+                    <div class="training-content">
+                        {{ module.content | safe }}
+                    </div>
+
+                    {% if module.required_for_roles %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-users me-2"></i>
+                        <strong>Required for roles:</strong> {{ module.required_for_roles }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Completion Form with Electronic Signature -->
+            <div class="card">
+                <div class="card-header signature-box">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">Complete Training with Electronic Signature</h5>
+                            <p class="mb-0 opacity-75">21 CFR Part 11 Compliant</p>
+                        </div>
+                        <div class="signature-icon">
+                            <i class="fas fa-pen-fancy"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="completionForm">
+                        <!-- Completion Checklist -->
+                        <h6 class="mb-3">Attestation</h6>
+                        <ul class="completion-checklist mb-4">
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                I have read and understood all training material
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                I agree to follow the procedures outlined in this training
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                I understand this signature is legally binding
+                            </li>
+                        </ul>
+
+                        <!-- Score (Optional) -->
+                        <div class="mb-3">
+                            <label for="score" class="form-label">
+                                <i class="fas fa-star me-2"></i>Score (Optional)
+                            </label>
+                            <div class="input-group" style="max-width: 200px;">
+                                <input type="number" class="form-control" id="score" name="score" 
+                                       min="0" max="100" placeholder="0-100">
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <small class="text-muted">Leave blank if not applicable</small>
+                        </div>
+
+                        <!-- Signature Reason -->
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">
+                                <i class="fas fa-comment me-2"></i>Signature Meaning <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="reason" name="reason" 
+                                   value="I attest that I have completed this training and understand the content"
+                                   required>
+                            <small class="text-muted">Per 21 CFR §11.200(a) - Meaning of signature</small>
+                        </div>
+
+                        <!-- Password for Electronic Signature -->
+                        <div class="mb-4">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock me-2"></i>Enter Your Password to Sign <span class="text-danger">*</span>
+                            </label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   required placeholder="Your account password">
+                            <small class="text-muted">
+                                Your password is required to create a legally binding electronic signature
+                            </small>
+                        </div>
+
+                        <!-- Signature Information -->
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Electronic Signature Details</h6>
+                            <ul class="mb-0">
+                                <li><strong>Signer:</strong> {{ current_user.full_name or current_user.username }}</li>
+                                <li><strong>Date/Time:</strong> <span id="currentDateTime"></span></li>
+                                <li><strong>IP Address:</strong> {{ request.remote_addr }}</li>
+                                <li><strong>Signature Hash:</strong> SHA-256 cryptographic hash will be generated</li>
+                            </ul>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-signature me-2"></i>
+                                Complete Training & Sign Electronically
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Legal Notice -->
+            <div class="card mt-3">
+                <div class="card-body bg-light">
+                    <p class="small mb-0 text-muted">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        <strong>21 CFR Part 11 Compliance Notice:</strong> 
+                        This electronic signature is legally equivalent to a handwritten signature. 
+                        By signing, you acknowledge that you are the identified individual and that this 
+                        action is legally binding. The signature will be permanently recorded in the 
+                        immutable blockchain audit trail.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update current date/time
+function updateDateTime() {
+    const now = new Date();
+    const formatted = now.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    document.getElementById('currentDateTime').textContent = formatted;
+}
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+// Form validation
+document.getElementById('completionForm').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    if (!password) {
+        e.preventDefault();
+        alert('Password is required for electronic signature');
+        return false;
+    }
+    
+    if (!confirm('Are you sure you want to complete this training with your electronic signature? This action cannot be undone.')) {
+        e.preventDefault();
+        return false;
+    }
+});
+</script>
+{% endblock %}

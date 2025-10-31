@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}Assign Training{% endblock %}
+
+{% block extra_css %}
+<style>
+.assignment-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #0d6efd;
+}
+
+.user-checkbox {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.user-checkbox:hover {
+    background: #e9ecef;
+}
+
+.user-checkbox input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+}
+
+.module-select-item {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.module-select-item:hover {
+    background: #e9ecef;
+}
+
+.module-select-item.selected {
+    background: #cfe2ff;
+    border: 2px solid #0d6efd;
+}
+
+.summary-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="mb-4">
+        <a href="{{ url_for('training_dashboard') }}" class="btn btn-outline-secondary btn-sm mb-3">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+        <h2 class="mb-1">
+            <i class="fas fa-user-plus me-2"></i>
+            Assign Training to Users
+        </h2>
+        <p class="text-muted">Bulk assign training modules to multiple users</p>
+    </div>
+
+    <form method="POST" id="assignmentForm">
+        <div class="row">
+            <!-- Module Selection -->
+            <div class="col-lg-6">
+                <div class="assignment-section">
+                    <div class="section-title">
+                        <i class="fas fa-book me-2"></i>Select Training Module
+                    </div>
+
+                    {% if modules %}
+                        <div id="modulesList">
+                            {% for module in modules %}
+                            <div class="module-select-item" data-module-id="{{ module.id }}">
+                                <input type="radio" name="module_id" value="{{ module.id }}" 
+                                       id="module_{{ module.id }}" class="form-check-input me-2"
+                                       {% if request.args.get('module_id') == module.id|string %}checked{% endif %}>
+                                <label for="module_{{ module.id }}" class="w-100 cursor-pointer">
+                                    <strong>{{ module.module_name }}</strong>
+                                    <span class="badge bg-primary ms-2">v{{ module.version }}</span>
+                                    {% if not module.is_active %}
+                                    <span class="badge bg-secondary ms-1">Inactive</span>
+                                    {% endif %}
+                                    <br>
+                                    <small class="text-muted">{{ module.description[:100] }}...</small>
+                                    <br>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar-alt me-1"></i>Valid for {{ module.validity_period_days }} days
+                                    </small>
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No training modules available. 
+                            <a href="{{ url_for('create_training_module') }}">Create one first</a>.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- User Selection -->
+            <div class="col-lg-6">
+                <div class="assignment-section">
+                    <div class="section-title">
+                        <i class="fas fa-users me-2"></i>Select Users
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="selectAllUsers()">
+                            <i class="fas fa-check-square me-1"></i>Select All
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAllUsers()">
+                            <i class="fas fa-square me-1"></i>Deselect All
+                        </button>
+                    </div>
+
+                    {% if users %}
+                        <div style="max-height: 500px; overflow-y: auto;">
+                            {% for user in users %}
+                            <div class="user-checkbox">
+                                <input type="checkbox" name="user_ids" value="{{ user.id }}" 
+                                       id="user_{{ user.id }}" class="form-check-input me-2">
+                                <label for="user_{{ user.id }}" class="form-check-label w-100 cursor-pointer">
+                                    <i class="fas fa-user me-2"></i>
+                                    <strong>{{ user.username }}</strong>
+                                    {% if user.email %}
+                                    <br>
+                                    <small class="text-muted ms-4">{{ user.email }}</small>
+                                    {% endif %}
+                                    {% if user.is_admin %}
+                                    <span class="badge bg-danger ms-2">Admin</span>
+                                    {% endif %}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            No users available for assignment.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Assignment Summary -->
+        <div class="summary-box mb-4">
+            <h5 class="mb-3">
+                <i class="fas fa-clipboard-check me-2"></i>Assignment Summary
+            </h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-2">
+                        <strong>Selected Module:</strong>
+                        <span id="selectedModuleName">None selected</span>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p class="mb-2">
+                        <strong>Selected Users:</strong>
+                        <span id="selectedUserCount">0</span> user(s)
+                    </p>
+                </div>
+            </div>
+            <div class="alert alert-light mt-3 mb-0">
+                <small>
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> Assigning a module does not automatically create completion records. 
+                    Users must complete the training themselves with electronic signatures.
+                    This assignment is for tracking purposes and user notifications.
+                </small>
+            </div>
+        </div>
+
+        <!-- Assignment Options -->
+        <div class="assignment-section">
+            <div class="section-title">
+                <i class="fas fa-cog me-2"></i>Assignment Options
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" name="send_notification" 
+                       id="send_notification" checked>
+                <label class="form-check-label" for="send_notification">
+                    Send email notification to users (if email configured)
+                </label>
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" name="reassign_completed" 
+                       id="reassign_completed">
+                <label class="form-check-label" for="reassign_completed">
+                    Reassign to users who have already completed this training
+                </label>
+                <small class="text-muted d-block ms-4">
+                    Check this to notify users about updated content or version changes
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label for="assignment_note" class="form-label">Assignment Note (Optional)</label>
+                <textarea class="form-control" id="assignment_note" name="assignment_note" 
+                          rows="3" placeholder="Add a note explaining why this training is required..."></textarea>
+            </div>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+                <i class="fas fa-paper-plane me-2"></i>Assign Training
+            </button>
+            <a href="{{ url_for('training_dashboard') }}" class="btn btn-outline-secondary btn-lg">
+                <i class="fas fa-times me-2"></i>Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Module selection handling
+const moduleItems = document.querySelectorAll('.module-select-item');
+const moduleRadios = document.querySelectorAll('input[name="module_id"]');
+const selectedModuleName = document.getElementById('selectedModuleName');
+
+moduleItems.forEach(item => {
+    item.addEventListener('click', function() {
+        const radio = this.querySelector('input[type="radio"]');
+        radio.checked = true;
+        updateModuleSelection();
+        updateSubmitButton();
+    });
+});
+
+moduleRadios.forEach(radio => {
+    radio.addEventListener('change', updateModuleSelection);
+});
+
+function updateModuleSelection() {
+    moduleItems.forEach(item => {
+        item.classList.remove('selected');
+    });
+    
+    const selectedRadio = document.querySelector('input[name="module_id"]:checked');
+    if (selectedRadio) {
+        const parentItem = selectedRadio.closest('.module-select-item');
+        parentItem.classList.add('selected');
+        const moduleName = parentItem.querySelector('strong').textContent;
+        selectedModuleName.textContent = moduleName;
+    } else {
+        selectedModuleName.textContent = 'None selected';
+    }
+}
+
+// User selection handling
+const userCheckboxes = document.querySelectorAll('input[name="user_ids"]');
+const selectedUserCount = document.getElementById('selectedUserCount');
+
+userCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updateUserCount);
+});
+
+function updateUserCount() {
+    const checked = document.querySelectorAll('input[name="user_ids"]:checked').length;
+    selectedUserCount.textContent = checked;
+    updateSubmitButton();
+}
+
+function selectAllUsers() {
+    userCheckboxes.forEach(checkbox => {
+        checkbox.checked = true;
+    });
+    updateUserCount();
+}
+
+function deselectAllUsers() {
+    userCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    updateUserCount();
+}
+
+// Submit button state
+function updateSubmitButton() {
+    const submitBtn = document.getElementById('submitBtn');
+    const hasModule = document.querySelector('input[name="module_id"]:checked') !== null;
+    const hasUsers = document.querySelectorAll('input[name="user_ids"]:checked').length > 0;
+    
+    submitBtn.disabled = !(hasModule && hasUsers);
+}
+
+// Form submission
+document.getElementById('assignmentForm').addEventListener('submit', function(e) {
+    const moduleSelected = document.querySelector('input[name="module_id"]:checked');
+    const usersSelected = document.querySelectorAll('input[name="user_ids"]:checked');
+    
+    if (!moduleSelected || usersSelected.length === 0) {
+        e.preventDefault();
+        alert('Please select both a module and at least one user.');
+        return false;
+    }
+    
+    const moduleName = selectedModuleName.textContent;
+    const userCount = usersSelected.length;
+    
+    if (!confirm(`Assign "${moduleName}" to ${userCount} user(s)?`)) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+// Initialize
+updateModuleSelection();
+updateUserCount();
+updateSubmitButton();
+</script>
+{% endblock %}

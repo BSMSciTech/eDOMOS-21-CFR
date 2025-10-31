@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Change Requests{% endblock %}
+
+{% block extra_css %}
+<style>
+.filters-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.change-row {
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #dee2e6;
+    transition: all 0.2s ease;
+}
+
+.change-row:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.change-row.priority-critical { border-left-color: #dc3545; }
+.change-row.priority-high { border-left-color: #fd7e14; }
+.change-row.priority-medium { border-left-color: #ffc107; }
+.change-row.priority-low { border-left-color: #6c757d; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-list me-2"></i>
+                Change Requests
+            </h2>
+            <p class="text-muted">All change control requests</p>
+        </div>
+        <a href="{{ url_for('create_change_request') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>New Change Request
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+        <form method="GET" class="row align-items-end">
+            <div class="col-md-3 mb-3">
+                <label for="status" class="form-label small">Status</label>
+                <select class="form-select" id="status" name="status" onchange="this.form.submit()">
+                    <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Statuses</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+                    <option value="implemented" {% if status_filter == 'implemented' %}selected{% endif %}>Implemented</option>
+                    <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="type" class="form-label small">Type</label>
+                <select class="form-select" id="type" name="type" onchange="this.form.submit()">
+                    <option value="all" {% if type_filter == 'all' %}selected{% endif %}>All Types</option>
+                    <option value="feature" {% if type_filter == 'feature' %}selected{% endif %}>Feature</option>
+                    <option value="bugfix" {% if type_filter == 'bugfix' %}selected{% endif %}>Bug Fix</option>
+                    <option value="configuration" {% if type_filter == 'configuration' %}selected{% endif %}>Configuration</option>
+                    <option value="security" {% if type_filter == 'security' %}selected{% endif %}>Security</option>
+                    <option value="documentation" {% if type_filter == 'documentation' %}selected{% endif %}>Documentation</option>
+                    <option value="other" {% if type_filter == 'other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <input type="text" class="form-control" id="search" placeholder="Search..." 
+                       onkeyup="filterChanges()">
+            </div>
+            <div class="col-md-3 mb-3">
+                {% if status_filter != 'all' or type_filter != 'all' %}
+                <a href="{{ url_for('change_control_list') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times me-2"></i>Clear Filters
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Summary -->
+    <div class="mb-3">
+        <p class="text-muted">
+            Showing <strong>{{ changes|length }}</strong> change request(s)
+        </p>
+    </div>
+
+    <!-- Change Requests List -->
+    <div id="changesList">
+        {% if changes %}
+            {% for change in changes %}
+            <div class="change-row priority-{{ change.priority }}" 
+                 data-search="{{ (change.change_number + ' ' + change.title + ' ' + change.description)|lower }}">
+                <div class="row align-items-center">
+                    <div class="col-md-9">
+                        <h5 class="mb-2">
+                            <a href="{{ url_for('view_change_request', change_id=change.id) }}" 
+                               class="text-decoration-none">
+                                {{ change.change_number }} - {{ change.title }}
+                            </a>
+                        </h5>
+                        <p class="text-muted mb-2 small">
+                            {{ change.description[:200] }}{% if change.description|length > 200 %}...{% endif %}
+                        </p>
+                        <div class="small text-muted">
+                            <span class="me-3">
+                                <i class="fas fa-user me-1"></i>
+                                {{ change.requestor.username if change.requestor else 'Unknown' }}
+                            </span>
+                            <span class="me-3">
+                                <i class="fas fa-calendar me-1"></i>
+                                {{ change.requested_date.strftime('%Y-%m-%d %H:%M') }}
+                            </span>
+                            <span class="me-3">
+                                <i class="fas fa-tag me-1"></i>
+                                {{ change.change_type|title }}
+                            </span>
+                            {% if change.approved_by %}
+                            <span class="me-3">
+                                <i class="fas fa-user-check me-1"></i>
+                                Approved by {{ change.approver.username if change.approver else 'Unknown' }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <span class="badge 
+                            {% if change.priority == 'critical' %}bg-danger
+                            {% elif change.priority == 'high' %}bg-warning text-dark
+                            {% elif change.priority == 'medium' %}bg-info
+                            {% else %}bg-secondary{% endif %} mb-2 d-block">
+                            {{ change.priority|upper }}
+                        </span>
+                        <span class="badge 
+                            {% if change.status == 'pending' %}bg-warning text-dark
+                            {% elif change.status == 'approved' %}bg-success
+                            {% elif change.status == 'implemented' %}bg-info
+                            {% else %}bg-danger{% endif %} d-block">
+                            {{ change.status|title }}
+                        </span>
+                        <div class="mt-2">
+                            <a href="{{ url_for('view_change_request', change_id=change.id) }}" 
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye me-1"></i>View
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <h5>No Change Requests Found</h5>
+                <p class="text-muted">
+                    {% if status_filter != 'all' or type_filter != 'all' %}
+                    No changes match your filter criteria.
+                    {% else %}
+                    No change requests have been submitted yet.
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function filterChanges() {
+    const searchTerm = document.getElementById('search').value.toLowerCase();
+    const changeRows = document.querySelectorAll('.change-row');
+    
+    changeRows.forEach(row => {
+        const searchData = row.getAttribute('data-search');
+        row.style.display = searchData.includes(searchTerm) ? 'block' : 'none';
+    });
+}
+</script>
+{% endblock %}

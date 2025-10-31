@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eDOMOS - {% block title %}{% endblock %}</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap (minimal - for modals and utilities) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Premium Theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/premium.css') }}?v=3.0">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Brand Header -->
+            <div class="sidebar-header">
+                <a href="{{ url_for('dashboard') }}" class="brand">
+                    <div class="brand-logo">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-name">eDOMOS</span>
+                        <span class="brand-tagline">Security System</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="sidebar-nav">
+                <!-- Main Menu -->
+                <div class="nav-section">
+                    <h6 class="nav-section-title">Main Menu</h6>
+                    
+                    {% if 'dashboard' in permissions %}
+                    <div class="nav-item">
+                        <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                            <i class="nav-icon fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if 'event_log' in permissions %}
+                    <div class="nav-item">
+                        <a href="{{ url_for('event_log') }}" class="nav-link {% if request.endpoint == 'event_log' %}active{% endif %}">
+                            <i class="nav-icon fas fa-list-ul"></i>
+                            <span>Events</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if 'analytics' in permissions %}
+                    <div class="nav-item">
+                        <a href="{{ url_for('analytics') }}" class="nav-link {% if request.endpoint == 'analytics' %}active{% endif %}">
+                            <i class="nav-icon fas fa-chart-line"></i>
+                            <span>Analytics</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if 'report' in permissions %}
+                    <div class="nav-item">
+                        <a href="{{ url_for('reports') }}" class="nav-link {% if request.endpoint == 'reports' %}active{% endif %}">
+                            <i class="nav-icon fas fa-file-alt"></i>
+                            <span>Reports</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Management -->
+                {% if current_user.is_admin or 'admin' in permissions %}
+                <div class="nav-section">
+                    <h6 class="nav-section-title">Management</h6>
+                    
+                    <div class="nav-item">
+                        <a href="{{ url_for('company_profile') }}" class="nav-link {% if request.endpoint == 'company_profile' %}active{% endif %}">
+                            <i class="nav-icon fas fa-building"></i>
+                            <span>Company Profile</span>
+                        </a>
+                    </div>
+                    
+                    <div class="nav-item">
+                        <a href="{{ url_for('user_management') }}" class="nav-link {% if request.endpoint == 'user_management' %}active{% endif %}">
+                            <i class="nav-icon fas fa-users"></i>
+                            <span>User Management</span>
+                        </a>
+                    </div>
+                    
+                    <div class="nav-item">
+                        <a href="{{ url_for('admin_panel') }}" class="nav-link {% if request.endpoint == 'admin_panel' %}active{% endif %}">
+                            <i class="nav-icon fas fa-cog"></i>
+                            <span>System Settings</span>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Support -->
+                <div class="nav-section">
+                    <h6 class="nav-section-title">Support</h6>
+                    
+                    <div class="nav-item">
+                        <a href="#" class="nav-link" onclick="showUserGuide(); return false;">
+                            <i class="nav-icon fas fa-book"></i>
+                            <span>User Guide</span>
+                        </a>
+                    </div>
+                    
+                    <div class="nav-item">
+                        <a href="#" class="nav-link" onclick="showHelp(); return false;">
+                            <i class="nav-icon fas fa-question-circle"></i>
+                            <span>Help & Support</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- User Profile -->
+            <div class="sidebar-footer">
+                <div class="user-profile" onclick="toggleUserMenu()">
+                    <div class="user-avatar">
+                        {{ current_user.username[0].upper() }}
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ current_user.username }}</div>
+                        <div class="user-role">{% if current_user.is_admin %}Administrator{% else %}User{% endif %}</div>
+                    </div>
+                    <i class="fas fa-ellipsis-v" style="color: var(--text-muted);"></i>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header d-lg-none mb-4">
+                <button class="btn btn-icon btn-secondary" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="h4 mb-0 ms-3">{% block page_title %}eDOMOS{% endblock %}</h1>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show animate-fade-in" role="alert">
+                    <i class="fas fa-{{ 'check-circle' if category == 'success' else 'info-circle' if category == 'info' else 'exclamation-triangle' }} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <!-- Page Content -->
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- User Menu Modal -->
+    <div class="modal fade" id="userMenuModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-effect">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">User Menu</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action bg-transparent text-light border-0">
+                            <i class="fas fa-user me-3"></i>Profile Settings
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action bg-transparent text-light border-0">
+                            <i class="fas fa-key me-3"></i>Change Password
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action bg-transparent text-light border-0">
+                            <i class="fas fa-palette me-3"></i>Preferences
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ url_for('logout') }}" class="list-group-item list-group-item-action bg-transparent text-danger border-0">
+                            <i class="fas fa-sign-out-alt me-3"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Login/Unauthenticated View -->
+    <div class="container-fluid">
+        {% block content %}{% endblock %}
+    </div>
+    {% endif %}
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='js/socket.js') }}"></script>
+
+    <script>
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // User Menu
+        function toggleUserMenu() {
+            const modal = new bootstrap.Modal(document.getElementById('userMenuModal'));
+            modal.show();
+        }
+
+        // Helper Functions
+        function showUserGuide() {
+            showNotification('User Guide - Coming soon! Full documentation will be available.', 'info', 5000);
+        }
+
+        function showHelp() {
+            showNotification('Help & Support - Contact your system administrator for assistance.', 'info', 5000);
+        }
+
+        // Notification System
+        function showNotification(message, type = 'info', duration = 3000) {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} position-fixed animate-fade-in`;
+            toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'exclamation-triangle',
+                warning: 'exclamation-triangle',
+                info: 'info-circle'
+            };
+            
+            toast.innerHTML = `
+                <i class="fas fa-${icons[type] || 'info-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // Initialize tooltips and popovers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Bootstrap components initialization
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Add fade-in animation to page content
+            document.querySelector('.main-content').classList.add('animate-fade-in');
+        });
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(100%); }
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

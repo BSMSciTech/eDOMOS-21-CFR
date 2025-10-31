@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}Validation Testing{% endblock %}
+
+{% block extra_css %}
+<style>
+.stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.stat-card.iq { border-left-color: #0d6efd; }
+.stat-card.oq { border-left-color: #198754; }
+.stat-card.pq { border-left-color: #0dcaf0; }
+.stat-card.pending { border-left-color: #ffc107; }
+.stat-card.passed { border-left-color: #198754; }
+.stat-card.failed { border-left-color: #dc3545; }
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.test-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #dee2e6;
+    transition: all 0.2s ease;
+}
+
+.test-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.test-card.iq { border-left-color: #0d6efd; }
+.test-card.oq { border-left-color: #198754; }
+.test-card.pq { border-left-color: #0dcaf0; }
+
+.section-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #0d6efd;
+}
+
+.pass-rate-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-file-pdf me-2"></i>
+                FDA Validation Templates
+            </h2>
+            <p class="text-muted">21 CFR Part 11 IQ/OQ/PQ Pre-filled Templates for Pharmaceutical Compliance</p>
+        </div>
+        <div>
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('validation_documents') }}" class="btn btn-primary">
+                <i class="fas fa-folder-open me-2"></i>Manage Documents
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- IQ/OQ/PQ Templates Export -->
+    <div class="section-card mb-4">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card border-success h-100">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-tools fa-4x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Installation Qualification (IQ)</h5>
+                        <p class="card-text text-muted small">
+                            Verifies correct installation of hardware, software, and documentation. 
+                            Includes equipment identification, component verification, and installation checklist.
+                        </p>
+                        <a href="{{ url_for('export_iq_template') }}" class="btn btn-success w-100" title="Export Installation Qualification Template">
+                            <i class="fas fa-download me-2"></i>Download IQ Template
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card border-primary h-100">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-cogs fa-4x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Operational Qualification (OQ)</h5>
+                        <p class="card-text text-muted small">
+                            Tests system functions and features against specifications. 
+                            Includes functional tests, performance measurements, and acceptance criteria.
+                        </p>
+                        <a href="{{ url_for('export_oq_template') }}" class="btn btn-primary w-100" title="Export Operational Qualification Template">
+                            <i class="fas fa-download me-2"></i>Download OQ Template
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card border-danger h-100">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-chart-line fa-4x text-danger"></i>
+                        </div>
+                        <h5 class="card-title">Performance Qualification (PQ)</h5>
+                        <p class="card-text text-muted small">
+                            Validates real-world performance over extended periods. 
+                            Includes stress testing, uptime monitoring, and production readiness verification.
+                        </p>
+                        <a href="{{ url_for('export_pq_template') }}" class="btn btn-danger w-100" title="Export Performance Qualification Template">
+                            <i class="fas fa-download me-2"></i>Download PQ Template
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert alert-info mt-3">
+            <h6><i class="fas fa-info-circle me-2"></i>How to Use These Templates:</h6>
+            <ol class="mb-0 small">
+                <li><strong>Download:</strong> Click the button above to download pre-filled PDF templates with your equipment information</li>
+                <li><strong>Print:</strong> Print the PDF documents on standard letter-size paper</li>
+                <li><strong>Complete:</strong> Fill in test results, observations, and measurements during validation activities</li>
+                <li><strong>Sign:</strong> Obtain required signatures from preparation, verification, and approval personnel</li>
+                <li><strong>File:</strong> Store completed documents in your quality management system for FDA audits</li>
+            </ol>
+        </div>
+        
+        <div class="alert alert-success">
+            <h6><i class="fas fa-check-circle me-2"></i>Template Features:</h6>
+            <div class="row small">
+                <div class="col-md-6">
+                    <ul class="mb-0">
+                        <li>Pre-filled with equipment serial number and model</li>
+                        <li>Company information auto-populated</li>
+                        <li>Professional multi-page format</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="mb-0">
+                        <li>FDA 21 CFR Part 11 compliant structure</li>
+                        <li>Sign-off sections for multiple roles</li>
+                        <li>Ready for immediate use</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Completed Documents -->
+    {% if current_user.is_admin %}
+    <div class="section-card mb-4">
+        <h5 class="mb-3">
+            <i class="fas fa-cloud-upload-alt me-2 text-primary"></i>Upload Completed Documents
+        </h5>
+        <p class="text-muted mb-3">
+            After completing and signing your validation documents, upload them here for tracking and approval workflow.
+        </p>
+        
+        <form id="uploadForm" enctype="multipart/form-data" class="border rounded p-3 bg-light">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label"><strong>Document Type</strong></label>
+                    <select class="form-select" name="document_type" required>
+                        <option value="IQ">IQ - Installation Qualification</option>
+                        <option value="OQ">OQ - Operational Qualification</option>
+                        <option value="PQ">PQ - Performance Qualification</option>
+                    </select>
+                </div>
+                <div class="col-md-5 mb-3">
+                    <label class="form-label"><strong>Completed PDF File</strong></label>
+                    <input type="file" class="form-control" name="file" accept=".pdf" required>
+                    <small class="text-muted">Only PDF files are accepted</small>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-upload me-2"></i>Upload Document
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <label class="form-label"><strong>Description (Optional)</strong></label>
+                    <textarea class="form-control" name="description" rows="2" placeholder="Add notes about this validation document..."></textarea>
+                </div>
+            </div>
+            <div class="alert alert-info mt-3 mb-0 small">
+                <i class="fas fa-info-circle me-1"></i>
+                <strong>Auto-captured metadata:</strong> Equipment Serial Number, Software Version, Site Location, Upload Timestamp
+            </div>
+        </form>
+        
+        <div id="uploadStatus" class="mt-3" style="display:none;"></div>
+    </div>
+    {% endif %}
+
+    <!-- Compliance Info -->
+    <div class="section-card">
+        <div class="row">
+            <div class="col-md-8">
+                <h5><i class="fas fa-shield-alt me-2 text-success"></i>FDA 21 CFR Part 11 Compliance</h5>
+                <p class="text-muted">
+                    These IQ/OQ/PQ templates follow FDA guidelines for computerized system validation 
+                    in pharmaceutical manufacturing and quality control environments.
+                </p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>What's Included:</h6>
+                        <ul class="small">
+                            <li>System identification and documentation</li>
+                            <li>Hardware and software verification checklists</li>
+                            <li>Functional and performance test protocols</li>
+                            <li>Acceptance criteria for each test</li>
+                            <li>Sign-off sections for multi-level approval</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Compliance Features:</h6>
+                        <ul class="small">
+                            <li>21 CFR Part 11 §11.10(a) - System validation</li>
+                            <li>Unique document numbering with timestamps</li>
+                            <li>Audit-ready format for FDA inspections</li>
+                            <li>Professional presentation for quality systems</li>
+                            <li>Ready for electronic signature integration</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="alert alert-light border">
+                    <h6>Need Help?</h6>
+                    <p class="small mb-2">
+                        <strong>Before Testing:</strong><br>
+                        Ensure company profile and equipment information are configured in Settings.
+                    </p>
+                    <p class="small mb-0">
+                        <strong>After Download:</strong><br>
+                        Follow pharmaceutical industry best practices for validation documentation and record retention.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Upload form handling
+const uploadForm = document.getElementById('uploadForm');
+const uploadStatus = document.getElementById('uploadStatus');
+
+if (uploadForm) {
+    uploadForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const fileInput = this.querySelector('input[type="file"]');
+        
+        if (!fileInput.files[0]) {
+            showUploadStatus('Please select a PDF file', 'danger');
+            return;
+        }
+        
+        if (fileInput.files[0].type !== 'application/pdf') {
+            showUploadStatus('Please upload a PDF file only', 'danger');
+            return;
+        }
+        
+        // Show loading
+        showUploadStatus('Uploading document...', 'info');
+        
+        fetch('/validation/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showUploadStatus('✓ Document uploaded successfully! Document Number: ' + data.document.document_number, 'success');
+                uploadForm.reset();
+                
+                // Redirect to documents page after 2 seconds
+                setTimeout(() => {
+                    window.location.href = '/validation/documents';
+                }, 2000);
+            } else {
+                showUploadStatus('✗ Upload failed: ' + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            showUploadStatus('✗ Upload error: ' + error, 'danger');
+        });
+    });
+}
+
+function showUploadStatus(message, type) {
+    uploadStatus.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+    uploadStatus.style.display = 'block';
+}
+</script>
+{% endblock %}

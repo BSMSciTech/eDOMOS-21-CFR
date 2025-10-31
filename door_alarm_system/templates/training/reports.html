@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %}Training Reports{% endblock %}
+
+{% block extra_css %}
+<style>
+.report-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #0d6efd;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.matrix-table {
+    font-size: 0.875rem;
+}
+
+.matrix-table th {
+    background: #f8f9fa;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.matrix-table .user-column {
+    min-width: 150px;
+    font-weight: 600;
+}
+
+.matrix-table .module-column {
+    min-width: 120px;
+    text-align: center;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-completed {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.status-expired {
+    background: #fff3cd;
+    color: #997404;
+}
+
+.status-pending {
+    background: #f8d7da;
+    color: #842029;
+}
+
+.export-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="{{ url_for('training_dashboard') }}" class="btn btn-outline-secondary btn-sm mb-3">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+            <h2 class="mb-1">
+                <i class="fas fa-chart-bar me-2"></i>
+                Training Compliance Reports
+            </h2>
+            <p class="text-muted">21 CFR Part 11 Training Compliance Matrix</p>
+        </div>
+        <div class="export-buttons">
+            <button class="btn btn-outline-primary" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Print Report
+            </button>
+            <button class="btn btn-outline-success" onclick="exportToCSV()">
+                <i class="fas fa-file-csv me-2"></i>Export CSV
+            </button>
+            <button class="btn btn-outline-danger" onclick="exportToPDF()">
+                <i class="fas fa-file-pdf me-2"></i>Export PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <h3>{{ training_matrix|length }}</h3>
+                <p class="mb-0">Total Users</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <h3>{{ modules|length }}</h3>
+                <p class="mb-0">Training Modules</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <h3>
+                    {% set total_completed = namespace(count=0) %}
+                    {% for user_data in training_matrix %}
+                        {% for module_status in user_data.modules %}
+                            {% if module_status.status == 'completed' %}
+                                {% set total_completed.count = total_completed.count + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    {{ total_completed.count }}
+                </h3>
+                <p class="mb-0">Valid Completions</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%);">
+                <h3>
+                    {% set total_expired = namespace(count=0) %}
+                    {% for user_data in training_matrix %}
+                        {% for module_status in user_data.modules %}
+                            {% if module_status.status == 'expired' %}
+                                {% set total_expired.count = total_expired.count + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    {{ total_expired.count }}
+                </h3>
+                <p class="mb-0">Expired/Pending</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compliance Matrix -->
+    <div class="report-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="section-title mb-0">
+                <i class="fas fa-table me-2"></i>Training Compliance Matrix
+            </div>
+            <div>
+                <input type="text" id="searchMatrix" class="form-control form-control-sm" 
+                       placeholder="Search users..." style="width: 250px;">
+            </div>
+        </div>
+
+        <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+            <table class="table table-bordered table-hover matrix-table" id="complianceMatrix">
+                <thead>
+                    <tr>
+                        <th class="user-column">User</th>
+                        {% for module in modules %}
+                        <th class="module-column">
+                            {{ module.module_name }}
+                            <br>
+                            <small class="text-muted">v{{ module.version }}</small>
+                        </th>
+                        {% endfor %}
+                        <th class="text-center">Compliance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user_data in training_matrix %}
+                    <tr class="user-row" data-username="{{ user_data.user.username|lower }}">
+                        <td class="user-column">
+                            <i class="fas fa-user me-2"></i>
+                            <strong>{{ user_data.user.username }}</strong>
+                            {% if user_data.user.is_admin %}
+                            <span class="badge bg-danger ms-2">Admin</span>
+                            {% endif %}
+                        </td>
+                        {% for module_status in user_data.modules %}
+                        <td class="module-column">
+                            {% if module_status.status == 'completed' %}
+                                <span class="status-badge status-completed" 
+                                      title="Completed: {{ module_status.completed_date }}&#10;Expires: {{ module_status.expiration_date }}">
+                                    <i class="fas fa-check-circle me-1"></i>Valid
+                                </span>
+                            {% elif module_status.status == 'expired' %}
+                                <span class="status-badge status-expired" 
+                                      title="Expired: {{ module_status.expiration_date }}">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>Expired
+                                </span>
+                            {% else %}
+                                <span class="status-badge status-pending">
+                                    <i class="fas fa-times-circle me-1"></i>Pending
+                                </span>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                        <td class="text-center">
+                            {% set completed_count = user_data.modules|selectattr('status', 'equalto', 'completed')|list|length %}
+                            {% set total_modules = modules|length %}
+                            {% set compliance_pct = (completed_count / total_modules * 100)|round|int if total_modules > 0 else 0 %}
+                            
+                            <div class="progress" style="height: 25px;">
+                                <div class="progress-bar 
+                                    {% if compliance_pct >= 80 %}bg-success
+                                    {% elif compliance_pct >= 50 %}bg-warning
+                                    {% else %}bg-danger{% endif %}" 
+                                    role="progressbar" 
+                                    style="width: {{ compliance_pct }}%"
+                                    aria-valuenow="{{ compliance_pct }}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="100">
+                                    {{ compliance_pct }}%
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if not training_matrix %}
+        <div class="text-center py-5">
+            <i class="fas fa-table fa-4x text-muted mb-3"></i>
+            <h5>No Data Available</h5>
+            <p class="text-muted">No users or training modules found.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Expiring Soon -->
+    <div class="report-section">
+        <div class="section-title">
+            <i class="fas fa-clock me-2"></i>Expiring Soon (Next 30 Days)
+        </div>
+
+        {% set expiring_soon = [] %}
+        {% for user_data in training_matrix %}
+            {% for module_status in user_data.modules %}
+                {% if module_status.status == 'completed' and module_status.days_until_expiration and module_status.days_until_expiration <= 30 %}
+                    {% set _ = expiring_soon.append({'user': user_data.user, 'module': module_status.module, 'days': module_status.days_until_expiration, 'expiration_date': module_status.expiration_date}) %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+
+        {% if expiring_soon %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Module</th>
+                        <th>Expiration Date</th>
+                        <th>Days Remaining</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in expiring_soon|sort(attribute='days') %}
+                    <tr class="{% if item.days <= 7 %}table-danger{% elif item.days <= 14 %}table-warning{% endif %}">
+                        <td>
+                            <i class="fas fa-user me-2"></i>
+                            {{ item.user.username }}
+                        </td>
+                        <td>{{ item.module }}</td>
+                        <td>{{ item.expiration_date }}</td>
+                        <td>
+                            <strong>{{ item.days }} day(s)</strong>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-warning" 
+                                    onclick="alert('Send reminder to {{ item.user.username }}')">
+                                <i class="fas fa-bell me-1"></i>Send Reminder
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle me-2"></i>
+            No training certifications expiring in the next 30 days.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Report Footer -->
+    <div class="report-section">
+        <p class="mb-1">
+            <strong>Report Generated:</strong> {{ now.strftime('%Y-%m-%d %H:%M:%S') }}
+        </p>
+        <p class="mb-0">
+            <strong>Generated By:</strong> {{ current_user.username }}
+        </p>
+    </div>
+</div>
+
+<script>
+// Search functionality
+document.getElementById('searchMatrix').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll('.user-row');
+    
+    rows.forEach(row => {
+        const username = row.getAttribute('data-username');
+        row.style.display = username.includes(searchTerm) ? '' : 'none';
+    });
+});
+
+// Export to CSV
+function exportToCSV() {
+    const table = document.getElementById('complianceMatrix');
+    let csv = [];
+    
+    // Headers
+    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+    csv.push(headers.join(','));
+    
+    // Rows
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const cols = Array.from(row.querySelectorAll('td')).map(td => {
+            return '"' + td.textContent.trim().replace(/"/g, '""') + '"';
+        });
+        csv.push(cols.join(','));
+    });
+    
+    // Download
+    const csvContent = csv.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'training_compliance_report_{{ now.strftime("%Y%m%d") }}.csv';
+    a.click();
+}
+
+// Export to PDF (placeholder)
+function exportToPDF() {
+    alert('PDF export requires additional setup. Using browser print dialog instead.');
+    window.print();
+}
+</script>
+{% endblock %}

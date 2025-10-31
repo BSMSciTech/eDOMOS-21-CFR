@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block title %}Approve {{ change.change_number }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.approval-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #0d6efd;
+}
+
+.change-summary {
+    background: #f8f9fa;
+    border-left: 4px solid #0d6efd;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.signature-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.approval-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.approval-actions button {
+    flex: 1;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="mb-4">
+                <a href="{{ url_for('view_change_request', change_id=change.id) }}" 
+                   class="btn btn-outline-secondary btn-sm mb-3">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Change Request
+                </a>
+                <h2 class="mb-1">
+                    <i class="fas fa-clipboard-check me-2"></i>
+                    Review Change Request
+                </h2>
+                <p class="text-muted">{{ change.change_number }} - Electronic Signature Required</p>
+            </div>
+
+            <!-- Change Summary -->
+            <div class="change-summary">
+                <h5 class="mb-3">{{ change.title }}</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Requested by:</small><br>
+                        <strong>{{ change.requestor.username if change.requestor else 'Unknown' }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Requested on:</small><br>
+                        <strong>{{ change.requested_date.strftime('%Y-%m-%d %H:%M') }}</strong>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">Type:</small><br>
+                        <span class="badge bg-primary">{{ change.change_type|title }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Priority:</small><br>
+                        <span class="badge 
+                            {% if change.priority == 'critical' %}bg-danger
+                            {% elif change.priority == 'high' %}bg-warning text-dark
+                            {% elif change.priority == 'medium' %}bg-info
+                            {% else %}bg-secondary{% endif %}">
+                            {{ change.priority|upper }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Change Details -->
+                    <div class="approval-section">
+                        <div class="section-title">
+                            <i class="fas fa-file-alt me-2"></i>Change Details
+                        </div>
+                        
+                        <h6>Description:</h6>
+                        <p style="white-space: pre-wrap;">{{ change.description }}</p>
+
+                        <h6>Business Justification:</h6>
+                        <p style="white-space: pre-wrap;">{{ change.justification }}</p>
+
+                        {% if change.impact_assessment %}
+                        <h6>Risk Analysis:</h6>
+                        <p style="white-space: pre-wrap;">{{ change.impact_assessment }}</p>
+                        {% endif %}
+
+                        {% if change.affected_systems %}
+                        <h6>Affected Systems:</h6>
+                        <p>{{ change.affected_systems }}</p>
+                        {% endif %}
+
+                        {% if change.rollback_plan %}
+                        <h6>Rollback Plan:</h6>
+                        <p style="white-space: pre-wrap;">{{ change.rollback_plan }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Approval Form -->
+                    <div class="approval-section">
+                        <div class="section-title">
+                            <i class="fas fa-signature me-2"></i>Electronic Signature
+                        </div>
+
+                        <form method="POST" id="approvalForm">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <strong>Decision <span class="text-danger">*</span></strong>
+                                </label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="action" 
+                                               id="approve" value="approve" required>
+                                        <label class="form-check-label text-success" for="approve">
+                                            <i class="fas fa-check-circle me-1"></i>Approve
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="action" 
+                                               id="reject" value="reject" required>
+                                        <label class="form-check-label text-danger" for="reject">
+                                            <i class="fas fa-times-circle me-1"></i>Reject
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="signature_reason" class="form-label">
+                                    <strong>Signature Meaning/Reason <span class="text-danger">*</span></strong>
+                                </label>
+                                <textarea class="form-control" id="signature_reason" name="signature_reason" 
+                                          rows="2" required 
+                                          placeholder="Per 21 CFR §11.200(a), explain the meaning and reason for signing..."></textarea>
+                                <small class="text-muted">Required by 21 CFR Part 11 §11.200(a)</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="comments" class="form-label">
+                                    <strong>Comments (Optional)</strong>
+                                </label>
+                                <textarea class="form-control" id="comments" name="comments" 
+                                          rows="3" 
+                                          placeholder="Additional comments or conditions for approval..."></textarea>
+                            </div>
+
+                            <div class="signature-box">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-key me-2"></i>Authenticate Your Signature
+                                </h6>
+                                
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">
+                                        <strong>Your Password <span class="text-danger">*</span></strong>
+                                    </label>
+                                    <input type="password" class="form-control" id="password" 
+                                           name="password" required 
+                                           placeholder="Enter your password to sign">
+                                    <small class="text-light">
+                                        Your password is required to create a legally binding electronic signature
+                                    </small>
+                                </div>
+
+                                <div class="small opacity-75">
+                                    <p class="mb-1">
+                                        <i class="fas fa-signature me-2"></i>
+                                        <strong>Signed by:</strong> {{ current_user.username }}
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="fas fa-calendar me-2"></i>
+                                        <strong>Date/Time:</strong> <span id="currentDateTime"></span>
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="fas fa-network-wired me-2"></i>
+                                        <strong>IP Address:</strong> {{ request.remote_addr }}
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="fas fa-fingerprint me-2"></i>
+                                        <strong>Hash Type:</strong> SHA-256
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Legal Notice:</strong> By signing this approval/rejection, you are creating 
+                                a legally binding electronic signature under 21 CFR Part 11. This action will be 
+                                recorded in the blockchain audit trail and cannot be undone.
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-signature me-2"></i>Sign & Submit Decision
+                                </button>
+                                <a href="{{ url_for('view_change_request', change_id=change.id) }}" 
+                                   class="btn btn-outline-secondary btn-lg">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Quick Reference -->
+                    <div class="approval-section">
+                        <div class="section-title">
+                            <i class="fas fa-info-circle me-2"></i>Review Checklist
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check1">
+                            <label class="form-check-label small" for="check1">
+                                Change description is clear and complete
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check2">
+                            <label class="form-check-label small" for="check2">
+                                Business justification is valid
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check3">
+                            <label class="form-check-label small" for="check3">
+                                Risk assessment is adequate
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check4">
+                            <label class="form-check-label small" for="check4">
+                                Rollback plan is acceptable
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="check5">
+                            <label class="form-check-label small" for="check5">
+                                Priority level is appropriate
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Compliance Info -->
+                    <div class="approval-section">
+                        <div class="section-title">
+                            <i class="fas fa-shield-alt me-2"></i>Compliance
+                        </div>
+                        <p class="small mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            21 CFR Part 11 Compliant
+                        </p>
+                        <p class="small mb-2">
+                            <i class="fas fa-signature text-success me-2"></i>
+                            Electronic Signature Required
+                        </p>
+                        <p class="small mb-0">
+                            <i class="fas fa-link text-success me-2"></i>
+                            Blockchain Audit Trail
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update date/time
+function updateDateTime() {
+    const now = new Date();
+    const formatted = now.toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+    document.getElementById('currentDateTime').textContent = formatted;
+}
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+// Form validation
+document.getElementById('approvalForm').addEventListener('submit', function(e) {
+    const action = document.querySelector('input[name="action"]:checked');
+    const reason = document.getElementById('signature_reason').value.trim();
+    const password = document.getElementById('password').value;
+    
+    if (!action) {
+        e.preventDefault();
+        alert('Please select Approve or Reject');
+        return false;
+    }
+    
+    if (!reason) {
+        e.preventDefault();
+        alert('Signature reason is required');
+        return false;
+    }
+    
+    if (!password) {
+        e.preventDefault();
+        alert('Password is required');
+        return false;
+    }
+    
+    const actionText = action.value === 'approve' ? 'approve' : 'reject';
+    if (!confirm(`Are you sure you want to ${actionText} this change request? This action will create a legally binding electronic signature.`)) {
+        e.preventDefault();
+        return false;
+    }
+});
+</script>
+{% endblock %}

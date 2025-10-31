@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+
+{% block title %}Create Validation Test{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #0d6efd;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0d6efd;
+    margin-bottom: 1rem;
+}
+
+/* Fix label visibility */
+.form-label {
+    color: #212529 !important;
+}
+
+.form-label strong {
+    color: #212529 !important;
+}
+
+.test-type-card {
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.test-type-card:hover {
+    border-color: #0d6efd;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.test-type-card.selected {
+    border-color: #0d6efd;
+    background: #cfe2ff;
+}
+
+.test-type-card h5,
+.test-type-card p {
+    color: #212529 !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="mb-4">
+                <a href="{{ url_for('validation_dashboard') }}" class="btn btn-outline-secondary btn-sm mb-3">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+                <h2 class="mb-1">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Create Validation Test
+                </h2>
+                <p class="text-muted">IQ/OQ/PQ Test Protocol Development</p>
+            </div>
+
+            <form method="POST" id="testForm">
+                <!-- Test Type Selection -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-flask me-2"></i>Test Type
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="test-type-card" onclick="selectTestType('IQ')">
+                                <input type="radio" name="test_type" value="IQ" id="type_iq" required class="d-none">
+                                <div class="text-center">
+                                    <i class="fas fa-server fa-3x text-primary mb-2"></i>
+                                    <h5>IQ</h5>
+                                    <p class="small mb-0">Installation Qualification</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="test-type-card" onclick="selectTestType('OQ')">
+                                <input type="radio" name="test_type" value="OQ" id="type_oq" required class="d-none">
+                                <div class="text-center">
+                                    <i class="fas fa-cogs fa-3x text-success mb-2"></i>
+                                    <h5>OQ</h5>
+                                    <p class="small mb-0">Operational Qualification</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="test-type-card" onclick="selectTestType('PQ')">
+                                <input type="radio" name="test_type" value="PQ" id="type_pq" required class="d-none">
+                                <div class="text-center">
+                                    <i class="fas fa-chart-line fa-3x text-info mb-2"></i>
+                                    <h5>PQ</h5>
+                                    <p class="small mb-0">Performance Qualification</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test Details -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-info-circle me-2"></i>Test Details
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="test_number" class="form-label">
+                                <strong>Test Number <span class="text-danger">*</span></strong>
+                            </label>
+                            <input type="text" class="form-control" id="test_number" name="test_number" 
+                                   required maxlength="50" 
+                                   placeholder="e.g., IQ-001, OQ-005, PQ-003">
+                            <small class="text-muted">Unique identifier for this test</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="test_name" class="form-label">
+                                <strong>Test Name <span class="text-danger">*</span></strong>
+                            </label>
+                            <input type="text" class="form-control" id="test_name" name="test_name" 
+                                   required maxlength="200" 
+                                   placeholder="e.g., Door Sensor Installation Verification">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            <strong>Description</strong>
+                        </label>
+                        <textarea class="form-control" id="description" name="description" 
+                                  rows="3" 
+                                  placeholder="Brief overview of what this test validates..."></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="test_category" class="form-label">
+                                <strong>Test Category <span class="text-danger">*</span></strong>
+                            </label>
+                            <select class="form-control" id="test_category" name="test_category" required>
+                                <option value="">-- Select Category --</option>
+                                <option value="Hardware">Hardware</option>
+                                <option value="Software">Software</option>
+                                <option value="Network">Network</option>
+                                <option value="Security">Security</option>
+                                <option value="Integration">Integration</option>
+                                <option value="Database">Database</option>
+                                <option value="Performance">Performance</option>
+                            </select>
+                            <small class="text-muted">Component being tested</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="system_version" class="form-label">
+                                <strong>System Version</strong>
+                            </label>
+                            <input type="text" class="form-control" id="system_version" 
+                                   name="system_version" placeholder="e.g., 2.1.0">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="test_environment" class="form-label">
+                            <strong>Test Environment</strong>
+                        </label>
+                        <input type="text" class="form-control" id="test_environment" 
+                               name="test_environment" placeholder="e.g., Production, Staging, Lab">
+                    </div>
+                </div>
+
+                <!-- Equipment Information -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-microchip me-2"></i>Equipment Information
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="equipment_name" class="form-label">
+                                <strong>Equipment Name <span class="text-danger">*</span></strong>
+                            </label>
+                            <input type="text" class="form-control" id="equipment_name" 
+                                   name="equipment_name" required maxlength="200"
+                                   placeholder="e.g., eDOMOS Door Alarm System">
+                            <small class="text-muted">Name of equipment being tested</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="equipment_model" class="form-label">
+                                <strong>Equipment Model <span class="text-danger">*</span></strong>
+                            </label>
+                            <input type="text" class="form-control" id="equipment_model" 
+                                   name="equipment_model" required maxlength="100"
+                                   placeholder="e.g., eDOMOS-2.1-Pro">
+                            <small class="text-muted">Manufacturer model number</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="equipment_serial" class="form-label">
+                                <strong>Serial Number <span class="text-danger">*</span></strong>
+                            </label>
+                            <input type="text" class="form-control" id="equipment_serial" 
+                                   name="equipment_serial" required maxlength="100"
+                                   placeholder="e.g., SN-2024-001">
+                            <small class="text-muted">Unique equipment identifier</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test Procedure -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-list-ol me-2"></i>Test Procedure
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="prerequisites" class="form-label">
+                            <strong>Prerequisites/Preconditions</strong>
+                        </label>
+                        <textarea class="form-control" id="prerequisites" name="prerequisites" 
+                                  rows="3"
+                                  placeholder="What must be ready before starting this test?&#10;e.g., System powered on, Network connected, Admin access, Test equipment calibrated"></textarea>
+                        <small class="text-muted">Requirements before executing this test</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="procedure" class="form-label">
+                            <strong>Test Steps <span class="text-danger">*</span></strong>
+                        </label>
+                        <textarea class="form-control" id="procedure" name="procedure" 
+                                  rows="8" required
+                                  placeholder="Step 1: ...&#10;Step 2: ...&#10;Step 3: ..."></textarea>
+                        <small class="text-muted">List detailed steps to execute this test</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="expected_result" class="form-label">
+                            <strong>Expected Result <span class="text-danger">*</span></strong>
+                        </label>
+                        <textarea class="form-control" id="expected_result" name="expected_result" 
+                                  rows="4" required
+                                  placeholder="Describe the expected outcome..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="acceptance_criteria" class="form-label">
+                            <strong>Acceptance Criteria <span class="text-danger">*</span></strong>
+                        </label>
+                        <textarea class="form-control" id="acceptance_criteria" name="acceptance_criteria" 
+                                  rows="5" required
+                                  placeholder="Define clear pass/fail criteria:&#10;✓ Sensor gap must be < 5mm&#10;✓ Response time must be < 2 seconds&#10;✓ All LEDs must illuminate&#10;✓ No errors in system logs"></textarea>
+                        <small class="text-muted"><strong>CRITICAL:</strong> Specific, measurable criteria for test pass/fail decision</small>
+                    </div>
+                </div>
+
+                <!-- Helper Info -->
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-lightbulb me-2"></i>Validation Guidelines</h6>
+                    <ul class="mb-0 small">
+                        <li><strong>IQ Tests:</strong> Verify correct installation of hardware, software, and configurations</li>
+                        <li><strong>OQ Tests:</strong> Confirm all system functions operate as designed</li>
+                        <li><strong>PQ Tests:</strong> Validate real-world performance meets specifications</li>
+                        <li>All tests require electronic signatures for execution and review</li>
+                        <li>Test results are recorded in the blockchain audit trail</li>
+                    </ul>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save me-2"></i>Create Validation Test
+                    </button>
+                    <a href="{{ url_for('validation_dashboard') }}" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectTestType(type) {
+    // Clear all selections
+    document.querySelectorAll('.test-type-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Select clicked type
+    const radio = document.getElementById(`type_${type.toLowerCase()}`);
+    radio.checked = true;
+    radio.closest('.test-type-card').classList.add('selected');
+}
+
+// Form validation
+document.getElementById('testForm').addEventListener('submit', function(e) {
+    const testType = document.querySelector('input[name="test_type"]:checked');
+    const testNumber = document.getElementById('test_number').value.trim();
+    const testName = document.getElementById('test_name').value.trim();
+    const testCategory = document.getElementById('test_category').value;
+    const equipmentName = document.getElementById('equipment_name').value.trim();
+    const equipmentModel = document.getElementById('equipment_model').value.trim();
+    const equipmentSerial = document.getElementById('equipment_serial').value.trim();
+    const procedure = document.getElementById('procedure').value.trim();
+    const expectedResult = document.getElementById('expected_result').value.trim();
+    const acceptanceCriteria = document.getElementById('acceptance_criteria').value.trim();
+    
+    if (!testType) {
+        e.preventDefault();
+        alert('Please select a test type (IQ, OQ, or PQ)');
+        return false;
+    }
+    
+    if (!testNumber || !testName || !testCategory) {
+        e.preventDefault();
+        alert('Please fill in all required test details');
+        return false;
+    }
+    
+    if (!equipmentName || !equipmentModel || !equipmentSerial) {
+        e.preventDefault();
+        alert('Please fill in all required equipment information');
+        return false;
+    }
+    
+    if (!procedure || !expectedResult || !acceptanceCriteria) {
+        e.preventDefault();
+        alert('Please fill in all required test procedure fields (Test Steps, Expected Result, Acceptance Criteria)');
+        return false;
+    }
+});
+</script>
+{% endblock %}

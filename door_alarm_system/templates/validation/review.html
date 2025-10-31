@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+
+{% block title %}Review {{ test.test_number }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.review-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #0d6efd;
+}
+
+.test-summary {
+    background: #f8f9fa;
+    border-left: 4px solid #0d6efd;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.result-display {
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.result-display.pass {
+    background: #d1e7dd;
+    border-left: 4px solid #198754;
+}
+
+.result-display.fail {
+    background: #f8d7da;
+    border-left: 4px solid #dc3545;
+}
+
+.signature-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="mb-4">
+                <a href="{{ url_for('view_validation_test', test_id=test.id) }}" 
+                   class="btn btn-outline-secondary btn-sm mb-3">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Test
+                </a>
+                <h2 class="mb-1">
+                    <i class="fas fa-check-double me-2"></i>
+                    Review Validation Test
+                </h2>
+                <p class="text-muted">{{ test.test_number }} - Electronic Signature Required</p>
+            </div>
+
+            <!-- Test Summary -->
+            <div class="test-summary">
+                <h5 class="mb-3">{{ test.test_name }}</h5>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <small class="text-muted">Test Type:</small><br>
+                        <strong>{{ test.test_type }}</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Executed by:</small><br>
+                        <strong>{{ test.executor.username if test.executor else 'Unknown' }}</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Executed on:</small><br>
+                        <strong>{{ test.executed_date.strftime('%Y-%m-%d %H:%M') if test.executed_date else 'N/A' }}</strong>
+                    </div>
+                </div>
+                <div class="alert 
+                    {% if test.status == 'pass' %}alert-success
+                    {% else %}alert-danger{% endif %} mb-0">
+                    <i class="fas 
+                        {% if test.status == 'pass' %}fa-check-circle
+                        {% else %}fa-times-circle{% endif %} me-2"></i>
+                    <strong>Test Result: {{ test.status|upper }}</strong>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Test Details -->
+                    <div class="review-section">
+                        <div class="section-title">
+                            <i class="fas fa-file-alt me-2"></i>Test Details
+                        </div>
+                        
+                        <h6>Expected Result:</h6>
+                        <p style="white-space: pre-wrap;">{{ test.expected_result }}</p>
+
+                        <h6>Actual Result:</h6>
+                        <div class="result-display {{ test.status }}">
+                            <p style="white-space: pre-wrap;">{{ test.actual_result }}</p>
+                        </div>
+
+                        {% if test.notes %}
+                        <h6>Execution Notes:</h6>
+                        <p style="white-space: pre-wrap;">{{ test.notes }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Review Form -->
+                    <div class="review-section">
+                        <div class="section-title">
+                            <i class="fas fa-signature me-2"></i>Review & Electronic Signature
+                        </div>
+
+                        <form method="POST" id="reviewForm">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <strong>Review Decision <span class="text-danger">*</span></strong>
+                                </label>
+                                <div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="action" 
+                                               id="approve" value="approve" required>
+                                        <label class="form-check-label" for="approve">
+                                            <i class="fas fa-check-circle text-success me-1"></i>
+                                            <strong>Approve Test Results</strong>
+                                            <br>
+                                            <small class="text-muted">Test execution was valid and results are acceptable</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="action" 
+                                               id="retest" value="retest" required>
+                                        <label class="form-check-label" for="retest">
+                                            <i class="fas fa-redo text-warning me-1"></i>
+                                            <strong>Request Retest</strong>
+                                            <br>
+                                            <small class="text-muted">Test needs to be re-executed due to issues or deviations</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="review_comments" class="form-label">
+                                    <strong>Review Comments</strong>
+                                </label>
+                                <textarea class="form-control" id="review_comments" 
+                                          name="review_comments" rows="4"
+                                          placeholder="Document your review findings, any concerns, or observations..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="signature_reason" class="form-label">
+                                    <strong>Signature Meaning/Reason <span class="text-danger">*</span></strong>
+                                </label>
+                                <textarea class="form-control" id="signature_reason" 
+                                          name="signature_reason" rows="2" required
+                                          placeholder="Per 21 CFR §11.200(a), explain the meaning and reason for signing..."></textarea>
+                                <small class="text-muted">Required by 21 CFR Part 11 §11.200(a)</small>
+                            </div>
+
+                            <div class="signature-box">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-key me-2"></i>Authenticate Your Signature
+                                </h6>
+                                
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">
+                                        <strong>Your Password <span class="text-danger">*</span></strong>
+                                    </label>
+                                    <input type="password" class="form-control" id="password" 
+                                           name="password" required 
+                                           placeholder="Enter your password to sign">
+                                    <small class="text-light">
+                                        Your password creates a legally binding electronic signature
+                                    </small>
+                                </div>
+
+                                <div class="small opacity-75">
+                                    <p class="mb-1">
+                                        <i class="fas fa-signature me-2"></i>
+                                        <strong>Reviewed by:</strong> {{ current_user.username }}
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="fas fa-calendar me-2"></i>
+                                        <strong>Date/Time:</strong> <span id="currentDateTime"></span>
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="fas fa-network-wired me-2"></i>
+                                        <strong>IP Address:</strong> {{ request.remote_addr }}
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="fas fa-fingerprint me-2"></i>
+                                        <strong>Hash Type:</strong> SHA-256
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-lightbulb me-2"></i>Review Checklist</h6>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="check1">
+                                    <label class="form-check-label small" for="check1">
+                                        Test procedure was followed correctly
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="check2">
+                                    <label class="form-check-label small" for="check2">
+                                        Results are clearly documented
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="check3">
+                                    <label class="form-check-label small" for="check3">
+                                        Test conclusion is appropriate
+                                    </label>
+                                </div>
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input" type="checkbox" id="check4">
+                                    <label class="form-check-label small" for="check4">
+                                        All deviations are noted
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Legal Notice:</strong> By signing this review, you certify that you have 
+                                reviewed the test execution and results, and confirm their validity. This creates 
+                                a legally binding electronic signature under 21 CFR Part 11.
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-signature me-2"></i>Sign & Submit Review
+                                </button>
+                                <a href="{{ url_for('view_validation_test', test_id=test.id) }}" 
+                                   class="btn btn-outline-secondary btn-lg">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Test Info -->
+                    <div class="review-section">
+                        <div class="section-title">
+                            <i class="fas fa-info-circle me-2"></i>Test Information
+                        </div>
+                        <table class="table table-sm mb-0">
+                            <tr>
+                                <td><strong>Test Number:</strong></td>
+                                <td>{{ test.test_number }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Type:</strong></td>
+                                <td>{{ test.test_type }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Result:</strong></td>
+                                <td>
+                                    <span class="badge 
+                                        {% if test.status == 'pass' %}bg-success
+                                        {% else %}bg-danger{% endif %}">
+                                        {{ test.status|upper }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Executed:</strong></td>
+                                <td>{{ test.executed_date.strftime('%Y-%m-%d') if test.executed_date else 'N/A' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Compliance -->
+                    <div class="review-section">
+                        <div class="section-title">
+                            <i class="fas fa-shield-alt me-2"></i>Compliance
+                        </div>
+                        <p class="small mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            21 CFR Part 11 §11.10(a)
+                        </p>
+                        <p class="small mb-2">
+                            <i class="fas fa-signature text-success me-2"></i>
+                            Dual Electronic Signatures
+                        </p>
+                        <p class="small mb-0">
+                            <i class="fas fa-link text-success me-2"></i>
+                            Blockchain Audit Trail
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update date/time
+function updateDateTime() {
+    const now = new Date();
+    const formatted = now.toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+    document.getElementById('currentDateTime').textContent = formatted;
+}
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+// Form validation
+document.getElementById('reviewForm').addEventListener('submit', function(e) {
+    const action = document.querySelector('input[name="action"]:checked');
+    const reason = document.getElementById('signature_reason').value.trim();
+    const password = document.getElementById('password').value;
+    
+    if (!action || !reason || !password) {
+        e.preventDefault();
+        alert('Please fill in all required fields');
+        return false;
+    }
+    
+    const actionText = action.value === 'approve' ? 'approve' : 'request retest for';
+    if (!confirm(`Are you sure you want to ${actionText} this validation test? This action will create a legally binding electronic signature.`)) {
+        e.preventDefault();
+        return false;
+    }
+});
+</script>
+{% endblock %}

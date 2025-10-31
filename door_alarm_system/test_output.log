@@ -1,0 +1,63 @@
+pygame 2.6.1 (SDL 2.32.4, Python 3.13.5)
+Hello from the pygame community. https://www.pygame.org/contribute.html
+[DEBUG] 🔧 Starting GPIO setup...
+[DEBUG] 🔧 Not in testing mode, initializing GPIO hardware...
+[DEBUG] 🔧 Checking for lingering GPIO processes...
+[DEBUG] 🔧 Performing aggressive GPIO cleanup...
+[DEBUG] 🔧 GPIO cleanup attempt 1 completed
+[DEBUG] 🔧 GPIO cleanup attempt 2 completed
+[DEBUG] 🔧 GPIO cleanup attempt 3 completed
+[DEBUG] 🔧 GPIO mode reset to BOARD
+[DEBUG] 🔧 GPIO cleanup and mode initialization completed
+[DEBUG] 🔧 Pin 11 retry 1: 'GPIO busy'
+[DEBUG] 🔧 Pin 11 retry 2: 'GPIO busy'
+[DEBUG] 🔧 Pin 11 retry 3: 'GPIO busy'
+[ERROR] ❌ Failed to setup GPIO pin 11 (Magnetic sensor) after 3 attempts: 'GPIO busy'
+[DEBUG] 🔧 Pin 22 retry 1: 'GPIO not allocated'
+[DEBUG] 🔧 Pin 22 retry 2: 'GPIO not allocated'
+[DEBUG] 🔧 Pin 22 retry 3: 'GPIO not allocated'
+[ERROR] ❌ Failed to setup GPIO pin 22 (Green LED) after 3 attempts: 'GPIO not allocated'
+[DEBUG] 🔧 Pin 13 retry 1: 'GPIO not allocated'
+[DEBUG] 🔧 Pin 13 retry 2: 'GPIO not allocated'
+[DEBUG] 🔧 Pin 13 retry 3: 'GPIO not allocated'
+[ERROR] ❌ Failed to setup GPIO pin 13 (Red LED) after 3 attempts: 'GPIO not allocated'
+[DEBUG] 🔧 Pin 16 retry 1: 'GPIO not allocated'
+[DEBUG] 🔧 Pin 16 retry 2: 'GPIO not allocated'
+[DEBUG] 🔧 Pin 16 retry 3: 'GPIO not allocated'
+[ERROR] ❌ Failed to setup GPIO pin 16 (White LED) after 3 attempts: 'GPIO not allocated'
+[DEBUG] 🔧 Pin 18 retry 1: 'GPIO busy'
+[DEBUG] 🔧 Pin 18 retry 2: 'GPIO busy'
+[DEBUG] 🔧 Pin 18 retry 3: 'GPIO busy'
+[ERROR] ❌ Failed to setup GPIO pin 18 (Switch) after 3 attempts: 'GPIO busy'
+[DEBUG] 🔧 GPIO Setup Summary:
+  ├─ Successful pins: 0/5
+  └─ Failed pins: 5
+      ❌ Pin 11: Magnetic sensor ('GPIO busy')
+      ❌ Pin 22: Green LED ('GPIO not allocated')
+      ❌ Pin 13: Red LED ('GPIO not allocated')
+      ❌ Pin 16: White LED ('GPIO not allocated')
+      ❌ Pin 18: Switch ('GPIO busy')
+[DEBUG] 🔧 GPIO initialization completed
+[DEBUG] 🔧 GPIO setup phase completed, continuing with global variables...
+[DEBUG] 🔧 Global variables initialized:
+  ├─ door_open: False
+  ├─ alarm_active: False
+  ├─ timer_active: False
+  └─ timer_duration: 30s
+🚀 Starting eDOMOS-v2 Door Alarm System...
+📡 WebSocket support enabled
+🔄 Event-driven real-time updates active
+🌐 Server will be available at: http://0.0.0.0:5000
+🔌 WebSocket endpoint: ws://0.0.0.0:5000/socket.io/?EIO=4&transport=websocket&ns=/events
+============================================================
+[DEBUG] ⏰ Timer duration loaded from database: 5 seconds
+[DEBUG] 🔧 Initializing LED states...
+[ERROR] ❌ Application error: The GPIO channel has not been set up as an OUTPUT
+[DEBUG] 🔧 Cleaning up GPIO before exit...
+[DEBUG] ✅ GPIO cleanup completed
+[DEBUG] 🔧 Cleaning up GPIO before exit...
+[DEBUG] ✅ GPIO cleanup completed
+[DEBUG] 🔧 Cleaning up GPIO before exit...
+[DEBUG] ✅ GPIO cleanup completed
+[DEBUG] 🔧 Cleaning up GPIO before exit...
+[DEBUG] ✅ GPIO cleanup completed

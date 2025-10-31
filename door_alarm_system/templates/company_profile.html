@@ -1,0 +1,351 @@
+{% extends "base.html" %}
+
+{% block title %}Company Profile - eDOMOS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h2 class="mb-0">
+                        <i class="fas fa-building text-primary me-2"></i>
+                        Company Profile & System Configuration
+                    </h2>
+                    <p class="text-muted mb-0">Configure company information, door/system details, and branding</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div id="alertContainer"></div>
+
+    <!-- Company Information Section -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-building me-2"></i>Company Information</h5>
+                </div>
+                <div class="card-body">
+                    <form id="companyProfileForm">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="companyName" class="form-label fw-bold">Company Name *</label>
+                                <input type="text" class="form-control" id="companyName" name="company_name" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="companyAddress" class="form-label fw-bold">Address</label>
+                                <input type="text" class="form-control" id="companyAddress" name="company_address" placeholder="Street Address">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="companyCity" class="form-label fw-bold">City</label>
+                                <input type="text" class="form-control" id="companyCity" name="company_city">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="companyState" class="form-label fw-bold">State/Province</label>
+                                <input type="text" class="form-control" id="companyState" name="company_state">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="companyZip" class="form-label fw-bold">ZIP/Postal Code</label>
+                                <input type="text" class="form-control" id="companyZip" name="company_zip">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="companyCountry" class="form-label fw-bold">Country</label>
+                                <input type="text" class="form-control" id="companyCountry" name="company_country">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="companyPhone" class="form-label fw-bold">Phone</label>
+                                <input type="tel" class="form-control" id="companyPhone" name="company_phone" placeholder="+1-234-567-8900">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="companyEmail" class="form-label fw-bold">Email</label>
+                                <input type="email" class="form-control" id="companyEmail" name="company_email">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="companyWebsite" class="form-label fw-bold">Website</label>
+                                <input type="url" class="form-control" id="companyWebsite" name="company_website" placeholder="www.example.com">
+                            </div>
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Save Company Information
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logo Upload Section -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-image me-2"></i>Company Logo</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div id="logoPreview" class="mb-3 border rounded p-3 bg-light" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                        <img id="logoImage" src="" alt="Company Logo" style="max-width: 100%; max-height: 180px; display: none;">
+                        <div id="logoPlaceholder">
+                            <i class="fas fa-image fa-5x text-muted mb-3"></i>
+                            <p class="text-muted">No logo uploaded</p>
+                        </div>
+                    </div>
+                    
+                    <form id="logoUploadForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <input type="file" class="form-control" id="logoFile" name="logo" accept="image/*">
+                            <small class="form-text text-muted">PNG, JPG, or SVG. Max 2MB.</small>
+                        </div>
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-upload me-2"></i>Upload Logo
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Door & System Information Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-door-open me-2"></i>Door & System Information</h5>
+                </div>
+                <div class="card-body">
+                    <form id="doorSystemForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="doorLocation" class="form-label fw-bold">Door Location *</label>
+                                <input type="text" class="form-control" id="doorLocation" name="door_location" placeholder="e.g., Main Entrance, Building A" required>
+                                <small class="form-text text-muted">Physical location of the monitored door</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="departmentName" class="form-label fw-bold">Department Name *</label>
+                                <input type="text" class="form-control" id="departmentName" name="department_name" placeholder="e.g., Quality Control, Production, Stores" required>
+                                <small class="form-text text-muted">Department responsible for this door</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="deviceSerialNumber" class="form-label fw-bold">Device Serial Number *</label>
+                                <input type="text" class="form-control" id="deviceSerialNumber" name="device_serial_number" placeholder="EDOMOS-001" required>
+                                <small class="form-text text-muted">Unique identifier for this eDOMOS device</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="systemModel" class="form-label fw-bold">System Model</label>
+                                <input type="text" class="form-control" id="systemModel" name="system_model" value="eDOMOS v2.1" readonly>
+                                <small class="form-text text-muted">eDOMOS system version</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="installationDate" class="form-label fw-bold">Installation Date</label>
+                                <input type="date" class="form-control" id="installationDate" name="installation_date">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastMaintenanceDate" class="form-label fw-bold">Last Maintenance Date</label>
+                                <input type="date" class="form-control" id="lastMaintenanceDate" name="last_maintenance_date">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="systemNotes" class="form-label fw-bold">Notes</label>
+                                <textarea class="form-control" id="systemNotes" name="notes" rows="3" placeholder="Additional information about this system..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-save me-2"></i>Save Door & System Info
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load existing company profile
+    loadCompanyProfile();
+    loadDoorSystemInfo();
+
+    // Company Profile Form Submit
+    document.getElementById('companyProfileForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+
+        fetch('/api/company-profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Company information saved successfully!', 'success');
+            } else {
+                showAlert('Error saving company information: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Error: ' + error.message, 'danger');
+        });
+    });
+
+    // Door/System Form Submit
+    document.getElementById('doorSystemForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+
+        fetch('/api/door-system-info', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Door & system information saved successfully!', 'success');
+            } else {
+                showAlert('Error saving door/system information: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Error: ' + error.message, 'danger');
+        });
+    });
+
+    // Logo Upload Form Submit
+    document.getElementById('logoUploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('/api/upload-logo', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Logo uploaded successfully!', 'success');
+                document.getElementById('logoImage').src = data.logo_path;
+                document.getElementById('logoImage').style.display = 'block';
+                document.getElementById('logoPlaceholder').style.display = 'none';
+            } else {
+                showAlert('Error uploading logo: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Error: ' + error.message, 'danger');
+        });
+    });
+
+    // Logo file preview
+    document.getElementById('logoFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('logoImage').src = e.target.result;
+                document.getElementById('logoImage').style.display = 'block';
+                document.getElementById('logoPlaceholder').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+});
+
+function loadCompanyProfile() {
+    fetch('/api/company-profile')
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.success && data.profile) {
+                const profile = data.profile;
+                document.getElementById('companyName').value = profile.company_name || '';
+                document.getElementById('companyAddress').value = profile.company_address || '';
+                document.getElementById('companyCity').value = profile.company_city || '';
+                document.getElementById('companyState').value = profile.company_state || '';
+                document.getElementById('companyZip').value = profile.company_zip || '';
+                document.getElementById('companyCountry').value = profile.company_country || '';
+                document.getElementById('companyPhone').value = profile.company_phone || '';
+                document.getElementById('companyEmail').value = profile.company_email || '';
+                document.getElementById('companyWebsite').value = profile.company_website || '';
+
+                if (profile.logo_path) {
+                    document.getElementById('logoImage').src = profile.logo_path;
+                    document.getElementById('logoImage').style.display = 'block';
+                    document.getElementById('logoPlaceholder').style.display = 'none';
+                }
+            }
+        })
+        .catch(error => console.error('Error loading company profile:', error));
+}
+
+function loadDoorSystemInfo() {
+    fetch('/api/door-system-info')
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.success && data.info) {
+                const info = data.info;
+                document.getElementById('doorLocation').value = info.door_location || '';
+                document.getElementById('departmentName').value = info.department_name || '';
+                document.getElementById('deviceSerialNumber').value = info.device_serial_number || '';
+                document.getElementById('systemModel').value = info.system_model || 'eDOMOS v2.1';
+                document.getElementById('installationDate').value = info.installation_date || '';
+                document.getElementById('lastMaintenanceDate').value = info.last_maintenance_date || '';
+                document.getElementById('systemNotes').value = info.notes || '';
+            }
+        })
+        .catch(error => console.error('Error loading door/system info:', error));
+}
+
+function showAlert(message, type) {
+    const alert = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    document.getElementById('alertContainer').innerHTML = alert;
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        const alertElement = document.querySelector('.alert');
+        if (alertElement) {
+            alertElement.classList.remove('show');
+            setTimeout(() => alertElement.remove(), 150);
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

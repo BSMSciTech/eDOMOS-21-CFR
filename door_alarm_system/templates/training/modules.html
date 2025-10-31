@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}Training Modules{% endblock %}
+
+{% block extra_css %}
+<style>
+.search-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.module-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #0d6efd;
+    transition: all 0.3s ease;
+}
+
+.module-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.module-card.inactive {
+    border-left-color: #6c757d;
+    opacity: 0.7;
+}
+
+.module-thumbnail {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 2rem;
+}
+
+.module-meta {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.badge-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-book-open me-2"></i>
+                Training Modules
+            </h2>
+            <p class="text-muted">21 CFR Part 11 Compliance Training Library</p>
+        </div>
+        {% if current_user.is_admin %}
+        <div>
+            <a href="{{ url_for('create_training_module') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Create Module
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="mb-1">{{ modules|length }}</h3>
+                    <small class="text-muted">Total Modules</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="mb-1 text-success">{{ modules|selectattr('is_active', 'equalto', True)|list|length }}</h3>
+                    <small class="text-muted">Active Modules</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="mb-1 text-info">
+                        {% set my_completions = namespace(count=0) %}
+                        {% for module in modules %}
+                            {% for record in module.training_records %}
+                                {% if record.user_id == current_user.id and not record.is_expired() %}
+                                    {% set my_completions.count = my_completions.count + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                        {{ my_completions.count }}
+                    </h3>
+                    <small class="text-muted">My Completions</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="mb-1 text-warning">
+                        {% set expired_count = namespace(count=0) %}
+                        {% for module in modules %}
+                            {% for record in module.training_records %}
+                                {% if record.user_id == current_user.id and record.is_expired() %}
+                                    {% set expired_count.count = expired_count.count + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                        {{ expired_count.count }}
+                    </h3>
+                    <small class="text-muted">Expired</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="search-section">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <input type="text" id="searchInput" class="form-control" 
+                       placeholder="Search modules by name or description...">
+            </div>
+            <div class="col-md-3 mb-3">
+                <select id="statusFilter" class="form-select">
+                    <option value="all">All Modules</option>
+                    <option value="active">Active Only</option>
+                    <option value="inactive">Inactive Only</option>
+                    <option value="completed">Completed by Me</option>
+                    <option value="not-completed">Not Completed</option>
+                    <option value="expired">Expired</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <select id="sortBy" class="form-select">
+                    <option value="name">Sort by Name</option>
+                    <option value="version">Sort by Version</option>
+                    <option value="date">Sort by Date Created</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modules List -->
+    <div id="modulesList">
+        {% if modules %}
+            {% for module in modules %}
+            <div class="module-card {% if not module.is_active %}inactive{% endif %}" 
+                 data-module-name="{{ module.module_name|lower }}"
+                 data-description="{{ module.description|lower }}"
+                 data-status="{{ 'active' if module.is_active else 'inactive' }}"
+                 data-created="{{ module.created_at.isoformat() if module.created_at else '' }}"
+                 data-version="{{ module.version }}"
+                 data-completed="{% for record in module.training_records %}{% if record.user_id == current_user.id and not record.is_expired() %}yes{% endif %}{% endfor %}"
+                 data-expired="{% for record in module.training_records %}{% if record.user_id == current_user.id and record.is_expired() %}yes{% endif %}{% endfor %}">
+                
+                <div class="row align-items-center">
+                    <!-- Thumbnail -->
+                    <div class="col-auto">
+                        <div class="module-thumbnail">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                    </div>
+
+                    <!-- Module Info -->
+                    <div class="col">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h5 class="mb-1">{{ module.module_name }}</h5>
+                                <p class="text-muted mb-2">{{ module.description[:150] }}{% if module.description|length > 150 %}...{% endif %}</p>
+                            </div>
+                            {% if not module.is_active %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="module-meta">
+                            <span class="me-3">
+                                <i class="fas fa-code-branch me-1"></i>
+                                Version {{ module.version }}
+                            </span>
+                            <span class="me-3">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                Valid for {{ module.validity_period_days }} days
+                            </span>
+                            <span class="me-3">
+                                <i class="fas fa-users me-1"></i>
+                                {{ module.training_records|length }} completion(s)
+                            </span>
+                            {% if module.required_for_roles %}
+                            <span class="me-3">
+                                <i class="fas fa-user-tag me-1"></i>
+                                Required for: {{ module.required_for_roles }}
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- User's Completion Status -->
+                        {% set user_record = namespace(found=None) %}
+                        {% for record in module.training_records %}
+                            {% if record.user_id == current_user.id %}
+                                {% set user_record.found = record %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if user_record.found %}
+                        <div class="mt-3">
+                            {% if user_record.found.is_expired() %}
+                            <div class="alert alert-warning py-2 mb-0">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Expired:</strong> Completed on {{ user_record.found.completed_date.strftime('%Y-%m-%d') }}, 
+                                expired on {{ user_record.found.expiration_date.strftime('%Y-%m-%d') }}
+                            </div>
+                            {% else %}
+                            <div class="alert alert-success py-2 mb-0">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <strong>Completed:</strong> {{ user_record.found.completed_date.strftime('%Y-%m-%d') }}
+                                (Valid until {{ user_record.found.expiration_date.strftime('%Y-%m-%d') }})
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Action Buttons -->
+                        <div class="mt-3">
+                            <a href="{{ url_for('view_training_module', module_id=module.id) }}" 
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </a>
+                            
+                            {% if module.is_active %}
+                                {% if not user_record.found or user_record.found.is_expired() %}
+                                <a href="{{ url_for('complete_training', module_id=module.id) }}" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-play me-1"></i>
+                                    {% if user_record.found %}Renew Training{% else %}Start Training{% endif %}
+                                </a>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if current_user.is_admin %}
+                            <a href="{{ url_for('edit_training_module', module_id=module.id) }}" 
+                               class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-edit me-1"></i>Edit
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-book-open fa-4x text-muted mb-3"></i>
+            <h4>No Training Modules Available</h4>
+            {% if current_user.is_admin %}
+            <p class="text-muted">Get started by creating your first training module</p>
+            <a href="{{ url_for('create_training_module') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Create First Module
+            </a>
+            {% else %}
+            <p class="text-muted">No training modules have been created yet</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+const searchInput = document.getElementById('searchInput');
+const statusFilter = document.getElementById('statusFilter');
+const sortBy = document.getElementById('sortBy');
+const moduleCards = document.querySelectorAll('.module-card');
+
+function filterModules() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const statusValue = statusFilter.value;
+    
+    moduleCards.forEach(card => {
+        const name = card.getAttribute('data-module-name');
+        const description = card.getAttribute('data-description');
+        const status = card.getAttribute('data-status');
+        const completed = card.getAttribute('data-completed');
+        const expired = card.getAttribute('data-expired');
+        
+        // Search filter
+        const matchesSearch = name.includes(searchTerm) || description.includes(searchTerm);
+        
+        // Status filter
+        let matchesStatus = true;
+        if (statusValue === 'active') matchesStatus = status === 'active';
+        else if (statusValue === 'inactive') matchesStatus = status === 'inactive';
+        else if (statusValue === 'completed') matchesStatus = completed === 'yes';
+        else if (statusValue === 'not-completed') matchesStatus = completed !== 'yes';
+        else if (statusValue === 'expired') matchesStatus = expired === 'yes';
+        
+        card.style.display = (matchesSearch && matchesStatus) ? 'block' : 'none';
+    });
+}
+
+function sortModules() {
+    const sortValue = sortBy.value;
+    const modulesList = document.getElementById('modulesList');
+    const cardsArray = Array.from(moduleCards);
+    
+    cardsArray.sort((a, b) => {
+        if (sortValue === 'name') {
+            return a.getAttribute('data-module-name').localeCompare(b.getAttribute('data-module-name'));
+        } else if (sortValue === 'version') {
+            return a.getAttribute('data-version').localeCompare(b.getAttribute('data-version'));
+        } else if (sortValue === 'date') {
+            return new Date(b.getAttribute('data-created')) - new Date(a.getAttribute('data-created'));
+        }
+    });
+    
+    cardsArray.forEach(card => modulesList.appendChild(card));
+}
+
+searchInput.addEventListener('input', filterModules);
+statusFilter.addEventListener('change', filterModules);
+sortBy.addEventListener('change', sortModules);
+</script>
+{% endblock %}

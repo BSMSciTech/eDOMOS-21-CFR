@@ -1,0 +1,2318 @@
+nohup: ignoring input
+INFO:camera_helper:Attempting to initialize USB camera on device 0
+INFO:camera_helper:✅ USB camera initialized successfully at (1920, 1080)
+WARNING:werkzeug:Werkzeug appears to be used in a production deployment. Consider switching to a production web server instead.
+pygame 2.6.1 (SDL 2.28.4, Python 3.13.5)
+Hello from the pygame community. https://www.pygame.org/contribute.html
+[DEBUG] 🔧 Starting GPIO setup...
+[DEBUG] 🔧 Not in testing mode, initializing GPIO hardware...
+[DEBUG] 🔧 Checking for lingering GPIO processes...
+[DEBUG] 🔧 Performing aggressive GPIO cleanup...
+[DEBUG] 🔧 GPIO cleanup attempt 1 completed
+[DEBUG] 🔧 GPIO cleanup attempt 2 completed
+[DEBUG] 🔧 GPIO cleanup attempt 3 completed
+[DEBUG] 🔧 GPIO mode reset to BOARD
+[DEBUG] 🔧 GPIO cleanup and mode initialization completed
+[DEBUG] ✅ GPIO pin 11 setup successful (Magnetic sensor)
+[DEBUG] ✅ GPIO pin 22 setup successful (Green LED)
+[DEBUG] ✅ GPIO pin 13 setup successful (Red LED)
+[DEBUG] ✅ GPIO pin 16 setup successful (White LED)
+[DEBUG] ✅ GPIO pin 18 setup successful (Switch)
+[DEBUG] 🔧 GPIO Setup Summary:
+  ├─ Successful pins: 5/5
+  │   ✅ Pin 11: Magnetic sensor
+  │   ✅ Pin 22: Green LED
+  │   ✅ Pin 13: Red LED
+  │   ✅ Pin 16: White LED
+  │   ✅ Pin 18: Switch
+[DEBUG] 🔧 GPIO initialization completed
+[DEBUG] 🔧 GPIO setup phase completed, continuing with global variables...
+[DEBUG] ✅ GPIO hardware is available and functional
+[DEBUG] 🔧 Global variables initialized:
+  ├─ door_open: False
+  ├─ alarm_active: False
+  ├─ timer_active: False
+  └─ timer_duration: 30s
+🌐 SSL disabled - HTTP mode (default)
+💡 To enable HTTPS: USE_SSL=true python app.py
+�🚀 Starting eDOMOS-v2 Door Alarm System...
+📡 WebSocket support enabled
+🔄 Event-driven real-time updates active
+🌐 Server will be available at: http://0.0.0.0:5000
+🔌 WebSocket endpoint: ws://0.0.0.0:5000/socket.io/?EIO=4&transport=websocket&ns=/events
+============================================================
+[DEBUG] ⏰ Timer duration loaded from database: 5 seconds
+[DEBUG] 🔧 Initializing LED states...
+[DEBUG] ✅ LEDs initialized - Green: ON, Red: OFF, White: OFF
+[DEBUG] 🔧 Initializing audio system...
+[DEBUG] 🔊 Initializing audio system...
+[DEBUG] Audio file path: /home/bsm/WebApp/eDOMOS-v2.1/door_alarm_system/static/audio.mp3
+[DEBUG] Audio file exists: True
+[DEBUG] Audio file size: 34605 bytes
+[DEBUG] ✅ Audio preloaded into memory for instant playback
+[DEBUG] ✅ Audio initialization successful:
+  ├─ File: /home/bsm/WebApp/eDOMOS-v2.1/door_alarm_system/static/audio.mp3
+  ├─ Size: 34605 bytes
+  ├─ Volume: 1.0
+  ├─ Mixer initialized: (22050, -16, 2)
+  ├─ Preloaded: True
+  └─ SDL Audio Driver: alsa
+[DEBUG] 🔧 Initializing camera system...
+[DEBUG] ✅ Camera initialized successfully!
+[DEBUG]    Type: usb
+[DEBUG]    Resolution: (1920, 1080)
+[DEBUG]    Storage: static/captures
+[DEBUG] 🚪 Door monitoring loop started
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+🔍 Door monitoring thread started
+[SCHEDULER] 📧 Report scheduler thread started
+📧 Report scheduler thread started
+🔧 Starting SocketIO server with enhanced configuration...
+ * Serving Flask app 'app'
+ * Debug mode: off
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.31.227:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+/home/bsm/WebApp/eDOMOS-v2.1/door_alarm_system/app.py:1418: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  return User.query.get(int(user_id))
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:27] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:29] "GET /socket.io/?EIO=4&transport=polling&t=Pem-cgT HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:29] "POST /socket.io/?EIO=4&transport=polling&t=Pem-cgy&sid=Aj0vXYv1chG7n6fhAAAA HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:29] "GET /socket.io/?EIO=4&transport=polling&t=Pem-cg_&sid=Aj0vXYv1chG7n6fhAAAA HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:29] "GET /socket.io/?EIO=4&transport=polling&t=Pem-chh&sid=Aj0vXYv1chG7n6fhAAAA HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:29] "POST /socket.io/?EIO=4&transport=polling&t=Pem-chl&sid=Aj0vXYv1chG7n6fhAAAA HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:29] "GET /socket.io/?EIO=4&transport=polling&t=Pem-cik&sid=Aj0vXYv1chG7n6fhAAAA HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:29] "POST /socket.io/?EIO=4&transport=polling&t=Pem-cis&sid=Aj0vXYv1chG7n6fhAAAA HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:30] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:34] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:37] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:40] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:43] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:46] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:49] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:52] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:54] "GET /socket.io/?EIO=4&transport=polling&t=Pem-ck2&sid=Aj0vXYv1chG7n6fhAAAA HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:54] "POST /socket.io/?EIO=4&transport=polling&t=Pem-inj&sid=Aj0vXYv1chG7n6fhAAAA HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:55] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:48:58] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:01] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:04] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:07] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:10] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:13] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:16] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:19] "GET /socket.io/?EIO=4&transport=polling&t=Pem-inu&sid=Aj0vXYv1chG7n6fhAAAA HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:19] "POST /socket.io/?EIO=4&transport=polling&t=Pem-ov5&sid=Aj0vXYv1chG7n6fhAAAA HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:19] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:22] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:25] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:28] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:31] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:34] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:37] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:40] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:43] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:44] "GET /socket.io/?EIO=4&transport=polling&t=Pem-ov7&sid=Aj0vXYv1chG7n6fhAAAA HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:44] "POST /socket.io/?EIO=4&transport=polling&t=Pem-v0K&sid=Aj0vXYv1chG7n6fhAAAA HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:46] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:49] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:52] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:55] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:49:58] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:01] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:04] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:07] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:08] "GET /event-log HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:09] "GET /socket.io/?EIO=4&transport=polling&t=Pem-v0P&sid=Aj0vXYv1chG7n6fhAAAA HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:09] "[36mGET /static/css/colors.css?v=2.2 HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:09] "[36mGET /static/js/socket.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:09] "[36mGET /static/css/modern.css?v=2.2 HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:11] "GET /socket.io/?EIO=4&transport=polling&t=Pem-_hc HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:11] "GET /socket.io/?EIO=4&transport=polling&t=Pem-_iY HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:11] "GET /socket.io/?EIO=4&transport=polling&t=Pem-_iu HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:11] "GET /api/events?per_page=1 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:11] "GET /socket.io/?EIO=4&transport=polling&t=Pem-_lG&sid=KI5j0Rn1DKJlf9zYAAAE HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:11] "POST /socket.io/?EIO=4&transport=polling&t=Pem-_lC&sid=KI5j0Rn1DKJlf9zYAAAE HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:11] "GET /socket.io/?EIO=4&transport=polling&t=Pem-_m7&sid=KI5j0Rn1DKJlf9zYAAAE HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:11] "POST /socket.io/?EIO=4&transport=polling&t=Pem-_mS&sid=KI5j0Rn1DKJlf9zYAAAE HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:11] "GET /socket.io/?EIO=4&transport=polling&t=Pem-_n2&sid=KI5j0Rn1DKJlf9zYAAAE HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:14] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:15] "GET /dashboard HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:15] "[36mGET /static/css/modern.css?v=2.2 HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:15] "[36mGET /static/css/colors.css?v=2.2 HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:15] "[36mGET /static/js/socket.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:15] "[36mGET /static/css/dashboard-realtime.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:15] "[36mGET /static/js/dashboard-realtime.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:16] "GET /socket.io/?EIO=4&transport=polling&t=Pem_0qI HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:16] "GET /socket.io/?EIO=4&transport=polling&t=Pem_0q8 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:16] "GET /api/events?per_page=1 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:16] "GET /api/company-profile HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:16] "GET /api/blockchain/stats HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:16] "GET /socket.io/?EIO=4&transport=polling&t=Pem_0zj&sid=0yTKvRFi9nevmP7iAAAH HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:16] "POST /socket.io/?EIO=4&transport=polling&t=Pem_0zg&sid=0yTKvRFi9nevmP7iAAAH HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:16] "[36mGET /static/uploads/company_logo_20251022_213028.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:16] "GET /socket.io/?EIO=4&transport=polling&t=Pem_0-r&sid=0yTKvRFi9nevmP7iAAAH HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:16] "POST /socket.io/?EIO=4&transport=polling&t=Pem_0-_&sid=0yTKvRFi9nevmP7iAAAH HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:17] "POST /socket.io/?EIO=4&transport=polling&t=Pem_13N&sid=0yTKvRFi9nevmP7iAAAH HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:17] "GET /socket.io/?EIO=4&transport=polling&t=Pem_13U HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:17] "POST /socket.io/?EIO=4&transport=polling&t=Pem_14Y&sid=0yTKvRFi9nevmP7iAAAH HTTP/1.1" 200 -
+[DEBUG] 🚪 Door state change detected: None -> False
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[WEBSOCKET] 🔌 CLIENT CONNECTING:
+  ├─ Session ID: 0w5Uf84L3mmr3oaPAAAB
+  ├─ Remote IP: 192.168.31.227
+  ├─ User Agent: Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK...
+  ├─ Origin: Unknown
+  └─ Namespace: /events
+[WEBSOCKET] ✅ CONNECTION SUCCESSFUL:
+  ├─ Handshake Complete: YES
+  ├─ Session Established: 0w5Uf84L3mmr3oaPAAAB
+  ├─ Total Connected Clients: 2
+  └─ Connection Time: 2025-10-29T22:48:29.076515
+[WEBSOCKET] 🏓 Sending initial ping to 0w5Uf84L3mmr3oaPAAAB
+[WEBSOCKET] 📱 CLIENT READY SIGNAL:
+  ├─ From Client: 0w5Uf84L3mmr3oaPAAAB
+  ├─ Client Data: {'timestamp': '2025-10-29T17:18:29.102Z', 'page': '/event-log', 'userAgent': 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK'}
+  └─ Acknowledging client ready state
+[WEBSOCKET] 🏓 PING RECEIVED:
+  ├─ From Client: 0w5Uf84L3mmr3oaPAAAB
+  ├─ Data: {'timestamp': '2025-10-29T17:18:29.109Z', 'message': 'Connection test from client'}
+  └─ Sending Pong Response...
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[WEBSOCKET] 🔌 CLIENT CONNECTING:
+  ├─ Session ID: -AaY71ExcnzeYSauAAAF
+  ├─ Remote IP: 192.168.31.227
+  ├─ User Agent: Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK...
+  ├─ Origin: Unknown
+  └─ Namespace: /events
+[WEBSOCKET] ✅ CONNECTION SUCCESSFUL:
+  ├─ Handshake Complete: YES
+  ├─ Session Established: -AaY71ExcnzeYSauAAAF
+  ├─ Total Connected Clients: 3
+  └─ Connection Time: 2025-10-29T22:50:11.758928
+[WEBSOCKET] 🏓 Sending initial ping to -AaY71ExcnzeYSauAAAF
+[WEBSOCKET] 📱 CLIENT READY SIGNAL:
+  ├─ From Client: -AaY71ExcnzeYSauAAAF
+  ├─ Client Data: {'timestamp': '2025-10-29T17:20:11.788Z', 'page': '/event-log', 'userAgent': 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK'}
+  └─ Acknowledging client ready state
+[WEBSOCKET] 🏓 PING RECEIVED:
+  ├─ From Client: -AaY71ExcnzeYSauAAAF
+  ├─ Data: {'timestamp': '2025-10-29T17:20:11.798Z', 'message': 'Connection test from client'}
+  └─ Sending Pong Response...
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[WEBSOCKET] 🔌 CLIENT CONNECTING:
+  ├─ Session ID: zNtB2nkRTGPETFmKAAAI
+  ├─ Remote IP: 192.168.31.227
+  ├─ User Agent: Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK...
+  ├─ Origin: Unknown
+  └─ Namespace: /events
+[WEBSOCKET] ✅ CONNECTION SUCCESSFUL:
+  ├─ Handshake Complete: YES
+  ├─ Session Established: zNtB2nkRTGPETFmKAAAI
+  ├─ Total Connected Clients: 4
+  └─ Connection Time: 2025-10-29T22:50:16.784831
+[WEBSOCKET] 🏓 Sending initial ping to zNtB2nkRTGPETFmKAAAI
+[WEBSOCKET] 🏓 PING RECEIVED:
+  ├─ From Client: zNtB2nkRTGPETFmKAAAI
+  ├─ Data: {'timestamp': '2025-10-29T17:20:16.825Z', 'message': 'Connection test from client'}
+  └─ Sending Pong Response...
+[WEBSOCKET] 📱 CLIENT READY SIGNAL:
+  ├─ From Client: zNtB2nkRTGPETFmKAAAI
+  ├─ Client Data: {'timestamp': '2025-10-29T17:20:16.823Z', 'page': '/dashboard', 'userAgent': 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK'}
+  └─ Acknowledging client ready state
+[WEBSOCKET] 🔌 CLIENT DISCONNECTING:
+  ├─ Session ID: zNtB2nkRTGPETFmKAAAI
+  ├─ Remaining Clients: 3
+  └─ Disconnect Time: 2025-10-29T22:50:17.131593
+[WEBSOCKET] 🔌 CLIENT CONNECTING:
+  ├─ Session ID: -d3ZAJN3eRbGYLB7AAAL
+  ├─ Remote IP: 192.168.31.227
+  ├─ User Agent: Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK...
+  ├─ Origin: http://192.168.31.227:5000
+  └─ Namespace: /events
+[WEBSOCKET] ✅ CONNECTION SUCCESSFUL:
+  ├─ Handshake Complete: YES
+  ├─ Session Established: -d3ZAJN3eRbGYLB7AAALINFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:17] "GET /socket.io/?EIO=4&transport=polling&t=Pem_11r&sid=0yTKvRFi9nevmP7iAAAH HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:17] "POST /socket.io/?EIO=4&transport=polling&t=Pem_14c&sid=hNf-ZM1vcXl491s9AAAJ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:17] "GET /socket.io/?EIO=4&transport=polling&t=Pem_14i&sid=hNf-ZM1vcXl491s9AAAJ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:17] "GET /api/dashboard HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:17] "GET /socket.io/?EIO=4&transport=polling&t=Pem_167&sid=hNf-ZM1vcXl491s9AAAJ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:17] "POST /socket.io/?EIO=4&transport=polling&t=Pem_16G&sid=hNf-ZM1vcXl491s9AAAJ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:17] "POST /socket.io/?EIO=4&transport=polling&t=Pem_17f&sid=hNf-ZM1vcXl491s9AAAJ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:17] "GET /socket.io/?EIO=4&transport=polling&t=Pem_17X&sid=hNf-ZM1vcXl491s9AAAJ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:19] "GET /event-log HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:19] "[36mGET /static/css/colors.css?v=2.2 HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:20] "[36mGET /static/css/modern.css?v=2.2 HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:20] "[36mGET /static/js/socket.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:20] "[35m[1mGET /socket.io/?EIO=4&transport=websocket HTTP/1.1[0m" 500 -
+ERROR:werkzeug:Error on request:
+Traceback (most recent call last):
+  File "/home/bsm/WebApp/eDOMOS-v2.1/door_alarm_system/venv/lib/python3.13/site-packages/werkzeug/serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+    ~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/bsm/WebApp/eDOMOS-v2.1/door_alarm_system/venv/lib/python3.13/site-packages/werkzeug/serving.py", line 336, in execute
+    write(b"")
+    ~~~~~^^^^^
+  File "/home/bsm/WebApp/eDOMOS-v2.1/door_alarm_system/venv/lib/python3.13/site-packages/werkzeug/serving.py", line 261, in write
+    assert status_set is not None, "write() before start_response"
+           ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: write() before start_response
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:21] "GET /socket.io/?EIO=4&transport=polling&t=Pem_23s HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:21] "GET /socket.io/?EIO=4&transport=polling&t=Pem_241 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:21] "GET /api/events?per_page=1 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:21] "POST /socket.io/?EIO=4&transport=polling&t=Pem_27q&sid=d7ClqnURLpvdKX6AAAAO HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:21] "GET /socket.io/?EIO=4&transport=polling&t=Pem_27t&sid=d7ClqnURLpvdKX6AAAAO HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:21] "GET /socket.io/?EIO=4&transport=polling&t=Pem_29F&sid=d7ClqnURLpvdKX6AAAAO HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:21] "POST /socket.io/?EIO=4&transport=polling&t=Pem_29I&sid=d7ClqnURLpvdKX6AAAAO HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:21] "POST /socket.io/?EIO=4&transport=polling&t=Pem_29n&sid=d7ClqnURLpvdKX6AAAAO HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:21] "GET /socket.io/?EIO=4&transport=polling&t=Pem_29k&sid=d7ClqnURLpvdKX6AAAAO HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:22] "POST /socket.io/?EIO=4&transport=polling&t=Pem_2JF&sid=d7ClqnURLpvdKX6AAAAO HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:22] "GET /socket.io/?EIO=4&transport=polling&t=Pem_2JO HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:22] "GET /socket.io/?EIO=4&transport=polling&t=Pem_2AK&sid=d7ClqnURLpvdKX6AAAAO HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:22] "POST /socket.io/?EIO=4&transport=polling&t=Pem_2Kd&sid=d7ClqnURLpvdKX6AAAAO HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:22] "GET /socket.io/?EIO=4&transport=polling&t=Pem_2Kt&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:22] "POST /socket.io/?EIO=4&transport=polling&t=Pem_2Kq&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:22] "GET /socket.io/?EIO=4&transport=polling&t=Pem_2MX&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:22] "POST /socket.io/?EIO=4&transport=polling&t=Pem_2Mn&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:22] "GET /socket.io/?EIO=4&transport=polling&t=Pem_2N9&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:24] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:27] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:30] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:33] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:36] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:36] "GET /socket.io/?EIO=4&transport=polling&t=Pem-_o7&sid=KI5j0Rn1DKJlf9zYAAAE HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:39] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:camera_helper:📸 Image captured: door_open_2025-10-29_22-50-41.jpg (24824 bytes)
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:41] "GET /socket.io/?EIO=4&transport=polling&t=Pem_18K&sid=hNf-ZM1vcXl491s9AAAJ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:41] "GET /socket.io/?EIO=4&transport=polling&t=Pem_2PK&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:41] "GET /socket.io/?EIO=4&transport=polling&t=Pem_6_z&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:42] "GET /api/events?since=904&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:45] "GET /api/events?since=905&per_page=50 HTTP/1.1" 200 -
+[WEBSOCKET] 🔌 CLIENT CONNECTING:
+  ├─ Session ID: 56ZG0WNjcrtbuUm6AAAM
+  ├─ Remote IP: 192.168.31.227
+  ├─ User Agent: Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK...
+  ├─ Origin: Unknown
+  └─ Namespace: /events
+[WEBSOCKET] ✅ CONNECTION SUCCESSFUL:
+  ├─ Handshake Complete: YES
+  ├─ Session Established: 56ZG0WNjcrtbuUm6AAAM
+  ├─ Total Connected Clients: 5
+  └─ Connection Time: 2025-10-29T22:50:17.236001
+
+  ├─ Total Connected Clients: 4
+  └─ Connection Time: 2025-10-29T22:50:17.236923
+[WEBSOCKET] 🏓 Sending initial ping to -d3ZAJN3eRbGYLB7AAAL
+[WEBSOCKET] 🏓 Sending initial ping to 56ZG0WNjcrtbuUm6AAAM
+[WEBSOCKET] 📱 CLIENT READY SIGNAL:
+  ├─ From Client: -d3ZAJN3eRbGYLB7AAAL
+  ├─ Client Data: {'page': 'dashboard', 'timestamp': '2025-10-29T17:20:17.247Z'}
+  └─ Acknowledging client ready state
+[WEBSOCKET] 📱 CLIENT READY SIGNAL:
+  ├─ From Client: 56ZG0WNjcrtbuUm6AAAM
+  ├─ Client Data: {'timestamp': '2025-10-29T17:20:17.295Z', 'page': '/dashboard', 'userAgent': 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK'}
+  └─ Acknowledging client ready state
+[WEBSOCKET] 🏓 PING RECEIVED:
+  ├─ From Client: 56ZG0WNjcrtbuUm6AAAM
+  ├─ Data: {'timestamp': '2025-10-29T17:20:17.299Z', 'message': 'Connection test from client'}
+  └─ Sending Pong Response...
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[WEBSOCKET] 🔌 CLIENT DISCONNECTING:
+  ├─ Session ID: -d3ZAJN3eRbGYLB7AAAL
+  ├─ Remaining Clients: 4
+  └─ Disconnect Time: 2025-10-29T22:50:20.316438
+[WEBSOCKET] 🔌 CLIENT CONNECTING:
+  ├─ Session ID: xR5Nc-lRrkvz9k6lAAAP
+  ├─ Remote IP: 192.168.31.227
+  ├─ User Agent: Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK...
+  ├─ Origin: Unknown
+  └─ Namespace: /events
+[WEBSOCKET] ✅ CONNECTION SUCCESSFUL:
+  ├─ Handshake Complete: YES
+  ├─ Session Established: xR5Nc-lRrkvz9k6lAAAP
+  ├─ Total Connected Clients: 5
+  └─ Connection Time: 2025-10-29T22:50:21.564313
+[WEBSOCKET] 🏓 Sending initial ping to xR5Nc-lRrkvz9k6lAAAP
+[WEBSOCKET] 📱 CLIENT READY SIGNAL:
+  ├─ From Client: xR5Nc-lRrkvz9k6lAAAP
+  ├─ Client Data: {'timestamp': '2025-10-29T17:20:21.585Z', 'page': '/event-log', 'userAgent': 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK'}
+  └─ Acknowledging client ready state
+[WEBSOCKET] 🏓 PING RECEIVED:
+  ├─ From Client: xR5Nc-lRrkvz9k6lAAAP
+  ├─ Data: {'timestamp': '2025-10-29T17:20:21.589Z', 'message': 'Connection test from client'}
+  └─ Sending Pong Response...
+[WEBSOCKET] 🔌 CLIENT DISCONNECTING:
+  ├─ Session ID: xR5Nc-lRrkvz9k6lAAAP
+  ├─ Remaining Clients: 4
+  └─ Disconnect Time: 2025-10-29T22:50:22.297550
+[WEBSOCKET] 🔌 CLIENT CONNECTING:
+  ├─ Session ID: npB1kHLK1VVqKnpVAAAR
+  ├─ Remote IP: 192.168.31.227
+  ├─ User Agent: Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK...
+  ├─ Origin: Unknown
+  └─ Namespace: /events
+[WEBSOCKET] ✅ CONNECTION SUCCESSFUL:
+  ├─ Handshake Complete: YES
+  ├─ Session Established: npB1kHLK1VVqKnpVAAAR
+  ├─ Total Connected Clients: 5
+  └─ Connection Time: 2025-10-29T22:50:22.385020
+[WEBSOCKET] 🏓 Sending initial ping to npB1kHLK1VVqKnpVAAAR
+[WEBSOCKET] 📱 CLIENT READY SIGNAL:
+  ├─ From Client: npB1kHLK1VVqKnpVAAAR
+  ├─ Client Data: {'timestamp': '2025-10-29T17:20:22.440Z', 'page': '/event-log', 'userAgent': 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK'}
+  └─ Acknowledging client ready state
+[WEBSOCKET] 🏓 PING RECEIVED:
+  ├─ From Client: npB1kHLK1VVqKnpVAAAR
+  ├─ Data: {'timestamp': '2025-10-29T17:20:22.441Z', 'message': 'Connection test from client'}
+  └─ Sending Pong Response...
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[API] Polling request: Getting events since ID 904
+[API] Found 0 new events since ID 904
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[DEBUG] 🚪 Door state change detected: False -> True
+[DEBUG] 🔧 GPIO Pin 16 set to LOW (White LED - ensure alarm off)
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - ensure timer LED off before blinking)
+[DEBUG] ✅ Timer setting found in DB: 5 seconds
+[DEBUG] 🚪 DOOR OPENED EVENT:
+  ├─ Timer Duration: 5 seconds
+  ├─ Global timer_duration: 5 seconds
+  ├─ Current Time: 1761758441.179207
+  └─ Will trigger alarm at: 1761758446.179207
+[DEBUG] log_event #1 [4d1c4634]: door_open - Door opened
+[DEBUG] *** EVENT APPROVED FOR LOGGING [4d1c4634] ***: door_open
+[DEBUG] Starting DB transaction [4d1c4634]...
+[DEBUG] ✅ DB COMMIT SUCCESS [4d1c4634]: door_open -> DB
+[DEBUG] 📸 Attempting to capture image for door_open...
+[DEBUG] ✅ IMAGE CAPTURED [4d1c4634]:
+[DEBUG]    File: door_open_2025-10-29_22-50-41.jpg
+[DEBUG]    Size: 24824 bytes
+[DEBUG]    Hash: aacc9dc2adfebbef...
+[DEBUG] ✅ BLOCKCHAIN COMMIT SUCCESS [4d1c4634]: Block #841
+[ANOMALY] 🚨 Odd hours access detected at 22:00
+[DEBUG] Broadcasting WebSocket [4d1c4634]: door_open
+[WEBSOCKET] 📡 BROADCASTING EVENT:
+  ├─ Event Type: door_open
+  ├─ Event Name: 'new_event'
+  ├─ Namespace: /events
+  ├─ Connected Clients: 5
+  └─ Payload Keys: ['event', 'door_status', 'alarm_status', 'timer_set', 'last_event', 'statistics', 'event_id']
+[WEBSOCKET] ✅ EVENT BROADCAST SUCCESSFUL - Event 'door_open' sent to all clients
+[DEBUG] ✅ EVENT COMPLETE [4d1c4634]: door_open
+[DEBUG] ⏰ ALARM TIMER STARTED:
+  ├─ Duration: 5 seconds
+  ├─ Start Time: 1761758441.4841967
+  ├─ Timer Active: True
+  └─ Door Open: True
+  🎯 EXPECTED TRIGGER TIME: 1761758446.4841967 (5s from now)
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer start)
+[DEBUG] 🔴 LED will blink 5 times (1 blink = 1 second)
+[DEBUG] 🎯 Timer will expire at: 1761758446.484
+[DEBUG] ⏱️  Second 1: Elapsed=0.0s, Remaining=5.0s
+[DEBUG] ⏰ New timer thread started for 5s
+[DEBUG] 🔍 Verification - Thread args: (5,)
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #1 - Elapsed: 0.5s - Remaining: 4.5s
+[API] Polling request: Getting events since ID 904
+[API] Found 1 new events since ID 904
+[DEBUG] ⏱️  Second 2: Elapsed=1.0s, Remaining=4.0s
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer blink)
+[DEBUG] ⚫ RED LED OFF - Blink #1 complete - Elapsed: 1.0s
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #2 - Elapsed: 1.5s - Remaining: 3.5s
+[DEBUG] ⏱️  Second 3: Elapsed=2.0s, Remaining=3.0s
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer blink)
+[DEBUG] ⚫ RED LED OFF - Blink #2 complete - Elapsed: 2.0s
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #3 - Elapsed: 2.5s - Remaining: 2.5s
+[DEBUG] ⏱️  Second 4: Elapsed=3.0s, Remaining=2.0s
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer blink)
+[DEBUG] ⚫ RED LED OFF - Blink #3 complete - Elapsed: 3.0s
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #4 - Elapsed: 3.5s - Remaining: 1.5s
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 1, interpreted as OPEN
+[API] Polling request: Getting events since ID 905
+[API] Found 0 new events since ID 905
+[DEBUG] ⏱️  Second 5: Elapsed=4.0s, Remaining=1.0s
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer blink)
+[DEBUG] ⚫ RED LED OFF - Blink #4 complete - Elapsed: 4.0s
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #5 - Elapsed: 4.5s - Remaining: 0.5s
+[DEBUG] 🏁 TIMER LOOP ENDED:
+  ├─ Start Time: 1761758441.484INFO:camera_helper:📸 Image captured: alarm_triggered_2025-10-29_22-50-46.jpg (24798 bytes)
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:46] "GET /socket.io/?EIO=4&transport=polling&t=Pem_70J&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:46] "GET /socket.io/?EIO=4&transport=polling&t=Pem_8Gi&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:47] "GET /socket.io/?EIO=4&transport=polling&t=Pem_8Hu&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:47] "POST /socket.io/?EIO=4&transport=polling&t=Pem_8RH&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:48] "GET /api/events?since=905&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:51] "GET /api/events?since=906&per_page=50 HTTP/1.1" 200 -
+INFO:camera_helper:📸 Image captured: door_close_2025-10-29_22-50-53.jpg (24785 bytes)
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:53] "GET /socket.io/?EIO=4&transport=polling&t=Pem_8RQ&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:54] "GET /api/events?since=906&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:50:57] "GET /api/events?since=907&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:00] "GET /api/events?since=907&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:03] "GET /api/events?since=907&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:06] "GET /api/events?since=907&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:09] "GET /api/events?since=907&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:12] "GET /api/events?since=907&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:12] "GET /socket.io/?EIO=4&transport=polling&t=Pem_A1B&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:12] "POST /socket.io/?EIO=4&transport=polling&t=Pem_EYL&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:15] "GET /api/events?since=907&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:18] "GET /api/events?since=907&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:21] "GET /api/events?since=907&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:24] "GET /api/events?since=907&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:27] "GET /api/events?since=907&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:30] "GET /api/events?since=907&per_page=50 HTTP/1.1" 200 -
+INFO:camera_helper:📸 Image captured: door_open_2025-10-29_22-51-31.jpg (24826 bytes)
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:31] "GET /socket.io/?EIO=4&transport=polling&t=Pem_EYN&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:31] "GET /socket.io/?EIO=4&transport=polling&t=Pem_JA9&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+
+  ├─ End Time: 1761758446.497
+  ├─ Elapsed Time: 5.012 seconds
+  ├─ Expected Duration: 5 seconds
+  ├─ Timer Active: True
+  ├─ Door Open: True
+  └─ Should Trigger: True
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer cleanup)
+[DEBUG] 🔴 Red LED turned OFF
+[DEBUG] ⚠️ ALARM TRIGGERED:
+  ├─ Duration Set: 5 seconds
+  ├─ Actual Elapsed: 5.01 seconds
+  ├─ Door Still Open: True
+  └─ Timer Was Active: False
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - before alarm activation)
+[DEBUG] 🔴 WHITE LED ON (Pin 16) - ALARM ACTIVE
+[DEBUG] 🔍 WHITE LED VERIFICATION: Pin 16 actual state = 1 (should be 1)
+[DEBUG] 🎵 AUDIO LINKED TO WHITE LED - Starting alarm sound...
+[DEBUG] 🔄 Preloaded audio now playing in continuous loop
+[DEBUG] log_event #2 [49137c08]: alarm_triggered - Alarm triggered after 5 seconds
+[DEBUG] *** EVENT APPROVED FOR LOGGING [49137c08] ***: alarm_triggered
+[DEBUG] Starting DB transaction [49137c08]...
+[DEBUG] ✅ DB COMMIT SUCCESS [49137c08]: alarm_triggered -> DB
+[DEBUG] 📸 Attempting to capture image for alarm_triggered...
+[DEBUG] ✅ IMAGE CAPTURED [49137c08]:
+[DEBUG]    File: alarm_triggered_2025-10-29_22-50-46.jpg
+[DEBUG]    Size: 24798 bytes
+[DEBUG]    Hash: 22293d7e99639535...
+[DEBUG] ✅ BLOCKCHAIN COMMIT SUCCESS [49137c08]: Block #842
+[DEBUG] Broadcasting WebSocket [49137c08]: alarm_triggered
+[WEBSOCKET] 📡 BROADCASTING EVENT:
+  ├─ Event Type: alarm_triggered
+  ├─ Event Name: 'new_event'
+  ├─ Namespace: /events
+  ├─ Connected Clients: 5
+  └─ Payload Keys: ['event', 'door_status', 'alarm_status', 'timer_set', 'last_event', 'statistics', 'event_id']
+[WEBSOCKET] ✅ EVENT BROADCAST SUCCESSFUL - Event 'alarm_triggered' sent to all clients
+[DEBUG] ✅ EVENT COMPLETE [49137c08]: alarm_triggered
+[ANOMALY] 🚨 Prolonged open detected: 5s
+[DEBUG] Attempting to send alarm email for duration: 5s
+[DEBUG] Email config found - Sender: bsmscitech@gmail.com
+[DEBUG] Recipients: srivathsamurthys.1745@gmail.com, srivathsasmurthy2005@gmail.com, ssrivathsamurthy@gmail.com, srivathsamurthys1969@gmail.com
+[DEBUG] Connecting to Gmail SMTP...
+[DEBUG] Attempting login...
+[API] Polling request: Getting events since ID 905
+[API] Found 1 new events since ID 905
+[DEBUG] Sending email to 4 recipients...
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 1, interpreted as OPEN
+[SUCCESS] Alarm email sent successfully to: srivathsamurthys.1745@gmail.com, srivathsasmurthy2005@gmail.com, ssrivathsamurthy@gmail.com, srivathsamurthys1969@gmail.com
+[DEBUG] Timer thread ending - Final state: timer_active=False, alarm_active=True
+[API] Polling request: Getting events since ID 906
+[API] Found 0 new events since ID 906
+[DEBUG] 🚪 Door state change detected: True -> False
+[DEBUG] 🚪 Door closed - stopping all timers and alarms
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - door closed)
+[DEBUG] 🔇 Audio alarm stopped immediately (both music and sound channels)
+[DEBUG] ⚫ WHITE LED OFF (Pin 16) - ALARM DEACTIVATED
+[DEBUG] ✅ Door closed. Timer and alarm deactivated.
+[DEBUG] log_event #3 [706cc2be]: door_close - Door closed
+[DEBUG] *** EVENT APPROVED FOR LOGGING [706cc2be] ***: door_close
+[DEBUG] Starting DB transaction [706cc2be]...
+[DEBUG] ✅ DB COMMIT SUCCESS [706cc2be]: door_close -> DB
+[DEBUG] 📸 Attempting to capture image for door_close...
+[DEBUG] 🔇 Alarm deactivated - stopping continuous loop
+[DEBUG] 🔇 Audio monitoring stopped
+[DEBUG] ✅ IMAGE CAPTURED [706cc2be]:
+[DEBUG]    File: door_close_2025-10-29_22-50-53.jpg
+[DEBUG]    Size: 24785 bytes
+[DEBUG]    Hash: 5936c90d139f09e3...
+[DEBUG] ✅ BLOCKCHAIN COMMIT SUCCESS [706cc2be]: Block #843
+[DEBUG] Broadcasting WebSocket [706cc2be]: door_close
+[WEBSOCKET] 📡 BROADCASTING EVENT:
+  ├─ Event Type: door_close
+  ├─ Event Name: 'new_event'
+  ├─ Namespace: /events
+  ├─ Connected Clients: 5
+  └─ Payload Keys: ['event', 'door_status', 'alarm_status', 'timer_set', 'last_event', 'statistics', 'event_id']
+[WEBSOCKET] ✅ EVENT BROADCAST SUCCESSFUL - Event 'door_close' sent to all clients
+[DEBUG] ✅ EVENT COMPLETE [706cc2be]: door_close
+[API] Polling request: Getting events since ID 906
+[API] Found 1 new events since ID 906
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 907
+[API] Found 0 new events since ID 907
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 907
+[API] Found 0 new events since ID 907
+[API] Polling request: Getting events since ID 907
+[API] Found 0 new events since ID 907
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 907
+[API] Found 0 new events since ID 907
+[API] Polling request: Getting events since ID 907
+[API] Found 0 new events since ID 907
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 907
+[API] Found 0 new events since ID 907
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 907
+[API] Found 0 new events since ID 907
+[API] Polling request: Getting events since ID 907
+[API] Found 0 new events since ID 907
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 907
+[API] Found 0 new events since ID 907
+[API] Polling request: Getting events since ID 907
+[API] Found 0 new events since ID 907
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 907
+[API] Found 0 new events since ID 907
+[WEBSOCKET] 🔌 CLIENT DISCONNECTING:
+  ├─ Session ID: 0w5Uf84L3mmr3oaPAAAB
+  ├─ Remaining Clients: 4
+  └─ Disconnect Time: 2025-10-29T22:51:29.042882
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 907
+[API] Found 0 new events since ID 907
+[DEBUG] 🚪 Door state change detected: False -> True
+[DEBUG] 🔧 GPIO Pin 16 set to LOW (White LED - ensure alarm off)
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - ensure timer LED off before blinking)
+[DEBUG] ✅ Timer setting found in DB: 5 seconds
+[DEBUG] 🚪 DOOR OPENED EVENT:
+  ├─ Timer Duration: 5 seconds
+  ├─ Global timer_duration: 5 seconds
+  ├─ Current Time: 1761758491.1852956
+  └─ Will trigger alarm at: 1761758496.1852956
+[DEBUG] log_event #4 [14a8b703]: door_open - Door opened
+[DEBUG] *** EVENT APPROVED FOR LOGGING [14a8b703] ***: door_open
+[DEBUG] Starting DB transaction [14a8b703]...
+[DEBUG] ✅ DB COMMIT SUCCESS [14a8b703]: door_open -> DB
+[DEBUG] 📸 Attempting to capture image for door_open...
+[DEBUG] ✅ IMAGE CAPTURED [14a8b703]:
+[DEBUG]    File: door_open_2025-10-29_22-51-31.jpg
+[DEBUG]    Size: 24826 bytes
+[DEBUG]    Hash: 7ad9da39d04d6ff4...
+[DEBUG] ✅ BLOCKCHAIN COMMIT SUCCESS [14a8b703]: Block #844
+[ANOMALY] 🚨 Odd hours access detected at 22:00
+[DEBUG] Broadcasting WebSocket [14a8b703]: door_open
+[WEBSOCKET] 📡 BROADCASTING EVENT:
+  ├─ Event Type: door_open
+  ├─ Event Name: 'new_event'
+  ├─ Namespace: /events
+  ├─ Connected Clients: 4
+  └─ Payload Keys: ['event', 'door_status', 'alarm_status', 'timer_set', 'last_event', 'statistics', 'event_id']
+[WEBSOCKET] ✅ EVENT BROADCAST SUCCESSFUL - Event 'door_open' sent to all clients
+[DEBUG] ✅ EVENT COMPLETE [14a8b703]: door_open
+[DEBUG] ⏰ ALARM TIMER STARTED:
+  ├─ Duration: 5 seconds
+  ├─ Start Time: 1761758491.2828062
+  ├─ Timer Active: True
+  └─ Door Open: True
+  🎯 EXPECTED TRIGGER TIME: 1761758496.2828062 (5s from now)
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer start)
+[DEBUG] 🔴 LED will blink 5 times (1 blink = 1 second)
+[DEBUG] 🎯 Timer will expire at: 1761758496.283
+[DEBUG] ⏱️  Second 1: Elapsed=0.0s, Remaining=5.0s
+[DEBUG] ⏰ New timer thread started for 5s
+[DEBUG] 🔍 Verification - Thread args: (5,)
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #1 - Elapsed: 0.5s - Remaining: 4.5s
+[DEBUG] ⏱️  Second 2: Elapsed=1.0s, Remaining=4.0sINFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:33] "GET /api/events?since=907&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:36] "GET /api/events?since=908&per_page=50 HTTP/1.1" 200 -
+INFO:camera_helper:📸 Image captured: alarm_triggered_2025-10-29_22-51-36.jpg (35439 bytes)
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:36] "GET /socket.io/?EIO=4&transport=polling&t=Pem_JAS&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:36] "GET /socket.io/?EIO=4&transport=polling&t=Pem_KQn&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:37] "GET /socket.io/?EIO=4&transport=polling&t=Pem_KR5&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:37] "POST /socket.io/?EIO=4&transport=polling&t=Pem_KfQ&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:camera_helper:📸 Image captured: door_close_2025-10-29_22-51-37.jpg (36517 bytes)
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:37] "GET /socket.io/?EIO=4&transport=polling&t=Pem_KfV&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:39] "GET /api/events?since=908&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:42] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:45] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:48] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:51] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:54] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:51:57] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:00] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:02] "GET /socket.io/?EIO=4&transport=polling&t=Pem_KlX&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:02] "POST /socket.io/?EIO=4&transport=polling&t=Pem_QmW&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:03] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:06] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:09] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:12] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:15] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:18] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:21] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:24] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:27] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:27] "GET /socket.io/?EIO=4&transport=polling&t=Pem_QmY&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:27] "POST /socket.io/?EIO=4&transport=polling&t=Pem_WtX&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:30] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:33] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer blink)
+[DEBUG] ⚫ RED LED OFF - Blink #1 complete - Elapsed: 1.0s
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #2 - Elapsed: 1.5s - Remaining: 3.5s
+[API] Polling request: Getting events since ID 907
+[API] Found 1 new events since ID 907
+[DEBUG] ⏱️  Second 3: Elapsed=2.0s, Remaining=3.0s
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer blink)
+[DEBUG] ⚫ RED LED OFF - Blink #2 complete - Elapsed: 2.0s
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #3 - Elapsed: 2.5s - Remaining: 2.5s
+[DEBUG] ⏱️  Second 4: Elapsed=3.0s, Remaining=2.0s
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer blink)
+[DEBUG] ⚫ RED LED OFF - Blink #3 complete - Elapsed: 3.0s
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #4 - Elapsed: 3.5s - Remaining: 1.5s
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 1, interpreted as OPEN
+[DEBUG] ⏱️  Second 5: Elapsed=4.0s, Remaining=1.0s
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer blink)
+[DEBUG] ⚫ RED LED OFF - Blink #4 complete - Elapsed: 4.0s
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #5 - Elapsed: 4.5s - Remaining: 0.5s
+[API] Polling request: Getting events since ID 908
+[API] Found 0 new events since ID 908
+[DEBUG] 🏁 TIMER LOOP ENDED:
+  ├─ Start Time: 1761758491.283
+  ├─ End Time: 1761758496.297
+  ├─ Elapsed Time: 5.014 seconds
+  ├─ Expected Duration: 5 seconds
+  ├─ Timer Active: True
+  ├─ Door Open: True
+  └─ Should Trigger: True
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer cleanup)
+[DEBUG] 🔴 Red LED turned OFF
+[DEBUG] ⚠️ ALARM TRIGGERED:
+  ├─ Duration Set: 5 seconds
+  ├─ Actual Elapsed: 5.01 seconds
+  ├─ Door Still Open: True
+  └─ Timer Was Active: False
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - before alarm activation)
+[DEBUG] 🔴 WHITE LED ON (Pin 16) - ALARM ACTIVE
+[DEBUG] 🔍 WHITE LED VERIFICATION: Pin 16 actual state = 1 (should be 1)
+[DEBUG] 🎵 AUDIO LINKED TO WHITE LED - Starting alarm sound...
+[DEBUG] 🔄 Preloaded audio now playing in continuous loop
+[DEBUG] log_event #5 [493c2712]: alarm_triggered - Alarm triggered after 5 seconds
+[DEBUG] *** EVENT APPROVED FOR LOGGING [493c2712] ***: alarm_triggered
+[DEBUG] Starting DB transaction [493c2712]...
+[DEBUG] ✅ DB COMMIT SUCCESS [493c2712]: alarm_triggered -> DB
+[DEBUG] 📸 Attempting to capture image for alarm_triggered...
+[DEBUG] ✅ IMAGE CAPTURED [493c2712]:
+[DEBUG]    File: alarm_triggered_2025-10-29_22-51-36.jpg
+[DEBUG]    Size: 35439 bytes
+[DEBUG]    Hash: e5f993201ef5c04f...
+[DEBUG] ✅ BLOCKCHAIN COMMIT SUCCESS [493c2712]: Block #845
+[DEBUG] Broadcasting WebSocket [493c2712]: alarm_triggered
+[WEBSOCKET] 📡 BROADCASTING EVENT:
+  ├─ Event Type: alarm_triggered
+  ├─ Event Name: 'new_event'
+  ├─ Namespace: /events
+  ├─ Connected Clients: 4
+  └─ Payload Keys: ['event', 'door_status', 'alarm_status', 'timer_set', 'last_event', 'statistics', 'event_id']
+[WEBSOCKET] ✅ EVENT BROADCAST SUCCESSFUL - Event 'alarm_triggered' sent to all clients
+[DEBUG] ✅ EVENT COMPLETE [493c2712]: alarm_triggered
+[ANOMALY] 🚨 Prolonged open detected: 5s
+[DEBUG] Attempting to send alarm email for duration: 5s
+[DEBUG] Email config found - Sender: bsmscitech@gmail.com
+[DEBUG] Recipients: srivathsamurthys.1745@gmail.com, srivathsasmurthy2005@gmail.com, ssrivathsamurthy@gmail.com, srivathsamurthys1969@gmail.com
+[DEBUG] Connecting to Gmail SMTP...
+[DEBUG] Attempting login...
+[DEBUG] 🚪 Door state change detected: True -> False
+[DEBUG] 🚪 Door closed - stopping all timers and alarms
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - door closed)
+[DEBUG] 🔇 Audio alarm stopped immediately (both music and sound channels)
+[DEBUG] ⚫ WHITE LED OFF (Pin 16) - ALARM DEACTIVATED
+[DEBUG] ✅ Door closed. Timer and alarm deactivated.
+[DEBUG] log_event #6 [08bc494b]: door_close - Door closed
+[DEBUG] *** EVENT APPROVED FOR LOGGING [08bc494b] ***: door_close
+[DEBUG] Starting DB transaction [08bc494b]...
+[DEBUG] ✅ DB COMMIT SUCCESS [08bc494b]: door_close -> DB
+[DEBUG] 📸 Attempting to capture image for door_close...
+[DEBUG] ✅ IMAGE CAPTURED [08bc494b]:
+[DEBUG]    File: door_close_2025-10-29_22-51-37.jpg
+[DEBUG]    Size: 36517 bytes
+[DEBUG]    Hash: 481fdaa30b3a00c9...
+[DEBUG] 🔇 Alarm deactivated - stopping continuous loop
+[DEBUG] 🔇 Audio monitoring stopped
+[DEBUG] ✅ BLOCKCHAIN COMMIT SUCCESS [08bc494b]: Block #846
+[DEBUG] Broadcasting WebSocket [08bc494b]: door_close
+[WEBSOCKET] 📡 BROADCASTING EVENT:
+  ├─ Event Type: door_close
+  ├─ Event Name: 'new_event'
+  ├─ Namespace: /events
+  ├─ Connected Clients: 4
+  └─ Payload Keys: ['event', 'door_status', 'alarm_status', 'timer_set', 'last_event', 'statistics', 'event_id']
+[WEBSOCKET] 🔌 CLIENT DISCONNECTING:
+  ├─ Session ID: -AaY71ExcnzeYSauAAAF
+  ├─ Remaining Clients: 3
+  └─ Disconnect Time: 2025-10-29T22:51:37.753970
+[WEBSOCKET] ✅ EVENT BROADCAST SUCCESSFUL - Event 'door_close' sent to all clients
+[DEBUG] ✅ EVENT COMPLETE [08bc494b]: door_close
+[DEBUG] Sending email to 4 recipients...
+[API] Polling request: Getting events since ID 908
+[API] Found 2 new events since ID 908
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[SUCCESS] Alarm email sent successfully to: srivathsamurthys.1745@gmail.com, srivathsasmurthy2005@gmail.com, ssrivathsamurthy@gmail.com, srivathsamurthys1969@gmail.com
+[DEBUG] Timer thread ending - Final state: timer_active=False, alarm_active=False
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[WEBSOCKET] 🔌 CLIENT DISCONNECTING:
+  ├─ Session ID: 56ZG0WNjcrtbuUm6AAAM
+  ├─ Remaining Clients: 2
+  └─ Disconnect Time: 2025-10-29T22:52:06.546758
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSEDINFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:36] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:camera_helper:📸 Image captured: door_open_2025-10-29_22-52-36.jpg (35587 bytes)
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:36] "GET /socket.io/?EIO=4&transport=polling&t=Pem_Wta&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:36] "GET /socket.io/?EIO=4&transport=polling&t=Pem_Z8c&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:36] "GET /socket.io/?EIO=4&transport=polling&t=Pem_Z8y&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:39] "GET /api/events?since=910&per_page=50 HTTP/1.1" 200 -
+INFO:camera_helper:📸 Image captured: alarm_triggered_2025-10-29_22-52-41.jpg (36449 bytes)
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:41] "GET /socket.io/?EIO=4&transport=polling&t=Pem_Z9C&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:41] "GET /socket.io/?EIO=4&transport=polling&t=Pem_aPo&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:42] "GET /api/events?since=911&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:45] "GET /api/events?since=912&per_page=50 HTTP/1.1" 200 -
+INFO:camera_helper:📸 Image captured: door_close_2025-10-29_22-52-47.jpg (36148 bytes)
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:47] "GET /socket.io/?EIO=4&transport=polling&t=Pem_aQD&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:48] "GET /api/events?since=912&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:51] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:52] "GET /socket.io/?EIO=4&transport=polling&t=Pem_bjA&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:52] "POST /socket.io/?EIO=4&transport=polling&t=Pem_c-g&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:54] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+
+[API] Polling request: Getting events since ID 910
+[API] Found 0 new events since ID 910
+[DEBUG] 🚪 Door state change detected: False -> True
+[DEBUG] 🔧 GPIO Pin 16 set to LOW (White LED - ensure alarm off)
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - ensure timer LED off before blinking)
+[DEBUG] ✅ Timer setting found in DB: 5 seconds
+[DEBUG] 🚪 DOOR OPENED EVENT:
+  ├─ Timer Duration: 5 seconds
+  ├─ Global timer_duration: 5 seconds
+  ├─ Current Time: 1761758556.6248503
+  └─ Will trigger alarm at: 1761758561.6248503
+[DEBUG] log_event #7 [cf0477a6]: door_open - Door opened
+[DEBUG] *** EVENT APPROVED FOR LOGGING [cf0477a6] ***: door_open
+[DEBUG] Starting DB transaction [cf0477a6]...
+[DEBUG] ✅ DB COMMIT SUCCESS [cf0477a6]: door_open -> DB
+[DEBUG] 📸 Attempting to capture image for door_open...
+[DEBUG] ✅ IMAGE CAPTURED [cf0477a6]:
+[DEBUG]    File: door_open_2025-10-29_22-52-36.jpg
+[DEBUG]    Size: 35587 bytes
+[DEBUG]    Hash: 4ed039aaff2cd6d3...
+[DEBUG] ✅ BLOCKCHAIN COMMIT SUCCESS [cf0477a6]: Block #847
+[ANOMALY] 🚨 Odd hours access detected at 22:00
+[ANOMALY] 🚨 Repeated opens: 3 times in 10 minutes
+[DEBUG] Broadcasting WebSocket [cf0477a6]: door_open
+[WEBSOCKET] 📡 BROADCASTING EVENT:
+  ├─ Event Type: door_open
+  ├─ Event Name: 'new_event'
+  ├─ Namespace: /events
+  ├─ Connected Clients: 2
+  └─ Payload Keys: ['event', 'door_status', 'alarm_status', 'timer_set', 'last_event', 'statistics', 'event_id']
+[WEBSOCKET] ✅ EVENT BROADCAST SUCCESSFUL - Event 'door_open' sent to all clients
+[DEBUG] ✅ EVENT COMPLETE [cf0477a6]: door_open
+[DEBUG] ⏰ ALARM TIMER STARTED:
+  ├─ Duration: 5 seconds
+  ├─ Start Time: 1761758556.7394474
+  ├─ Timer Active: True
+  └─ Door Open: True
+  🎯 EXPECTED TRIGGER TIME: 1761758561.7394474 (5s from now)
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer start)
+[DEBUG] 🔴 LED will blink 5 times (1 blink = 1 second)
+[DEBUG] 🎯 Timer will expire at: 1761758561.739
+[DEBUG] ⏱️  Second 1: Elapsed=0.0s, Remaining=5.0s
+[DEBUG] ⏰ New timer thread started for 5s
+[DEBUG] 🔍 Verification - Thread args: (5,)
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #1 - Elapsed: 0.5s - Remaining: 4.5s
+[DEBUG] ⏱️  Second 2: Elapsed=1.0s, Remaining=4.0s
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer blink)
+[DEBUG] ⚫ RED LED OFF - Blink #1 complete - Elapsed: 1.0s
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #2 - Elapsed: 1.5s - Remaining: 3.5s
+[DEBUG] ⏱️  Second 3: Elapsed=2.0s, Remaining=3.0s
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer blink)
+[DEBUG] ⚫ RED LED OFF - Blink #2 complete - Elapsed: 2.0s
+[API] Polling request: Getting events since ID 910
+[API] Found 1 new events since ID 910
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #3 - Elapsed: 2.5s - Remaining: 2.5s
+[DEBUG] ⏱️  Second 4: Elapsed=3.0s, Remaining=2.0s
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer blink)
+[DEBUG] ⚫ RED LED OFF - Blink #3 complete - Elapsed: 3.0s
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 1, interpreted as OPEN
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #4 - Elapsed: 3.5s - Remaining: 1.5s
+[DEBUG] ⏱️  Second 5: Elapsed=4.0s, Remaining=1.0s
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer blink)
+[DEBUG] ⚫ RED LED OFF - Blink #4 complete - Elapsed: 4.0s
+[DEBUG] 🔧 GPIO Pin 13 set to HIGH (Red LED - timer blink)
+[DEBUG] 🔴 RED LED ON - Blink #5 - Elapsed: 4.5s - Remaining: 0.5s
+[DEBUG] 🏁 TIMER LOOP ENDED:
+  ├─ Start Time: 1761758556.739
+  ├─ End Time: 1761758561.752
+  ├─ Elapsed Time: 5.013 seconds
+  ├─ Expected Duration: 5 seconds
+  ├─ Timer Active: True
+  ├─ Door Open: True
+  └─ Should Trigger: True
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - timer cleanup)
+[DEBUG] 🔴 Red LED turned OFF
+[DEBUG] ⚠️ ALARM TRIGGERED:
+  ├─ Duration Set: 5 seconds
+  ├─ Actual Elapsed: 5.01 seconds
+  ├─ Door Still Open: True
+  └─ Timer Was Active: False
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - before alarm activation)
+[DEBUG] 🔴 WHITE LED ON (Pin 16) - ALARM ACTIVE
+[DEBUG] 🔍 WHITE LED VERIFICATION: Pin 16 actual state = 1 (should be 1)
+[DEBUG] 🎵 AUDIO LINKED TO WHITE LED - Starting alarm sound...
+[DEBUG] 🔄 Preloaded audio now playing in continuous loop
+[DEBUG] log_event #8 [26d23044]: alarm_triggered - Alarm triggered after 5 seconds
+[DEBUG] *** EVENT APPROVED FOR LOGGING [26d23044] ***: alarm_triggered
+[DEBUG] Starting DB transaction [26d23044]...
+[DEBUG] ✅ DB COMMIT SUCCESS [26d23044]: alarm_triggered -> DB
+[DEBUG] 📸 Attempting to capture image for alarm_triggered...
+[DEBUG] ✅ IMAGE CAPTURED [26d23044]:
+[DEBUG]    File: alarm_triggered_2025-10-29_22-52-41.jpg
+[DEBUG]    Size: 36449 bytes
+[DEBUG]    Hash: 1e03047526cbee7d...
+[DEBUG] ✅ BLOCKCHAIN COMMIT SUCCESS [26d23044]: Block #848
+[DEBUG] Broadcasting WebSocket [26d23044]: alarm_triggered
+[WEBSOCKET] 📡 BROADCASTING EVENT:
+  ├─ Event Type: alarm_triggered
+  ├─ Event Name: 'new_event'
+  ├─ Namespace: /events
+  ├─ Connected Clients: 2
+  └─ Payload Keys: ['event', 'door_status', 'alarm_status', 'timer_set', 'last_event', 'statistics', 'event_id']
+[WEBSOCKET] ✅ EVENT BROADCAST SUCCESSFUL - Event 'alarm_triggered' sent to all clients
+[DEBUG] ✅ EVENT COMPLETE [26d23044]: alarm_triggered
+[ANOMALY] 🚨 Prolonged open detected: 5s
+[DEBUG] Attempting to send alarm email for duration: 5s
+[DEBUG] Email config found - Sender: bsmscitech@gmail.com
+[DEBUG] Recipients: srivathsamurthys.1745@gmail.com, srivathsasmurthy2005@gmail.com, ssrivathsamurthy@gmail.com, srivathsamurthys1969@gmail.com
+[DEBUG] Connecting to Gmail SMTP...
+[API] Polling request: Getting events since ID 911
+[API] Found 1 new events since ID 911
+[DEBUG] Attempting login...
+[DEBUG] Sending email to 4 recipients...
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 1, interpreted as OPEN
+[API] Polling request: Getting events since ID 912
+[API] Found 0 new events since ID 912
+[SUCCESS] Alarm email sent successfully to: srivathsamurthys.1745@gmail.com, srivathsasmurthy2005@gmail.com, ssrivathsamurthy@gmail.com, srivathsamurthys1969@gmail.com
+[DEBUG] Timer thread ending - Final state: timer_active=False, alarm_active=True
+[DEBUG] 🚪 Door state change detected: True -> False
+[DEBUG] 🚪 Door closed - stopping all timers and alarms
+[DEBUG] 🔧 GPIO Pin 13 set to LOW (Red LED - door closed)
+[DEBUG] 🔇 Audio alarm stopped immediately (both music and sound channels)
+[DEBUG] ⚫ WHITE LED OFF (Pin 16) - ALARM DEACTIVATED
+[DEBUG] ✅ Door closed. Timer and alarm deactivated.
+[DEBUG] log_event #9 [5e01f97d]: door_close - Door closed
+[DEBUG] *** EVENT APPROVED FOR LOGGING [5e01f97d] ***: door_close
+[DEBUG] Starting DB transaction [5e01f97d]...
+[DEBUG] ✅ DB COMMIT SUCCESS [5e01f97d]: door_close -> DB
+[DEBUG] 📸 Attempting to capture image for door_close...
+[DEBUG] 🔇 Alarm deactivated - stopping continuous loop
+[DEBUG] 🔇 Audio monitoring stopped
+[DEBUG] ✅ IMAGE CAPTURED [5e01f97d]:
+[DEBUG]    File: door_close_2025-10-29_22-52-47.jpg
+[DEBUG]    Size: 36148 bytes
+[DEBUG]    Hash: 77d4b2e488384b1b...
+[DEBUG] ✅ BLOCKCHAIN COMMIT SUCCESS [5e01f97d]: Block #849
+[DEBUG] Broadcasting WebSocket [5e01f97d]: door_close
+[WEBSOCKET] 📡 BROADCASTING EVENT:
+  ├─ Event Type: door_close
+  ├─ Event Name: 'new_event'
+  ├─ Namespace: /events
+  ├─ Connected Clients: 2
+  └─ Payload Keys: ['event', 'door_status', 'alarm_status', 'timer_set', 'last_event', 'statistics', 'event_id']
+[WEBSOCKET] ✅ EVENT BROADCAST SUCCESSFUL - Event 'door_close' sent to all clients
+[DEBUG] ✅ EVENT COMPLETE [5e01f97d]: door_close
+[API] Polling request: Getting events since ID 912
+[API] Found 1 new events since ID 912
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSEDINFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:52:57] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:00] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:03] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:06] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:09] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:12] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:15] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:17] "GET /socket.io/?EIO=4&transport=polling&t=Pem_c-h&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:17] "POST /socket.io/?EIO=4&transport=polling&t=Pem_j5h&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:18] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:21] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:24] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:27] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:30] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:33] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:36] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:39] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:42] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:42] "GET /socket.io/?EIO=4&transport=polling&t=Pem_j5j&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:42] "POST /socket.io/?EIO=4&transport=polling&t=Pem_pCu&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:45] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:48] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:51] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:54] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:53:57] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:00] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:03] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:06] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:07] "GET /socket.io/?EIO=4&transport=polling&t=Pem_pCy&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:07] "POST /socket.io/?EIO=4&transport=polling&t=Pem_vK0&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:09] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:12] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:15] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:18] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:21] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:24] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:27] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:30] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:32] "GET /socket.io/?EIO=4&transport=polling&t=Pem_vK1&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:32] "POST /socket.io/?EIO=4&transport=polling&t=Pem__Qv&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:33] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:36] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:39] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:42] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:45] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:48] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:51] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:54] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:57] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:57] "GET /socket.io/?EIO=4&transport=polling&t=Pem__Qw&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:54:57] "POST /socket.io/?EIO=4&transport=polling&t=Pen05Xx&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:00] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:03] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:06] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:09] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:12] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:15] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:18] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:21] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:22] "GET /socket.io/?EIO=4&transport=polling&t=Pen05Y2&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:22] "POST /socket.io/?EIO=4&transport=polling&t=Pen0BfC&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:24] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:27] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:30] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:33] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:36] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:39] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:42] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:45] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:47] "GET /socket.io/?EIO=4&transport=polling&t=Pen0BfE&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:47] "POST /socket.io/?EIO=4&transport=polling&t=Pen0HmN&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:48] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:51] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:54] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:55:57] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:00] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:03] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSEDINFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:06] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:09] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:12] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:12] "GET /socket.io/?EIO=4&transport=polling&t=Pen0HmR&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:12] "POST /socket.io/?EIO=4&transport=polling&t=Pen0Nto&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:15] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:18] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:21] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:24] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:27] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:30] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:33] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:36] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:37] "GET /socket.io/?EIO=4&transport=polling&t=Pen0Ntt&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:37] "POST /socket.io/?EIO=4&transport=polling&t=Pen0T_m&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:39] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:42] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:45] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:48] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:51] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:54] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:56:57] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:00] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:02] "GET /socket.io/?EIO=4&transport=polling&t=Pen0T_x&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:02] "POST /socket.io/?EIO=4&transport=polling&t=Pen0a7G&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:03] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:06] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:09] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:12] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:15] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:18] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:21] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:24] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:27] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:27] "GET /socket.io/?EIO=4&transport=polling&t=Pen0a7K&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:27] "POST /socket.io/?EIO=4&transport=polling&t=Pen0gEM&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:30] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:33] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:36] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:39] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:42] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:45] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:48] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:51] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:52] "GET /socket.io/?EIO=4&transport=polling&t=Pen0gEQ&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:52] "POST /socket.io/?EIO=4&transport=polling&t=Pen0mLd&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:54] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:57:57] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:00] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:03] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:06] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:09] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:12] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:15] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:17] "GET /socket.io/?EIO=4&transport=polling&t=Pen0mLg&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:18] "POST /socket.io/?EIO=4&transport=polling&t=Pen0sSx&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:18] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:21] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:24] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:27] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:30] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:33] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:36] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:39] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:42] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:43] "GET /socket.io/?EIO=4&transport=polling&t=Pen0sS_&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:43] "POST /socket.io/?EIO=4&transport=polling&t=Pen0yaR&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:45] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:48] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:51] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:54] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:58:57] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:00] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:03] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:06] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:08] "GET /socket.io/?EIO=4&transport=polling&t=Pen0yaU&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:08] "POST /socket.io/?EIO=4&transport=polling&t=Pen12hi&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:09] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:12] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSEDINFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:15] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:18] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:21] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:24] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:27] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:30] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:33] "GET /socket.io/?EIO=4&transport=polling&t=Pen12hn&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:33] "POST /socket.io/?EIO=4&transport=polling&t=Pen18p1&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:33] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:36] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:39] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:42] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:45] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:48] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:51] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:54] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:57] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:58] "GET /socket.io/?EIO=4&transport=polling&t=Pen18p5&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 22:59:58] "POST /socket.io/?EIO=4&transport=polling&t=Pen1Ew5&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:00] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:03] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:06] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:09] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:12] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:15] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:18] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:21] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:23] "GET /socket.io/?EIO=4&transport=polling&t=Pen1Ew9&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:23] "POST /socket.io/?EIO=4&transport=polling&t=Pen1L16&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:24] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:27] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:30] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:33] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:36] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:39] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:42] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:45] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:48] "GET /socket.io/?EIO=4&transport=polling&t=Pen1L18&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:48] "POST /socket.io/?EIO=4&transport=polling&t=Pen1R80&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:48] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:51] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:54] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:00:57] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:00] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:03] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:06] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:09] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:12] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:13] "GET /socket.io/?EIO=4&transport=polling&t=Pen1R82&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:13] "POST /socket.io/?EIO=4&transport=polling&t=Pen1XEv&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:15] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:18] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:21] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:24] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:27] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:30] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:33] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:36] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:38] "GET /socket.io/?EIO=4&transport=polling&t=Pen1XEw&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:38] "POST /socket.io/?EIO=4&transport=polling&t=Pen1dLo&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:39] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:42] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:45] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:48] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:51] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:54] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:01:57] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:00] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:03] "GET /socket.io/?EIO=4&transport=polling&t=Pen1dLq&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:03] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:03] "POST /socket.io/?EIO=4&transport=polling&t=Pen1jSx&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:06] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:09] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:12] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:15] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:18] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:21] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:24] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:27] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:28] "GET /socket.io/?EIO=4&transport=polling&t=Pen1jSz&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:28] "POST /socket.io/?EIO=4&transport=polling&t=Pen1paA&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:30] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:33] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:36] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:39] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:42] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:45] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:48] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:51] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:53] "GET /socket.io/?EIO=4&transport=polling&t=Pen1paD&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:53] "POST /socket.io/?EIO=4&transport=polling&t=Pen1vhB&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:54] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:02:57] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:00] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:03] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:06] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:09] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:12] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:15] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:18] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:18] "GET /socket.io/?EIO=4&transport=polling&t=Pen1vhD&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:18] "POST /socket.io/?EIO=4&transport=polling&t=Pen1_o4&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:21] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:24] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:27] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:30] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:33] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:36] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:39] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:42] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:43] "GET /socket.io/?EIO=4&transport=polling&t=Pen1_o5&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:43] "POST /socket.io/?EIO=4&transport=polling&t=Pen25uy&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:45] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:48] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:51] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:54] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:03:57] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:00] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:03] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:06] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:08] "GET /socket.io/?EIO=4&transport=polling&t=Pen25u-&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:08] "POST /socket.io/?EIO=4&transport=polling&t=Pen2B_u&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:09] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:12] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:15] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:18] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:21] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:24] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:27] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:30] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:33] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:33] "GET /socket.io/?EIO=4&transport=polling&t=Pen2B_v&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:34] "POST /socket.io/?EIO=4&transport=polling&t=Pen2IG1&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:35] "GET /event-log HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:35] "[36mGET /static/css/modern.css?v=2.2 HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:35] "[36mGET /static/css/colors.css?v=2.2 HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:35] "[36mGET /static/js/socket.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:36] "GET /socket.io/?EIO=4&transport=polling&t=Pen2ImB HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:36] "GET /socket.io/?EIO=4&transport=polling&t=Pen2ImN HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:36] "GET /api/events?per_page=1 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:36] "POST /socket.io/?EIO=4&transport=polling&t=Pen2Iqc&sid=JdKQVhS6XMz3FpUOAAAT HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:36] "GET /socket.io/?EIO=4&transport=polling&t=Pen2Iqf&sid=JdKQVhS6XMz3FpUOAAAT HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:36] "POST /socket.io/?EIO=4&transport=polling&t=Pen2Irv&sid=JdKQVhS6XMz3FpUOAAAT HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:36] "GET /socket.io/?EIO=4&transport=polling&t=Pen2Irs&sid=JdKQVhS6XMz3FpUOAAAT HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:36] "POST /socket.io/?EIO=4&transport=polling&t=Pen2IsJ&sid=JdKQVhS6XMz3FpUOAAAT HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:36] "GET /socket.io/?EIO=4&transport=polling&t=Pen2IsS&sid=JdKQVhS6XMz3FpUOAAAT HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:37] "POST /socket.io/?EIO=4&transport=polling&t=Pen2J0A&sid=JdKQVhS6XMz3FpUOAAAT HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:37] "GET /socket.io/?EIO=4&transport=polling&t=Pen2J0G HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:37] "POST /socket.io/?EIO=4&transport=polling&t=Pen2J1O&sid=JdKQVhS6XMz3FpUOAAAT HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:37] "GET /socket.io/?EIO=4&transport=polling&t=Pen2Ist&sid=JdKQVhS6XMz3FpUOAAAT HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:37] "POST /socket.io/?EIO=4&transport=polling&t=Pen2J1X&sid=WAbmYR3K1aDcL-t4AAAV HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:37] "GET /socket.io/?EIO=4&transport=polling&t=Pen2J1a&sid=WAbmYR3K1aDcL-t4AAAV HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:37] "GET /socket.io/?EIO=4&transport=polling&t=Pen2J2T&sid=WAbmYR3K1aDcL-t4AAAV HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:37] "POST /socket.io/?EIO=4&transport=polling&t=Pen2J2d&sid=WAbmYR3K1aDcL-t4AAAV HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:39] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:40] "GET /event-log HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:40] "[36mGET /static/css/colors.css?v=2.2 HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:40] "[36mGET /static/js/socket.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:40] "[36mGET /static/css/modern.css?v=2.2 HTTP/1.1[0m" 304 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:41] "GET /socket.io/?EIO=4&transport=polling&t=Pen2K0S HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:41] "GET /socket.io/?EIO=4&transport=polling&t=Pen2K0m HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:41] "GET /api/events?per_page=1 HTTP/1.1" 200 -
+
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[WEBSOCKET] 🔌 CLIENT CONNECTING:
+  ├─ Session ID: tx5bk8iVs6psjoEoAAAU
+  ├─ Remote IP: 192.168.31.227
+  ├─ User Agent: Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK...
+  ├─ Origin: Unknown
+  └─ Namespace: /events
+[WEBSOCKET] ✅ CONNECTION SUCCESSFUL:
+  ├─ Handshake Complete: YES
+  ├─ Session Established: tx5bk8iVs6psjoEoAAAU
+  ├─ Total Connected Clients: 3
+  └─ Connection Time: 2025-10-29T23:04:36.382254
+[WEBSOCKET] 🏓 Sending initial ping to tx5bk8iVs6psjoEoAAAU
+[WEBSOCKET] 📱 CLIENT READY SIGNAL:
+  ├─ From Client: tx5bk8iVs6psjoEoAAAU
+  ├─ Client Data: {'timestamp': '2025-10-29T17:34:36.408Z', 'page': '/event-log', 'userAgent': 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK'}
+  └─ Acknowledging client ready state
+[WEBSOCKET] 🏓 PING RECEIVED:
+  ├─ From Client: tx5bk8iVs6psjoEoAAAU
+  ├─ Data: {'timestamp': '2025-10-29T17:34:36.411Z', 'message': 'Connection test from client'}
+  └─ Sending Pong Response...
+[WEBSOCKET] 🔌 CLIENT DISCONNECTING:
+  ├─ Session ID: tx5bk8iVs6psjoEoAAAU
+  ├─ Remaining Clients: 2
+  └─ Disconnect Time: 2025-10-29T23:04:37.117219
+[WEBSOCKET] 🔌 CLIENT CONNECTING:
+  ├─ Session ID: KRC2EmrY-UsfvYfvAAAW
+  ├─ Remote IP: 192.168.31.227
+  ├─ User Agent: Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK...
+  ├─ Origin: Unknown
+  └─ Namespace: /events
+[WEBSOCKET] ✅ CONNECTION SUCCESSFUL:
+  ├─ Handshake Complete: YES
+  ├─ Session Established: KRC2EmrY-UsfvYfvAAAW
+  ├─ Total Connected Clients: 3
+  └─ Connection Time: 2025-10-29T23:04:37.192011
+[WEBSOCKET] 🏓 Sending initial ping to KRC2EmrY-UsfvYfvAAAW
+[WEBSOCKET] 📱 CLIENT READY SIGNAL:
+  ├─ From Client: KRC2EmrY-UsfvYfvAAAW
+  ├─ Client Data: {'timestamp': '2025-10-29T17:34:37.218Z', 'page': '/event-log', 'userAgent': 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK'}
+  └─ Acknowledging client ready state
+[WEBSOCKET] 🏓 PING RECEIVED:
+  ├─ From Client: KRC2EmrY-UsfvYfvAAAW
+  ├─ Data: {'timestamp': '2025-10-29T17:34:37.218Z', 'message': 'Connection test from client'}
+  └─ Sending Pong Response...
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[WEBSOCKET] 🔌 CLIENT CONNECTING:
+  ├─ Session ID: oROUXsDMglBLXaWRAAAZ
+  ├─ Remote IP: 192.168.31.227
+  ├─ User Agent: Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK...INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:41] "POST /socket.io/?EIO=4&transport=polling&t=Pen2K3q&sid=CDyOcjUHfzFzNULsAAAY HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:41] "GET /socket.io/?EIO=4&transport=polling&t=Pen2K3t&sid=CDyOcjUHfzFzNULsAAAY HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:41] "POST /socket.io/?EIO=4&transport=polling&t=Pen2K5j&sid=CDyOcjUHfzFzNULsAAAY HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:41] "GET /socket.io/?EIO=4&transport=polling&t=Pen2K5g&sid=CDyOcjUHfzFzNULsAAAY HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:41] "POST /socket.io/?EIO=4&transport=polling&t=Pen2K6B&sid=CDyOcjUHfzFzNULsAAAY HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:41] "GET /socket.io/?EIO=4&transport=polling&t=Pen2K6E&sid=CDyOcjUHfzFzNULsAAAY HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:42] "POST /socket.io/?EIO=4&transport=polling&t=Pen2KFv&sid=CDyOcjUHfzFzNULsAAAY HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:42] "GET /socket.io/?EIO=4&transport=polling&t=Pen2KFz HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:42] "POST /socket.io/?EIO=4&transport=polling&t=Pen2KGq&sid=CDyOcjUHfzFzNULsAAAY HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:42] "GET /socket.io/?EIO=4&transport=polling&t=Pen2K6g&sid=CDyOcjUHfzFzNULsAAAY HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:42] "POST /socket.io/?EIO=4&transport=polling&t=Pen2KH7&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:42] "GET /socket.io/?EIO=4&transport=polling&t=Pen2KHA&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:42] "POST /socket.io/?EIO=4&transport=polling&t=Pen2KHy&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:42] "GET /socket.io/?EIO=4&transport=polling&t=Pen2KHt&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:42] "POST /socket.io/?EIO=4&transport=polling&t=Pen2KIZ&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:42] "GET /socket.io/?EIO=4&transport=polling&t=Pen2KJ1&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:45] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:47] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:50] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:53] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:56] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:59] "GET /socket.io/?EIO=4&transport=polling&t=Pen2IG4&sid=ZSAeNjQwDjSsKIPfAAAQ HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:04:59] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:02] "GET /socket.io/?EIO=4&transport=polling&t=Pen2J3F&sid=WAbmYR3K1aDcL-t4AAAV HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:02] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:05] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:07] "GET /socket.io/?EIO=4&transport=polling&t=Pen2KKw&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:07] "POST /socket.io/?EIO=4&transport=polling&t=Pen2QNd&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:08] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:11] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:14] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:17] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:20] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:23] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:26] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:29] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:32] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:32] "GET /socket.io/?EIO=4&transport=polling&t=Pen2QNf&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:32] "POST /socket.io/?EIO=4&transport=polling&t=Pen2WUa&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:35] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:38] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:41] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:44] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:47] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:50] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:53] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:56] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:57] "GET /socket.io/?EIO=4&transport=polling&t=Pen2WUd&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:57] "POST /socket.io/?EIO=4&transport=polling&t=Pen2ccU&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:05:59] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:02] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:05] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:08] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:11] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:14] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:17] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:20] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:22] "GET /socket.io/?EIO=4&transport=polling&t=Pen2ccd&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:22] "POST /socket.io/?EIO=4&transport=polling&t=Pen2ik2&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:23] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:26] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:29] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:32] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:35] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:38] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:41] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:44] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:47] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:47] "GET /socket.io/?EIO=4&transport=polling&t=Pen2ik7&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:47] "POST /socket.io/?EIO=4&transport=polling&t=Pen2orC&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:50] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:53] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:56] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+
+  ├─ Origin: Unknown
+  └─ Namespace: /events
+[WEBSOCKET] ✅ CONNECTION SUCCESSFUL:
+  ├─ Handshake Complete: YES
+  ├─ Session Established: oROUXsDMglBLXaWRAAAZ
+  ├─ Total Connected Clients: 4
+  └─ Connection Time: 2025-10-29T23:04:41.495585
+[WEBSOCKET] 🏓 Sending initial ping to oROUXsDMglBLXaWRAAAZ
+[WEBSOCKET] 📱 CLIENT READY SIGNAL:
+  ├─ From Client: oROUXsDMglBLXaWRAAAZ
+  ├─ Client Data: {'timestamp': '2025-10-29T17:34:41.516Z', 'page': '/event-log', 'userAgent': 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK'}
+  └─ Acknowledging client ready state
+[WEBSOCKET] 🏓 PING RECEIVED:
+  ├─ From Client: oROUXsDMglBLXaWRAAAZ
+  ├─ Data: {'timestamp': '2025-10-29T17:34:41.519Z', 'message': 'Connection test from client'}
+  └─ Sending Pong Response...
+[WEBSOCKET] 🔌 CLIENT DISCONNECTING:
+  ├─ Session ID: oROUXsDMglBLXaWRAAAZ
+  ├─ Remaining Clients: 3
+  └─ Disconnect Time: 2025-10-29T23:04:42.188413
+[WEBSOCKET] 🔌 CLIENT CONNECTING:
+  ├─ Session ID: CBui2F2s0SsZi1lOAAAb
+  ├─ Remote IP: 192.168.31.227
+  ├─ User Agent: Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK...
+  ├─ Origin: Unknown
+  └─ Namespace: /events
+[WEBSOCKET] ✅ CONNECTION SUCCESSFUL:
+  ├─ Handshake Complete: YES
+  ├─ Session Established: CBui2F2s0SsZi1lOAAAb
+  ├─ Total Connected Clients: 4
+  └─ Connection Time: 2025-10-29T23:04:42.274379
+[WEBSOCKET] 🏓 Sending initial ping to CBui2F2s0SsZi1lOAAAb
+[WEBSOCKET] 📱 CLIENT READY SIGNAL:
+  ├─ From Client: CBui2F2s0SsZi1lOAAAb
+  ├─ Client Data: {'timestamp': '2025-10-29T17:34:42.299Z', 'page': '/event-log', 'userAgent': 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebK'}
+  └─ Acknowledging client ready state
+[WEBSOCKET] 🏓 PING RECEIVED:
+  ├─ From Client: CBui2F2s0SsZi1lOAAAb
+  ├─ Data: {'timestamp': '2025-10-29T17:34:42.304Z', 'message': 'Connection test from client'}
+  └─ Sending Pong Response...
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[WEBSOCKET] 🔌 CLIENT DISCONNECTING:
+  ├─ Session ID: npB1kHLK1VVqKnpVAAAR
+  ├─ Remaining Clients: 3
+  └─ Disconnect Time: 2025-10-29T23:06:29.059014
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[WEBSOCKET] 🔌 CLIENT DISCONNECTING:
+  ├─ Session ID: KRC2EmrY-UsfvYfvAAAW
+  ├─ Remaining Clients: 2
+  └─ Disconnect Time: 2025-10-29T23:06:53.060599
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[DEBUG] 🔍 Door monitoring: GPIO pin 11 = 0, interpreted as CLOSED
+[API] Polling request: Getting events since ID 913
+[API] Found 0 new events since ID 913
+[API] Polling request: Getting events since ID 913INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:06:59] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:07:02] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:07:05] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:07:08] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:07:11] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:07:12] "GET /socket.io/?EIO=4&transport=polling&t=Pen2orF&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:07:12] "POST /socket.io/?EIO=4&transport=polling&t=Pen2uyE&sid=6B1EaCIdMptZGffXAAAa HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:07:14] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:07:17] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -
+INFO:werkzeug:192.168.31.227 - - [29/Oct/2025 23:07:20] "GET /api/events?since=913&per_page=50 HTTP/1.1" 200 -

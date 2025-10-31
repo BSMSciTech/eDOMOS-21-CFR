@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Training Module{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #0d6efd;
+}
+
+.form-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0d6efd;
+    margin-bottom: 1rem;
+}
+
+.char-counter {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.version-warning {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="mb-4">
+                <a href="{{ url_for('view_training_module', module_id=module.id) }}" class="btn btn-outline-secondary btn-sm mb-3">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Module
+                </a>
+                <h2 class="mb-1">
+                    <i class="fas fa-edit me-2"></i>
+                    Edit Training Module
+                </h2>
+                <p class="text-muted">{{ module.module_name }} (v{{ module.version }})</p>
+            </div>
+
+            <!-- Version Control Warning -->
+            <div class="version-warning">
+                <h6><i class="fas fa-info-circle me-2"></i>Version Control Notice</h6>
+                <p class="mb-0 small">
+                    Making significant changes to this module? Consider incrementing the version number. 
+                    This helps track changes and may require users to retake the training.
+                </p>
+            </div>
+
+            <form method="POST" id="moduleForm">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-info-circle me-2"></i>Basic Information
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="module_name" class="form-label">
+                            Module Name <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="module_name" name="module_name" 
+                               value="{{ module.module_name }}" required maxlength="200">
+                        <small class="text-muted">Maximum 200 characters</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="version" class="form-label">
+                            Version <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="version" name="version" 
+                               value="{{ module.version }}" required maxlength="20" style="max-width: 150px;">
+                        <small class="text-muted">Current: {{ module.version }}</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            Description <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control" id="description" name="description" 
+                                  rows="3" required maxlength="500">{{ module.description }}</textarea>
+                        <small class="text-muted char-counter">
+                            <span id="descLength">{{ module.description|length }}</span>/500 characters
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Training Content -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-file-alt me-2"></i>Training Content
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="content" class="form-label">
+                            Content <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control" id="content" name="content" 
+                                  rows="15" required>{{ module.content }}</textarea>
+                        <small class="text-muted">
+                            You can use basic HTML tags for formatting (p, ul, li, strong, em, etc.)
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Requirements & Settings -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-cog me-2"></i>Requirements & Settings
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="required_for_roles" class="form-label">
+                                Required for Roles
+                            </label>
+                            <input type="text" class="form-control" id="required_for_roles" 
+                                   name="required_for_roles" 
+                                   value="{{ module.required_for_roles or '' }}" 
+                                   placeholder="e.g., Admin, Operator, QA">
+                            <small class="text-muted">Comma-separated list (leave blank for all users)</small>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="validity_period_days" class="form-label">
+                                Validity Period (Days) <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" class="form-control" id="validity_period_days" 
+                                   name="validity_period_days" value="{{ module.validity_period_days }}" 
+                                   required min="1" max="3650">
+                            <small class="text-muted">Current: {{ module.validity_period_days }} days</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active" 
+                                   {% if module.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">
+                                Module is Active
+                            </label>
+                        </div>
+                        <small class="text-muted">
+                            Inactive modules are not visible to users but retain all completion records
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Completion Statistics -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-chart-line me-2"></i>Completion Statistics
+                    </div>
+
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <h3 class="mb-1">{{ module.training_records|length }}</h3>
+                                <small class="text-muted">Total Completions</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <h3 class="mb-1">
+                                    {{ module.training_records|selectattr('is_expired', 'equalto', False)|list|length }}
+                                </h3>
+                                <small class="text-muted">Currently Valid</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 bg-light rounded">
+                                <h3 class="mb-1">
+                                    {{ module.training_records|selectattr('is_expired', 'equalto', True)|list|length }}
+                                </h3>
+                                <small class="text-muted">Expired</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if module.training_records %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> This module has {{ module.training_records|length }} 
+                        completion record(s). Consider incrementing the version if making major changes.
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                    <a href="{{ url_for('view_training_module', module_id=module.id) }}" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Character counter for description
+const descField = document.getElementById('description');
+const descLength = document.getElementById('descLength');
+
+descField.addEventListener('input', function() {
+    descLength.textContent = this.value.length;
+    if (this.value.length > 450) {
+        descLength.classList.add('text-warning');
+    } else {
+        descLength.classList.remove('text-warning');
+    }
+});
+
+// Version change warning
+const versionField = document.getElementById('version');
+const originalVersion = '{{ module.version }}';
+
+document.getElementById('moduleForm').addEventListener('submit', function(e) {
+    const newVersion = versionField.value.trim();
+    
+    if (newVersion !== originalVersion) {
+        if (!confirm(`You are changing the version from ${originalVersion} to ${newVersion}. Users may need to retake this training. Continue?`)) {
+            e.preventDefault();
+            return false;
+        }
+    }
+});
+</script>
+{% endblock %}

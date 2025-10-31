@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hero Door Status Test</title>
+    <link rel="stylesheet" href="/static/css/dashboard-realtime.css">
+    <style>
+        body { font-family: Arial; background: #1a1a2e; color: white; padding: 20px; }
+        .status-indicator { 
+            background: rgba(255,255,255,0.1); 
+            border: 2px solid rgba(255,255,255,0.3); 
+            border-radius: 25px; 
+            padding: 15px 30px; 
+            font-size: 1.2rem; 
+            margin: 20px; 
+            display: inline-block; 
+        }
+        .status-indicator.secure { border-color: #00b894; color: #00b894; }
+        .status-indicator.alert { border-color: #e17055; color: #e17055; }
+        .btn { background: #667eea; color: white; border: none; padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Hero Door Status Test</h1>
+    
+    <div class="status-indicator secure">
+        <i class="fas fa-lock"></i>
+        DOOR CLOSED
+    </div>
+    
+    <div>
+        <button class="btn" onclick="testOpen()">Test Door Open</button>
+        <button class="btn" onclick="testClose()">Test Door Close</button>
+    </div>
+    
+    <div id="log"></div>
+    
+    <script src="/static/js/dashboard-realtime.js"></script>
+    <script>
+        function log(msg) {
+            document.getElementById('log').innerHTML += '<div>' + msg + '</div>';
+        }
+        
+        function testOpen() {
+            log('Testing door open...');
+            if (window.dashboardRealTime && window.dashboardRealTime.updateHeroDoorStatus) {
+                window.dashboardRealTime.updateHeroDoorStatus('Open');
+                log('Door open test completed');
+            } else {
+                log('Dashboard system not ready');
+            }
+        }
+        
+        function testClose() {
+            log('Testing door close...');
+            if (window.dashboardRealTime && window.dashboardRealTime.updateHeroDoorStatus) {
+                window.dashboardRealTime.updateHeroDoorStatus('Closed');
+                log('Door close test completed');
+            } else {
+                log('Dashboard system not ready');
+            }
+        }
+        
+        setTimeout(function() {
+            if (window.dashboardRealTime) {
+                log('Dashboard system loaded successfully');
+            } else {
+                log('Dashboard system not found');
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

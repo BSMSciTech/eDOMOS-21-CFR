@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block title %}Change Control Reports{% endblock %}
+
+{% block extra_css %}
+<style>
+.report-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #0d6efd;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="{{ url_for('change_control_dashboard') }}" class="btn btn-outline-secondary btn-sm mb-3">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+            <h2 class="mb-1">
+                <i class="fas fa-chart-bar me-2"></i>
+                Change Control Reports
+            </h2>
+            <p class="text-muted">Analytics and compliance reporting</p>
+        </div>
+        <div>
+            <button class="btn btn-outline-primary" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Print Report
+            </button>
+            <button class="btn btn-outline-success" onclick="exportToCSV()">
+                <i class="fas fa-file-csv me-2"></i>Export CSV
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-number">{{ changes|length }}</div>
+                <div>Total Changes</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <div class="stat-number">{{ status_stats.get('implemented', 0) }}</div>
+                <div>Implemented</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <div class="stat-number">{{ status_stats.get('pending', 0) }}</div>
+                <div>Pending Approval</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="stat-number">{{ avg_implementation_days }}</div>
+                <div>Avg. Implementation (Days)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Status Breakdown -->
+        <div class="col-md-6 mb-4">
+            <div class="report-section">
+                <div class="section-title">
+                    <i class="fas fa-chart-pie me-2"></i>Status Breakdown
+                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th class="text-center">Count</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for status, count in status_stats.items() %}
+                        <tr>
+                            <td>
+                                <span class="badge 
+                                    {% if status == 'pending' %}bg-warning text-dark
+                                    {% elif status == 'approved' %}bg-success
+                                    {% elif status == 'implemented' %}bg-info
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ status|title }}
+                                </span>
+                            </td>
+                            <td class="text-center"><strong>{{ count }}</strong></td>
+                            <td>
+                                <div class="progress" style="height: 25px;">
+                                    <div class="progress-bar 
+                                        {% if status == 'pending' %}bg-warning
+                                        {% elif status == 'approved' %}bg-success
+                                        {% elif status == 'implemented' %}bg-info
+                                        {% else %}bg-danger{% endif %}" 
+                                        role="progressbar" 
+                                        style="width: {{ (count / changes|length * 100)|round|int if changes|length > 0 else 0 }}%">
+                                        {{ (count / changes|length * 100)|round|int if changes|length > 0 else 0 }}%
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Type Breakdown -->
+        <div class="col-md-6 mb-4">
+            <div class="report-section">
+                <div class="section-title">
+                    <i class="fas fa-tags me-2"></i>Change Type Distribution
+                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th class="text-center">Count</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for type, count in type_stats.items() %}
+                        <tr>
+                            <td>{{ type|title }}</td>
+                            <td class="text-center"><strong>{{ count }}</strong></td>
+                            <td>
+                                <div class="progress" style="height: 25px;">
+                                    <div class="progress-bar bg-primary" 
+                                        role="progressbar" 
+                                        style="width: {{ (count / changes|length * 100)|round|int if changes|length > 0 else 0 }}%">
+                                        {{ (count / changes|length * 100)|round|int if changes|length > 0 else 0 }}%
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Priority Breakdown -->
+    <div class="report-section">
+        <div class="section-title">
+            <i class="fas fa-exclamation-triangle me-2"></i>Priority Distribution
+        </div>
+        <div class="row">
+            {% for priority, count in priority_stats.items() %}
+            <div class="col-md-3 mb-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <h3 class="
+                            {% if priority == 'critical' %}text-danger
+                            {% elif priority == 'high' %}text-warning
+                            {% elif priority == 'medium' %}text-info
+                            {% else %}text-secondary{% endif %}">
+                            {{ count }}
+                        </h3>
+                        <p class="mb-0">{{ priority|title }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- All Changes Table -->
+    <div class="report-section">
+        <div class="section-title">
+            <i class="fas fa-table me-2"></i>All Change Requests
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm" id="changesTable">
+                <thead>
+                    <tr>
+                        <th>Change #</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Priority</th>
+                        <th>Requested By</th>
+                        <th>Requested Date</th>
+                        <th>Status</th>
+                        <th>Approved By</th>
+                        <th>Implemented Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for change in changes %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('view_change_request', change_id=change.id) }}">
+                                {{ change.change_number }}
+                            </a>
+                        </td>
+                        <td>{{ change.title[:50] }}{% if change.title|length > 50 %}...{% endif %}</td>
+                        <td>{{ change.change_type|title }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if change.priority == 'critical' %}bg-danger
+                                {% elif change.priority == 'high' %}bg-warning text-dark
+                                {% elif change.priority == 'medium' %}bg-info
+                                {% else %}bg-secondary{% endif %}">
+                                {{ change.priority|title }}
+                            </span>
+                        </td>
+                        <td>{{ change.requestor.username if change.requestor else 'Unknown' }}</td>
+                        <td>{{ change.requested_date.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if change.status == 'pending' %}bg-warning text-dark
+                                {% elif change.status == 'approved' %}bg-success
+                                {% elif change.status == 'implemented' %}bg-info
+                                {% else %}bg-danger{% endif %}">
+                                {{ change.status|title }}
+                            </span>
+                        </td>
+                        <td>{{ change.approver.username if change.approver else '-' }}</td>
+                        <td>{{ change.implemented_date.strftime('%Y-%m-%d') if change.implemented_date else '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Report Footer -->
+    <div class="report-section">
+        <p class="mb-1">
+            <strong>Report Generated:</strong> {{ now.strftime('%Y-%m-%d %H:%M:%S') }}
+        </p>
+        <p class="mb-0">
+            <strong>Generated By:</strong> {{ current_user.username }}
+        </p>
+    </div>
+</div>
+
+<script>
+function exportToCSV() {
+    const table = document.getElementById('changesTable');
+    let csv = [];
+    
+    // Headers
+    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+    csv.push(headers.join(','));
+    
+    // Rows
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const cols = Array.from(row.querySelectorAll('td')).map(td => {
+            return '"' + td.textContent.trim().replace(/"/g, '""') + '"';
+        });
+        csv.push(cols.join(','));
+    });
+    
+    // Download
+    const csvContent = csv.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'change_control_report_{{ now.strftime("%Y%m%d") }}.csv';
+    a.click();
+}
+</script>
+{% endblock %}

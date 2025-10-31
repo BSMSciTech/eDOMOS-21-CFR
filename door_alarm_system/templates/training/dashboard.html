@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Training Management - 21 CFR Part 11{% endblock %}
+
+{% block extra_css %}
+<style>
+.training-card {
+    border-left: 4px solid #0d6efd;
+    transition: all 0.3s;
+}
+
+.training-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.training-status-badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+}
+
+.training-progress {
+    height: 8px;
+    border-radius: 4px;
+}
+
+.stat-card {
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-dark) 100%);
+    color: white;
+    border: none;
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    opacity: 0.3;
+}
+
+.expired-warning {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+}
+
+.module-thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">
+                        <i class="fas fa-graduation-cap me-2"></i>
+                        Training Management
+                    </h1>
+                    <p class="text-muted mb-0">21 CFR Part 11 Compliance Training System</p>
+                </div>
+                {% if current_user.is_admin %}
+                <div>
+                    <a href="{{ url_for('create_training_module') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create Module
+                    </a>
+                    <a href="{{ url_for('training_reports') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-chart-bar me-2"></i>Reports
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 opacity-75">Total Modules</p>
+                        <h3 class="mb-0">{{ total_modules }}</h3>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 opacity-75">Active Modules</p>
+                        <h3 class="mb-0">{{ active_modules }}</h3>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 opacity-75">Completions</p>
+                        <h3 class="mb-0">{{ total_completions }}</h3>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 opacity-75">Expired/Expiring</p>
+                        <h3 class="mb-0">{{ expired_trainings }}</h3>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Training Modules -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Available Training Modules
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if modules %}
+                    <div class="row">
+                        {% for module in modules %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card training-card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="module-thumbnail me-3">
+                                            <i class="fas fa-book-open"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">{{ module.module_name }}</h6>
+                                            <p class="text-muted small mb-2">{{ module.description[:100] }}...</p>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge bg-primary me-2">v{{ module.version }}</span>
+                                                <span class="text-muted small">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    Valid for {{ module.validity_period_days }} days
+                                                </span>
+                                            </div>
+                                            <div class="mt-3">
+                                                <a href="{{ url_for('training_module_detail', module_id=module.id) }}" 
+                                                   class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye me-1"></i>View Details
+                                                </a>
+                                                <a href="{{ url_for('complete_training', module_id=module.id) }}" 
+                                                   class="btn btn-sm btn-success">
+                                                    <i class="fas fa-check me-1"></i>Complete
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No training modules available yet.</p>
+                        {% if current_user.is_admin %}
+                        <a href="{{ url_for('create_training_module') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Create First Module
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Training Records -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        {% if current_user.is_admin %}Recent Training Completions{% else %}My Training History{% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if records %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Module</th>
+                                    {% if current_user.is_admin %}<th>User</th>{% endif %}
+                                    <th>Completed</th>
+                                    <th>Expires</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in records %}
+                                <tr class="{{ 'expired-warning' if record.is_expired() else '' }}">
+                                    <td>
+                                        <i class="fas fa-book me-2"></i>
+                                        {{ record.module.module_name if record.module else 'Unknown' }}
+                                    </td>
+                                    {% if current_user.is_admin %}
+                                    <td>{{ record.user.full_name or record.user.username }}</td>
+                                    {% endif %}
+                                    <td>{{ record.completed_date.strftime('%Y-%m-%d') if record.completed_date else 'N/A' }}</td>
+                                    <td>{{ record.expiration_date.strftime('%Y-%m-%d') if record.expiration_date else 'Never' }}</td>
+                                    <td>
+                                        {% if record.score %}
+                                        <span class="badge bg-info">{{ record.score }}%</span>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if record.is_expired() %}
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>Expired
+                                        </span>
+                                        {% else %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>Valid
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if record.signature_id %}
+                                        <span class="badge bg-primary" title="Electronically Signed">
+                                            <i class="fas fa-signature"></i>
+                                        </span>
+                                        {% endif %}
+                                        {% if record.is_expired() %}
+                                        <a href="{{ url_for('complete_training', module_id=record.module_id) }}" 
+                                           class="btn btn-sm btn-warning">
+                                            <i class="fas fa-redo me-1"></i>Renew
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-clipboard-list fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">No training records found.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

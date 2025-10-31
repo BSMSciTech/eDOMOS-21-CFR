@@ -1,0 +1,474 @@
+{% extends "base.html" %}
+
+{% block title %}Validation Reports{% endblock %}
+
+{% block extra_css %}
+<style>
+.report-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #0d6efd;
+    border-bottom: 2px solid #0d6efd;
+    padding-bottom: 0.5rem;
+}
+
+.metric-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.25rem;
+    text-align: center;
+    height: 100%;
+}
+
+.metric-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin: 1.5rem 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-chart-bar me-2"></i>
+                Validation Reports
+            </h2>
+            <p class="text-muted">Analytics and compliance metrics</p>
+        </div>
+        <div>
+            <button class="btn btn-outline-primary" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Print Report
+            </button>
+            <a href="{{ url_for('validation_dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="report-section">
+        <div class="section-title">
+            <i class="fas fa-clipboard-check me-2"></i>Executive Summary
+        </div>
+        
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <div class="metric-card">
+                    <div class="metric-number">{{ total_tests }}</div>
+                    <div class="text-muted">Total Tests</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="metric-card">
+                    <div class="metric-number text-success">{{ tests_passed }}</div>
+                    <div class="text-muted">Passed</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="metric-card">
+                    <div class="metric-number text-danger">{{ tests_failed }}</div>
+                    <div class="text-muted">Failed</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="metric-card">
+                    <div class="metric-number 
+                        {% if pass_rate >= 90 %}text-success
+                        {% elif pass_rate >= 70 %}text-warning
+                        {% else %}text-danger{% endif %}">
+                        {{ pass_rate }}%
+                    </div>
+                    <div class="text-muted">Pass Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert 
+            {% if pass_rate >= 90 %}alert-success
+            {% elif pass_rate >= 70 %}alert-warning
+            {% else %}alert-danger{% endif %}">
+            <strong>Overall Status:</strong>
+            {% if pass_rate >= 90 %}
+                Excellent validation performance. System meets quality standards.
+            {% elif pass_rate >= 70 %}
+                Acceptable validation performance. Some improvements recommended.
+            {% else %}
+                Attention required. Multiple test failures detected.
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Test Type Breakdown -->
+    <div class="report-section">
+        <div class="section-title">
+            <i class="fas fa-flask me-2"></i>Test Type Breakdown
+        </div>
+        
+        <div class="row">
+            <!-- IQ Tests -->
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-server me-2"></i>
+                            Installation Qualification (IQ)
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm mb-0">
+                            <tr>
+                                <td>Total:</td>
+                                <td class="text-end"><strong>{{ iq_total }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Passed:</td>
+                                <td class="text-end"><span class="text-success">{{ iq_passed }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Failed:</td>
+                                <td class="text-end"><span class="text-danger">{{ iq_failed }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Pending:</td>
+                                <td class="text-end"><span class="text-warning">{{ iq_pending }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pass Rate:</strong></td>
+                                <td class="text-end"><strong>{{ iq_pass_rate }}%</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OQ Tests -->
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-cogs me-2"></i>
+                            Operational Qualification (OQ)
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm mb-0">
+                            <tr>
+                                <td>Total:</td>
+                                <td class="text-end"><strong>{{ oq_total }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Passed:</td>
+                                <td class="text-end"><span class="text-success">{{ oq_passed }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Failed:</td>
+                                <td class="text-end"><span class="text-danger">{{ oq_failed }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Pending:</td>
+                                <td class="text-end"><span class="text-warning">{{ oq_pending }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pass Rate:</strong></td>
+                                <td class="text-end"><strong>{{ oq_pass_rate }}%</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PQ Tests -->
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Performance Qualification (PQ)
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm mb-0">
+                            <tr>
+                                <td>Total:</td>
+                                <td class="text-end"><strong>{{ pq_total }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Passed:</td>
+                                <td class="text-end"><span class="text-success">{{ pq_passed }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Failed:</td>
+                                <td class="text-end"><span class="text-danger">{{ pq_failed }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Pending:</td>
+                                <td class="text-end"><span class="text-warning">{{ pq_pending }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pass Rate:</strong></td>
+                                <td class="text-end"><strong>{{ pq_pass_rate }}%</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Distribution -->
+    <div class="report-section">
+        <div class="section-title">
+            <i class="fas fa-chart-pie me-2"></i>Status Distribution
+        </div>
+        
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <div class="metric-card border-start border-warning border-5">
+                    <div class="metric-number text-warning">{{ pending_tests }}</div>
+                    <div class="text-muted">Pending Execution</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="metric-card border-start border-success border-5">
+                    <div class="metric-number text-success">{{ passed_tests }}</div>
+                    <div class="text-muted">Passed</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="metric-card border-start border-danger border-5">
+                    <div class="metric-number text-danger">{{ failed_tests }}</div>
+                    <div class="text-muted">Failed</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="metric-card border-start border-info border-5">
+                    <div class="metric-number text-info">{{ retest_tests }}</div>
+                    <div class="text-muted">Require Retest</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Electronic Signatures -->
+    <div class="report-section">
+        <div class="section-title">
+            <i class="fas fa-signature me-2"></i>Electronic Signatures
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="metric-card">
+                    <div class="metric-number text-primary">{{ execution_signatures }}</div>
+                    <div class="text-muted">Execution Signatures</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="metric-card">
+                    <div class="metric-number text-success">{{ review_signatures }}</div>
+                    <div class="text-muted">Review Signatures</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="metric-card">
+                    <div class="metric-number">{{ execution_signatures + review_signatures }}</div>
+                    <div class="text-muted">Total Signatures</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            All electronic signatures are cryptographically secured using SHA-256 hashing and 
+            logged to the immutable blockchain audit trail per 21 CFR Part 11 requirements.
+        </div>
+    </div>
+
+    <!-- Compliance Matrix -->
+    <div class="report-section">
+        <div class="section-title">
+            <i class="fas fa-shield-alt me-2"></i>21 CFR Part 11 Compliance Matrix
+        </div>
+        
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Requirement</th>
+                    <th>Description</th>
+                    <th class="text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>§11.10(a)</strong></td>
+                    <td>Validation of systems to ensure accuracy and reliability</td>
+                    <td class="text-center">
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle"></i> Compliant
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>§11.200(a)</strong></td>
+                    <td>Electronic signatures contain signature meaning</td>
+                    <td class="text-center">
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle"></i> Compliant
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>§11.50</strong></td>
+                    <td>Signature manifestations (dual signatures implemented)</td>
+                    <td class="text-center">
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle"></i> Compliant
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>§11.10(e)</strong></td>
+                    <td>Audit trail for record changes</td>
+                    <td class="text-center">
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle"></i> Compliant
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Recent Test Activity -->
+    <div class="report-section">
+        <div class="section-title">
+            <i class="fas fa-clock me-2"></i>Recent Test Activity
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Test Number</th>
+                        <th>Test Name</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Executed By</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for test in recent_tests %}
+                    <tr>
+                        <td>{{ test.test_number }}</td>
+                        <td>{{ test.test_name }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if test.test_type == 'IQ' %}bg-primary
+                                {% elif test.test_type == 'OQ' %}bg-success
+                                {% elif test.test_type == 'PQ' %}bg-info
+                                {% endif %}">
+                                {{ test.test_type }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge 
+                                {% if test.status == 'pending' %}bg-warning text-dark
+                                {% elif test.status == 'pass' %}bg-success
+                                {% elif test.status == 'fail' %}bg-danger
+                                {% elif test.status == 'retest' %}bg-warning
+                                {% endif %}">
+                                {{ test.status|upper }}
+                            </span>
+                        </td>
+                        <td>{{ test.executor.username if test.executor else '-' }}</td>
+                        <td>{{ test.executed_date.strftime('%Y-%m-%d') if test.executed_date else '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% if not recent_tests %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No test activity yet</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Export Options -->
+    <div class="report-section">
+        <div class="section-title">
+            <i class="fas fa-download me-2"></i>Export Options
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-file-pdf text-danger" style="font-size: 3rem;"></i>
+                        <h6 class="mt-3">PDF Report</h6>
+                        <p class="text-muted small">Download complete validation report</p>
+                        <button class="btn btn-outline-danger btn-sm" onclick="window.print()">
+                            <i class="fas fa-download me-2"></i>Export PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-file-csv text-success" style="font-size: 3rem;"></i>
+                        <h6 class="mt-3">CSV Export</h6>
+                        <p class="text-muted small">Export raw test data</p>
+                        <a href="{{ url_for('validation_reports') }}?export=csv" 
+                           class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-download me-2"></i>Export CSV
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-file-excel text-primary" style="font-size: 3rem;"></i>
+                        <h6 class="mt-3">Excel Report</h6>
+                        <p class="text-muted small">Export with charts and formatting</p>
+                        <button class="btn btn-outline-primary btn-sm" disabled>
+                            <i class="fas fa-download me-2"></i>Coming Soon
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Footer -->
+    <div class="report-section text-center">
+        <p class="text-muted mb-1">
+            <i class="fas fa-calendar me-2"></i>
+            Report Generated: {{ now.strftime('%Y-%m-%d %H:%M:%S') }}
+        </p>
+        <p class="text-muted mb-0">
+            <i class="fas fa-shield-alt me-2"></i>
+            21 CFR Part 11 Compliant Electronic Records System
+        </p>
+    </div>
+</div>
+{% endblock %}

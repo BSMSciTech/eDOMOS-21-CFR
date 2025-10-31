@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% block title %}Validation Documents{% endblock %}
+
+{% block extra_css %}
+<style>
+.document-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #dee2e6;
+    transition: all 0.2s ease;
+}
+
+.document-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.document-card.iq { border-left-color: #198754; }
+.document-card.oq { border-left-color: #0d6efd; }
+.document-card.pq { border-left-color: #dc3545; }
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-pending { background: #fff3cd; color: #856404; }
+.status-submitted { background: #cfe2ff; color: #084298; }
+.status-approved { background: #d1e7dd; color: #0f5132; }
+.status-rejected { background: #f8d7da; color: #842029; }
+.status-archived { background: #e2e3e5; color: #41464b; }
+
+.upload-zone {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-zone:hover {
+    border-color: #0d6efd;
+    background: #e7f1ff;
+}
+
+.upload-zone.dragover {
+    border-color: #198754;
+    background: #d1e7dd;
+}
+
+.filter-btn {
+    margin: 0 0.25rem 0.5rem 0;
+}
+
+.filter-btn.active {
+    font-weight: 600;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-folder-open me-2"></i>
+                Validation Documents
+            </h2>
+            <p class="text-muted">Manage uploaded IQ/OQ/PQ PDF documents</p>
+        </div>
+        {% if current_user.is_admin %}
+        <div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                <i class="fas fa-upload me-2"></i>Upload Document
+            </button>
+            <a href="{{ url_for('validation_dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Templates
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Status Summary -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-warning h-100">
+                <div class="card-body text-center">
+                    <h3 class="mb-0">{{ pending_count }}</h3>
+                    <small class="text-muted">Pending Review</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-primary h-100">
+                <div class="card-body text-center">
+                    <h3 class="mb-0">{{ submitted_count }}</h3>
+                    <small class="text-muted">Submitted</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-success h-100">
+                <div class="card-body text-center">
+                    <h3 class="mb-0">{{ approved_count }}</h3>
+                    <small class="text-muted">Approved</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-danger h-100">
+                <div class="card-body text-center">
+                    <h3 class="mb-0">{{ rejected_count }}</h3>
+                    <small class="text-muted">Rejected</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h6 class="mb-3">Filter Documents:</h6>
+            <div class="mb-3">
+                <strong class="me-2">Type:</strong>
+                <a href="{{ url_for('validation_documents') }}" class="btn btn-sm btn-outline-secondary filter-btn {% if not request.args.get('type') %}active{% endif %}">All</a>
+                <a href="{{ url_for('validation_documents', type='IQ') }}" class="btn btn-sm btn-outline-success filter-btn {% if request.args.get('type') == 'IQ' %}active{% endif %}">IQ</a>
+                <a href="{{ url_for('validation_documents', type='OQ') }}" class="btn btn-sm btn-outline-primary filter-btn {% if request.args.get('type') == 'OQ' %}active{% endif %}">OQ</a>
+                <a href="{{ url_for('validation_documents', type='PQ') }}" class="btn btn-sm btn-outline-danger filter-btn {% if request.args.get('type') == 'PQ' %}active{% endif %}">PQ</a>
+            </div>
+            <div>
+                <strong class="me-2">Status:</strong>
+                <a href="{{ url_for('validation_documents') }}" class="btn btn-sm btn-outline-secondary filter-btn {% if not request.args.get('status') %}active{% endif %}">All</a>
+                <a href="{{ url_for('validation_documents', status='pending') }}" class="btn btn-sm btn-outline-warning filter-btn {% if request.args.get('status') == 'pending' %}active{% endif %}">Pending</a>
+                <a href="{{ url_for('validation_documents', status='submitted') }}" class="btn btn-sm btn-outline-primary filter-btn {% if request.args.get('status') == 'submitted' %}active{% endif %}">Submitted</a>
+                <a href="{{ url_for('validation_documents', status='approved') }}" class="btn btn-sm btn-outline-success filter-btn {% if request.args.get('status') == 'approved' %}active{% endif %}">Approved</a>
+                <a href="{{ url_for('validation_documents', status='rejected') }}" class="btn btn-sm btn-outline-danger filter-btn {% if request.args.get('status') == 'rejected' %}active{% endif %}">Rejected</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documents List -->
+    <div class="card">
+        <div class="card-body">
+            {% if documents %}
+                {% for doc in documents %}
+                <div class="document-card {{ doc.document_type|lower }}">
+                    <div class="row align-items-center">
+                        <div class="col-md-7">
+                            <h6 class="mb-1">
+                                <span class="badge bg-{% if doc.document_type == 'IQ' %}success{% elif doc.document_type == 'OQ' %}primary{% else %}danger{% endif %} me-2">
+                                    {{ doc.document_type }}
+                                </span>
+                                {{ doc.document_number }}
+                            </h6>
+                            <p class="text-muted mb-2 small">
+                                <i class="fas fa-file-pdf me-1"></i> {{ doc.original_filename }}
+                                <span class="ms-3"><i class="fas fa-database me-1"></i> {{ (doc.file_size / 1024)|round(1) }} KB</span>
+                            </p>
+                            <div class="small text-muted">
+                                <span class="me-3">
+                                    <i class="fas fa-microchip me-1"></i>{{ doc.system_id }}
+                                </span>
+                                <span class="me-3">
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ doc.site_location }}
+                                </span>
+                                <span>
+                                    <i class="fas fa-user me-1"></i>{{ doc.uploader.username }}
+                                </span>
+                                <span class="ms-3">
+                                    <i class="fas fa-calendar me-1"></i>{{ doc.uploaded_at.strftime('%Y-%m-%d %H:%M') }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <span class="status-badge status-{{ doc.status }}">
+                                {% if doc.status == 'pending' %}<i class="fas fa-clock me-1"></i>Pending
+                                {% elif doc.status == 'submitted' %}<i class="fas fa-paper-plane me-1"></i>Submitted
+                                {% elif doc.status == 'approved' %}<i class="fas fa-check-circle me-1"></i>Approved
+                                {% elif doc.status == 'rejected' %}<i class="fas fa-times-circle me-1"></i>Rejected
+                                {% else %}<i class="fas fa-archive me-1"></i>Archived{% endif %}
+                            </span>
+                            {% if doc.approved_by %}
+                            <div class="small text-muted mt-2">
+                                by {{ doc.approver.username }}<br>
+                                {{ doc.approved_at.strftime('%Y-%m-%d %H:%M') }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <a href="{{ url_for('view_validation_document', doc_id=doc.id) }}" class="btn btn-sm btn-outline-primary mb-1 w-100">
+                                <i class="fas fa-eye me-1"></i>View
+                            </a>
+                            <a href="{{ url_for('download_validation_document', doc_id=doc.id) }}" class="btn btn-sm btn-outline-secondary mb-1 w-100">
+                                <i class="fas fa-download me-1"></i>Download
+                            </a>
+                            {% if current_user.is_admin and doc.status == 'pending' %}
+                            <button class="btn btn-sm btn-outline-primary w-100 mb-1" onclick="submitDocument({{ doc.id }})">
+                                <i class="fas fa-paper-plane me-1"></i>Submit
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+                    <h5>No Documents Found</h5>
+                    <p class="text-muted">Upload your first validation document to get started.</p>
+                    {% if current_user.is_admin %}
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <i class="fas fa-upload me-2"></i>Upload Document
+                    </button>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Upload Modal -->
+{% if current_user.is_admin %}
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Validation Document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Document Type *</label>
+                        <select class="form-select" name="document_type" required>
+                            <option value="IQ">IQ - Installation Qualification</option>
+                            <option value="OQ">OQ - Operational Qualification</option>
+                            <option value="PQ">PQ - Performance Qualification</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">PDF File *</label>
+                        <div class="upload-zone" id="uploadZone">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                            <p class="mb-2">Click to browse or drag & drop PDF file</p>
+                            <small class="text-muted">Only PDF files are accepted</small>
+                            <input type="file" id="fileInput" name="file" accept=".pdf" style="display:none" required>
+                        </div>
+                        <div id="fileName" class="mt-2 text-success" style="display:none"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description (Optional)</label>
+                        <textarea class="form-control" name="description" rows="3" placeholder="Add notes about this document..."></textarea>
+                    </div>
+                    <div class="alert alert-info small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        System will auto-capture: Equipment Serial Number, Software Version, Site Location, Upload Time
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="uploadDocument()">
+                    <i class="fas fa-upload me-2"></i>Upload Document
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+// File upload handling
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+const fileName = document.getElementById('fileName');
+
+if (uploadZone && fileInput) {
+    uploadZone.addEventListener('click', () => fileInput.click());
+    
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            fileName.textContent = `Selected: ${e.target.files[0].name}`;
+            fileName.style.display = 'block';
+        }
+    });
+    
+    // Drag and drop
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+    });
+    
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('dragover');
+    });
+    
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        
+        if (e.dataTransfer.files.length > 0) {
+            const file = e.dataTransfer.files[0];
+            if (file.type === 'application/pdf') {
+                fileInput.files = e.dataTransfer.files;
+                fileName.textContent = `Selected: ${file.name}`;
+                fileName.style.display = 'block';
+            } else {
+                alert('Please upload a PDF file');
+            }
+        }
+    });
+}
+
+function uploadDocument() {
+    const form = document.getElementById('uploadForm');
+    const formData = new FormData(form);
+    
+    fetch('/validation/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Upload failed: ' + error);
+    });
+}
+
+function submitDocument(docId) {
+    if (confirm('Submit this document for approval?')) {
+        fetch(`/validation/document/${docId}/submit`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

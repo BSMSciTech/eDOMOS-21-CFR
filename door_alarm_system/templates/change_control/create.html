@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Create Change Request{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #0d6efd;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0d6efd;
+    margin-bottom: 1rem;
+}
+
+.char-counter {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.required-label::after {
+    content: " *";
+    color: #dc3545;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="mb-4">
+                <a href="{{ url_for('change_control_dashboard') }}" class="btn btn-outline-secondary btn-sm mb-3">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+                <h2 class="mb-1">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Create Change Request
+                </h2>
+                <p class="text-muted">Submit a new change request for approval</p>
+            </div>
+
+            <form method="POST" id="changeForm">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-info-circle me-2"></i>Basic Information
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label required-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               required maxlength="200" placeholder="Brief description of the change">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="change_type" class="form-label required-label">Change Type</label>
+                            <select class="form-select" id="change_type" name="change_type" required>
+                                <option value="">Select type...</option>
+                                <option value="feature">New Feature</option>
+                                <option value="bugfix">Bug Fix</option>
+                                <option value="configuration">Configuration</option>
+                                <option value="security">Security Update</option>
+                                <option value="documentation">Documentation</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="priority" class="form-label required-label">Priority</label>
+                            <select class="form-select" id="priority" name="priority" required>
+                                <option value="">Select priority...</option>
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label required-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" 
+                                  rows="5" required placeholder="Detailed description of the proposed change..."></textarea>
+                        <small class="char-counter">
+                            <span id="descLength">0</span> characters
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="justification" class="form-label required-label">Business Justification</label>
+                        <textarea class="form-control" id="justification" name="justification" 
+                                  rows="4" required 
+                                  placeholder="Why is this change necessary? What problem does it solve?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Impact Assessment -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Impact Assessment
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="impact_assessment" class="form-label">Risk Analysis</label>
+                        <textarea class="form-control" id="impact_assessment" name="impact_assessment" 
+                                  rows="4" 
+                                  placeholder="Potential risks, impacts on other systems, user impact..."></textarea>
+                        <small class="text-muted">Describe potential risks and impacts</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="affected_systems" class="form-label">Affected Systems</label>
+                        <input type="text" class="form-control" id="affected_systems" name="affected_systems" 
+                               placeholder="e.g., Door System, Alarm Module, Database">
+                        <small class="text-muted">Comma-separated list of affected components</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="rollback_plan" class="form-label">Rollback Plan</label>
+                        <textarea class="form-control" id="rollback_plan" name="rollback_plan" 
+                                  rows="4" 
+                                  placeholder="Steps to rollback the change if issues occur..."></textarea>
+                        <small class="text-muted">Describe how to revert this change if needed</small>
+                    </div>
+                </div>
+
+                <!-- Version Information -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-code-branch me-2"></i>Version Information
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="version_before" class="form-label">Current Version</label>
+                            <input type="text" class="form-control" id="version_before" name="version_before" 
+                                   placeholder="e.g., 2.1.0">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="version_after" class="form-label">Target Version</label>
+                            <input type="text" class="form-control" id="version_after" name="version_after" 
+                                   placeholder="e.g., 2.2.0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compliance Notice -->
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-shield-alt me-2"></i>21 CFR Part 11 Compliance</h6>
+                    <p class="mb-0 small">
+                        This change request will be subject to review and approval with electronic signatures. 
+                        All changes are tracked in the blockchain audit trail for regulatory compliance.
+                    </p>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-paper-plane me-2"></i>Submit Change Request
+                    </button>
+                    <a href="{{ url_for('change_control_dashboard') }}" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Character counter
+const descField = document.getElementById('description');
+const descLength = document.getElementById('descLength');
+
+descField.addEventListener('input', function() {
+    descLength.textContent = this.value.length;
+});
+
+// Form validation
+document.getElementById('changeForm').addEventListener('submit', function(e) {
+    const title = document.getElementById('title').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const justification = document.getElementById('justification').value.trim();
+    
+    if (!title || !description || !justification) {
+        e.preventDefault();
+        alert('Please fill in all required fields');
+        return false;
+    }
+});
+</script>
+{% endblock %}

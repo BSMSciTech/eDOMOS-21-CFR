@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}eDOMOS v2.1 - Cyber Edition{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Cyber Theme CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cyber.css') }}">
+    
+    <!-- Socket.IO for Real-time Updates -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation Bar -->
+        <nav class="top-navbar">
+            <div class="navbar-container">
+                <!-- Brand -->
+                <a href="{{ url_for('dashboard') }}" class="navbar-brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1>eDOMOS</h1>
+                        <p>Cyber Security v2.1</p>
+                    </div>
+                </a>
+                
+                <!-- Navigation Menu -->
+                <ul class="navbar-menu">
+                    <li class="nav-item">
+                        <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('event_log') }}" class="nav-link {% if request.endpoint == 'event_log' %}active{% endif %}">
+                            <i class="fas fa-bell"></i>
+                            <span>Events</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('analytics') }}" class="nav-link {% if request.endpoint == 'analytics' %}active{% endif %}">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Analytics</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('reports') }}" class="nav-link {% if request.endpoint == 'reports' %}active{% endif %}">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('admin_panel') }}" class="nav-link {% if request.endpoint == 'admin_panel' %}active{% endif %}">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- User Menu -->
+                <div class="user-menu" onclick="toggleUserDropdown()">
+                    <div class="user-avatar">
+                        {{ current_user.username[0].upper() if current_user.is_authenticated else 'U' }}
+                    </div>
+                    <div class="user-info-text">
+                        <div class="user-name">{{ current_user.username if current_user.is_authenticated else 'User' }}</div>
+                        <div class="user-role">{{ current_user.role if current_user.is_authenticated else 'Guest' }}</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="color: var(--neon-cyan); font-size: 12px;"></i>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages" style="margin-bottom: 2rem;">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show animate-slide-up" role="alert" style="border-radius: 12px; border-left: 4px solid var(--neon-{{ 'green' if category == 'success' else 'pink' }});">
+                                <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Page Content -->
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    
+    <!-- User Dropdown Menu (Modal-style) -->
+    <div id="userDropdown" style="display: none; position: fixed; top: 80px; right: 40px; z-index: 2000; background: var(--card-dark); border-radius: 16px; padding: 1rem; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 212, 255, 0.2); border: 2px solid var(--neon-cyan); min-width: 250px;">
+        <div style="padding: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                <div class="user-avatar" style="width: 50px; height: 50px; font-size: 24px;">
+                    {{ current_user.username[0].upper() if current_user.is_authenticated else 'U' }}
+                </div>
+                <div>
+                    <div style="color: var(--neon-cyan); font-weight: 700; font-size: 16px;">
+                        {{ current_user.username if current_user.is_authenticated else 'User' }}
+                    </div>
+                    <div style="color: var(--neon-orange); font-size: 12px; text-transform: uppercase;">
+                        {{ current_user.role if current_user.is_authenticated else 'Guest' }}
+                    </div>
+                </div>
+            </div>
+            {% if current_user.is_authenticated %}
+                <div style="color: rgba(255, 255, 255, 0.6); font-size: 12px; margin-top: 0.5rem;">
+                    <i class="fas fa-envelope" style="color: var(--neon-cyan);"></i>
+                    {{ current_user.email if current_user.email else 'No email set' }}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('admin_panel') }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 8px; text-decoration: none; color: white; transition: all 0.3s;" onmouseover="this.style.background='rgba(0, 212, 255, 0.1)'" onmouseout="this.style.background='transparent'">
+                    <i class="fas fa-user-cog" style="color: var(--neon-cyan); width: 20px;"></i>
+                    <span>Profile Settings</span>
+                </a>
+                <a href="{{ url_for('logout') }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 8px; text-decoration: none; color: white; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 107, 53, 0.1)'" onmouseout="this.style.background='transparent'">
+                    <i class="fas fa-sign-out-alt" style="color: var(--neon-orange); width: 20px;"></i>
+                    <span>Logout</span>
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 8px; text-decoration: none; color: white; transition: all 0.3s;" onmouseover="this.style.background='rgba(0, 212, 255, 0.1)'" onmouseout="this.style.background='transparent'">
+                    <i class="fas fa-sign-in-alt" style="color: var(--neon-cyan); width: 20px;"></i>
+                    <span>Login</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Overlay for dropdown -->
+    <div id="userDropdownOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1999;" onclick="toggleUserDropdown()"></div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- User Dropdown Script -->
+    <script>
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            const overlay = document.getElementById('userDropdownOverlay');
+            if (dropdown.style.display === 'none') {
+                dropdown.style.display = 'block';
+                overlay.style.display = 'block';
+                dropdown.style.animation = 'slideUp 0.3s ease-out';
+            } else {
+                dropdown.style.display = 'none';
+                overlay.style.display = 'none';
+            }
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            const dropdown = document.getElementById('userDropdown');
+            if (!userMenu.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+                document.getElementById('userDropdownOverlay').style.display = 'none';
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,393 @@
+{% extends "base_cyber.html" %}
+
+{% block title %}Dashboard - eDOMOS Cyber Security{% endblock %}
+
+{% block content %}
+<!-- Cyber Hero Section -->
+<div class="cyber-hero animate-slide-up">
+    <div class="hero-content">
+        <div class="hero-icon">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <h1 class="hero-title">SECURITY COMMAND CENTER</h1>
+        <p class="hero-subtitle">Real-Time Monitoring & Control</p>
+        <div class="status-badge">
+            <span class="pulse-dot"></span>
+            <span>ALL SYSTEMS OPERATIONAL</span>
+        </div>
+    </div>
+</div>
+
+<!-- Metric Cards Grid -->
+<div class="grid grid-4" style="margin-bottom: 3rem;">
+    <!-- Door Status Card -->
+    <div class="metric-card cyan animate-slide-up" style="animation-delay: 0.1s;">
+        <div class="metric-icon-container cyan">
+            <i class="fas fa-door-{{ 'open' if door_status == 'open' else 'closed' }}"></i>
+        </div>
+        <div class="metric-label">Door Status</div>
+        <div class="metric-value" id="door-status-display">
+            {{ door_status.upper() }}
+        </div>
+        <div class="metric-change {{ 'up' if door_status == 'open' else 'down' }}">
+            <i class="fas fa-circle"></i>
+            <span id="door-timestamp">{{ last_event_time if last_event_time else 'No events' }}</span>
+        </div>
+    </div>
+    
+    <!-- Alarm Status Card -->
+    <div class="metric-card orange animate-slide-up" style="animation-delay: 0.2s;">
+        <div class="metric-icon-container orange">
+            <i class="fas fa-{{ 'bell' if alarm_active else 'bell-slash' }}"></i>
+        </div>
+        <div class="metric-label">Alarm System</div>
+        <div class="metric-value" id="alarm-status-display">
+            {{ 'ACTIVE' if alarm_active else 'INACTIVE' }}
+        </div>
+        <div class="metric-change {{ 'up' if alarm_active else 'down' }}">
+            <i class="fas fa-{{ 'volume-up' if alarm_active else 'volume-mute' }}"></i>
+            <span>{{ 'Triggered' if alarm_active else 'Standby' }}</span>
+        </div>
+    </div>
+    
+    <!-- Timer Status Card -->
+    <div class="metric-card green animate-slide-up" style="animation-delay: 0.3s;">
+        <div class="metric-icon-container green">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div class="metric-label">Timer Status</div>
+        <div class="metric-value" id="timer-display">
+            {{ timer_remaining if timer_remaining else '00:00' }}
+        </div>
+        <div class="metric-change {{ 'up' if timer_active else 'down' }}">
+            <i class="fas fa-{{ 'play' if timer_active else 'pause' }}"></i>
+            <span>{{ 'Running' if timer_active else 'Stopped' }}</span>
+        </div>
+    </div>
+    
+    <!-- Total Events Card -->
+    <div class="metric-card pink animate-slide-up" style="animation-delay: 0.4s;">
+        <div class="metric-icon-container pink">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <div class="metric-label">Total Events</div>
+        <div class="metric-value" id="event-count">
+            {{ total_events if total_events else '0' }}
+        </div>
+        <div class="metric-change up">
+            <i class="fas fa-arrow-up"></i>
+            <span>Last 24 hours</span>
+        </div>
+    </div>
+</div>
+
+<!-- System Controls & Analytics Grid -->
+<div class="grid grid-2" style="gap: 2rem;">
+    <!-- Control Panel -->
+    <div class="cyber-card cyan animate-slide-up" style="animation-delay: 0.5s;">
+        <h2 style="font-family: var(--font-display); color: var(--text-white); font-size: 24px; font-weight: 800; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fas fa-sliders-h" style="color: var(--neon-cyan);"></i>
+            SYSTEM CONTROLS
+        </h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <!-- Door Control -->
+            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 1.25rem; border: 1px solid rgba(0, 212, 255, 0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div>
+                        <h3 style="color: var(--neon-cyan); font-size: 16px; font-weight: 700; margin-bottom: 0.25rem;">Door Sensor</h3>
+                        <p style="color: rgba(255, 255, 255, 0.6); font-size: 12px; margin: 0;">Monitor entrance activity</p>
+                    </div>
+                    <i class="fas fa-door-open" style="font-size: 32px; color: var(--neon-cyan); opacity: 0.3;"></i>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <button class="cyber-btn cyan" style="flex: 1; font-size: 12px; padding: 0.75rem 1rem;" onclick="testDoorSensor()">
+                        <i class="fas fa-vial"></i>
+                        TEST SENSOR
+                    </button>
+                    <button class="cyber-btn cyan" style="flex: 1; font-size: 12px; padding: 0.75rem 1rem;" onclick="refreshStatus()">
+                        <i class="fas fa-sync"></i>
+                        REFRESH
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Alarm Control -->
+            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 1.25rem; border: 1px solid rgba(255, 107, 53, 0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div>
+                        <h3 style="color: var(--neon-orange); font-size: 16px; font-weight: 700; margin-bottom: 0.25rem;">Alarm System</h3>
+                        <p style="color: rgba(255, 255, 255, 0.6); font-size: 12px; margin: 0;">Audio alert management</p>
+                    </div>
+                    <i class="fas fa-bell" style="font-size: 32px; color: var(--neon-orange); opacity: 0.3;"></i>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <button class="cyber-btn orange" style="flex: 1; font-size: 12px; padding: 0.75rem 1rem;" onclick="triggerAlarm()">
+                        <i class="fas fa-volume-up"></i>
+                        TRIGGER
+                    </button>
+                    <button class="cyber-btn orange" style="flex: 1; font-size: 12px; padding: 0.75rem 1rem;" onclick="stopAlarm()">
+                        <i class="fas fa-volume-mute"></i>
+                        STOP
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Timer Control -->
+            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 1.25rem; border: 1px solid rgba(0, 255, 136, 0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div>
+                        <h3 style="color: var(--neon-green); font-size: 16px; font-weight: 700; margin-bottom: 0.25rem;">Auto Timer</h3>
+                        <p style="color: rgba(255, 255, 255, 0.6); font-size: 12px; margin: 0;">Automated countdown system</p>
+                    </div>
+                    <i class="fas fa-clock" style="font-size: 32px; color: var(--neon-green); opacity: 0.3;"></i>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <button class="cyber-btn" style="flex: 1; font-size: 12px; padding: 0.75rem 1rem; background: var(--gradient-green); border-color: var(--neon-green); color: white; box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);" onclick="startTimer()">
+                        <i class="fas fa-play"></i>
+                        START
+                    </button>
+                    <button class="cyber-btn" style="flex: 1; font-size: 12px; padding: 0.75rem 1rem; background: var(--gradient-pink); border-color: var(--neon-pink); color: white; box-shadow: 0 0 20px rgba(255, 51, 102, 0.4);" onclick="resetTimer()">
+                        <i class="fas fa-redo"></i>
+                        RESET
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Analytics -->
+    <div class="cyber-card orange animate-slide-up" style="animation-delay: 0.6s;">
+        <h2 style="font-family: var(--font-display); color: var(--text-white); font-size: 24px; font-weight: 800; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fas fa-chart-bar" style="color: var(--neon-orange);"></i>
+            SYSTEM ANALYTICS
+        </h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <!-- Uptime -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="color: rgba(255, 255, 255, 0.8); font-size: 14px; font-weight: 600;">System Uptime</span>
+                    <span style="color: var(--neon-cyan); font-weight: 700; font-size: 16px;" id="uptime-display">{{ uptime if uptime else 'Calculating...' }}</span>
+                </div>
+                <div style="height: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden;">
+                    <div style="height: 100%; width: 95%; background: var(--gradient-cyan); box-shadow: 0 0 10px rgba(0, 212, 255, 0.6); border-radius: 10px; transition: width 0.3s;"></div>
+                </div>
+            </div>
+            
+            <!-- Event Activity -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="color: rgba(255, 255, 255, 0.8); font-size: 14px; font-weight: 600;">Event Activity</span>
+                    <span style="color: var(--neon-orange); font-weight: 700; font-size: 16px;" id="event-rate">{{ event_rate if event_rate else '0' }}/hr</span>
+                </div>
+                <div style="height: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden;">
+                    <div style="height: 100%; width: 68%; background: var(--gradient-orange); box-shadow: 0 0 10px rgba(255, 107, 53, 0.6); border-radius: 10px; transition: width 0.3s;"></div>
+                </div>
+            </div>
+            
+            <!-- Response Time -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="color: rgba(255, 255, 255, 0.8); font-size: 14px; font-weight: 600;">Response Time</span>
+                    <span style="color: var(--neon-green); font-weight: 700; font-size: 16px;">< 50ms</span>
+                </div>
+                <div style="height: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden;">
+                    <div style="height: 100%; width: 92%; background: var(--gradient-green); box-shadow: 0 0 10px rgba(0, 255, 136, 0.6); border-radius: 10px; transition: width 0.3s;"></div>
+                </div>
+            </div>
+            
+            <!-- System Health -->
+            <div style="background: rgba(0, 255, 136, 0.1); border-radius: 12px; padding: 1.25rem; border: 2px solid var(--neon-green); margin-top: 1rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--gradient-green); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-neon-green);">
+                        <i class="fas fa-check" style="font-size: 28px; color: white;"></i>
+                    </div>
+                    <div>
+                        <h3 style="color: var(--neon-green); font-size: 18px; font-weight: 800; margin-bottom: 0.25rem;">OPTIMAL</h3>
+                        <p style="color: rgba(255, 255, 255, 0.8); font-size: 13px; margin: 0;">All components functioning normally</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Links -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1rem;">
+                <a href="{{ url_for('event_log') }}" class="cyber-btn cyan" style="font-size: 11px; padding: 0.75rem; text-align: center; justify-content: center;">
+                    <i class="fas fa-list"></i>
+                    VIEW EVENTS
+                </a>
+                <a href="{{ url_for('analytics') }}" class="cyber-btn orange" style="font-size: 11px; padding: 0.75rem; text-align: center; justify-content: center;">
+                    <i class="fas fa-chart-line"></i>
+                    ANALYTICS
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Events Section -->
+<div class="cyber-card green animate-slide-up" style="margin-top: 2rem; animation-delay: 0.7s; border-top: 4px solid var(--neon-green);">
+    <h2 style="font-family: var(--font-display); color: var(--text-white); font-size: 24px; font-weight: 800; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <i class="fas fa-history" style="color: var(--neon-green);"></i>
+        RECENT ACTIVITY
+    </h2>
+    
+    <div id="recent-events-container">
+        {% if recent_events %}
+            {% for event in recent_events[:5] %}
+                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 1rem; margin-bottom: 0.75rem; border-left: 4px solid var(--neon-{{ 'cyan' if event.event_type == 'door_opened' else 'orange' if event.event_type == 'alarm_triggered' else 'green' }});">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                                <i class="fas fa-{{ 'door-open' if event.event_type == 'door_opened' else 'bell' if event.event_type == 'alarm_triggered' else 'clock' }}" style="color: var(--neon-{{ 'cyan' if event.event_type == 'door_opened' else 'orange' if event.event_type == 'alarm_triggered' else 'green' }}); font-size: 20px;"></i>
+                                <h4 style="color: var(--text-white); font-size: 16px; font-weight: 700; margin: 0;">{{ event.event_type.replace('_', ' ').title() }}</h4>
+                            </div>
+                            <p style="color: rgba(255, 255, 255, 0.6); font-size: 13px; margin: 0; margin-left: 32px;">{{ event.description if event.description else 'System event logged' }}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: var(--neon-cyan); font-size: 13px; font-weight: 600;">{{ event.timestamp.strftime('%H:%M:%S') }}</div>
+                            <div style="color: rgba(255, 255, 255, 0.5); font-size: 11px;">{{ event.timestamp.strftime('%d %b %Y') }}</div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; padding: 3rem; color: rgba(255, 255, 255, 0.5);">
+                <i class="fas fa-inbox" style="font-size: 64px; margin-bottom: 1rem; opacity: 0.3;"></i>
+                <p style="font-size: 16px; margin: 0;">No recent events to display</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Real-time Dashboard Updates
+    class CyberDashboard {
+        constructor() {
+            this.socket = io({
+                transports: ['polling', 'websocket'],
+                upgrade: true
+            });
+            this.initSocketListeners();
+            this.startAutoRefresh();
+        }
+        
+        initSocketListeners() {
+            this.socket.on('connect', () => {
+                console.log('🟢 Connected to server');
+            });
+            
+            this.socket.on('door_status_update', (data) => {
+                this.updateDoorStatus(data);
+            });
+            
+            this.socket.on('alarm_update', (data) => {
+                this.updateAlarmStatus(data);
+            });
+            
+            this.socket.on('timer_update', (data) => {
+                this.updateTimer(data);
+            });
+        }
+        
+        updateDoorStatus(data) {
+            const statusDisplay = document.getElementById('door-status-display');
+            const timestamp = document.getElementById('door-timestamp');
+            if (statusDisplay) {
+                statusDisplay.textContent = data.status.toUpperCase();
+            }
+            if (timestamp && data.timestamp) {
+                timestamp.textContent = new Date(data.timestamp).toLocaleTimeString();
+            }
+        }
+        
+        updateAlarmStatus(data) {
+            const alarmDisplay = document.getElementById('alarm-status-display');
+            if (alarmDisplay) {
+                alarmDisplay.textContent = data.active ? 'ACTIVE' : 'INACTIVE';
+            }
+        }
+        
+        updateTimer(data) {
+            const timerDisplay = document.getElementById('timer-display');
+            if (timerDisplay) {
+                timerDisplay.textContent = data.remaining || '00:00';
+            }
+        }
+        
+        startAutoRefresh() {
+            setInterval(() => {
+                this.fetchUpdates();
+            }, 3000); // Refresh every 3 seconds
+        }
+        
+        async fetchUpdates() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                // Update UI with latest data
+                if (data.uptime) {
+                    const uptimeDisplay = document.getElementById('uptime-display');
+                    if (uptimeDisplay) uptimeDisplay.textContent = data.uptime;
+                }
+                
+                if (data.event_count !== undefined) {
+                    const eventCount = document.getElementById('event-count');
+                    if (eventCount) eventCount.textContent = data.event_count;
+                }
+            } catch (error) {
+                console.error('Failed to fetch updates:', error);
+            }
+        }
+    }
+    
+    // Control Functions
+    function testDoorSensor() {
+        fetch('/api/test_door', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => alert(data.message || 'Door sensor test triggered'))
+            .catch(error => console.error('Error:', error));
+    }
+    
+    function triggerAlarm() {
+        fetch('/api/trigger_alarm', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => alert(data.message || 'Alarm triggered'))
+            .catch(error => console.error('Error:', error));
+    }
+    
+    function stopAlarm() {
+        fetch('/api/stop_alarm', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => alert(data.message || 'Alarm stopped'))
+            .catch(error => console.error('Error:', error));
+    }
+    
+    function startTimer() {
+        fetch('/api/start_timer', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => alert(data.message || 'Timer started'))
+            .catch(error => console.error('Error:', error));
+    }
+    
+    function resetTimer() {
+        fetch('/api/reset_timer', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => alert(data.message || 'Timer reset'))
+            .catch(error => console.error('Error:', error));
+    }
+    
+    function refreshStatus() {
+        location.reload();
+    }
+    
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', () => {
+        new CyberDashboard();
+    });
+</script>
+{% endblock %}

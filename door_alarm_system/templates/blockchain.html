@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}Blockchain Audit Trail - eDOMOS{% endblock %}
+
+{% block content %}
+<style>
+    .blockchain-verified {
+        border-left: 4px solid #00ff9d;
+        background: rgba(0, 255, 157, 0.1);
+    }
+    
+    .blockchain-corrupted {
+        border-left: 4px solid #ff4444;
+        background: rgba(255, 68, 68, 0.1);
+    }
+    
+    .block-hash {
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        word-break: break-all;
+    }
+    
+    .stat-card {
+        transition: transform 0.2s;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+
+<div class="container-fluid mt-4">
+    <h2><i class="fas fa-link me-2"></i>Blockchain Audit Trail</h2>
+    <p class="text-muted">Tamper-proof, cryptographically-verified event logging</p>
+    
+    <!-- Blockchain Status Cards -->
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card stat-card" id="totalBlocksCard">
+                <div class="card-body">
+                    <h6 class="card-title"><i class="fas fa-cubes"></i> Total Blocks</h6>
+                    <h3 id="totalBlocks">-</h3>
+                    <small class="text-muted">Blockchain length</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card" id="verificationCard">
+                <div class="card-body">
+                    <h6 class="card-title"><i class="fas fa-shield-alt"></i> Verification</h6>
+                    <h3 id="verificationStatus">-</h3>
+                    <small class="text-muted" id="verificationMessage">Checking...</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-info text-white">
+                <div class="card-body">
+                    <h6 class="card-title"><i class="fas fa-calendar-check"></i> Genesis Block</h6>
+                    <h3 id="genesisDate" style="font-size: 1.2rem;">-</h3>
+                    <small>System initialized</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="card-title"><i class="fas fa-clock"></i> Latest Block</h6>
+                    <h3 id="latestDate" style="font-size: 1.2rem;">-</h3>
+                    <small>Most recent event</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Verification Actions -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-check-circle"></i> Blockchain Integrity</h5>
+                    <div>
+                        <button class="btn btn-success btn-sm" onclick="verifyBlockchain()">
+                            <i class="fas fa-sync"></i> Verify Now
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="exportBlockchain()">
+                            <i class="fas fa-download"></i> Export Proof
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="verificationResult" class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Click "Verify Now" to check blockchain integrity
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Blockchain Events -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-list"></i> Recent Blockchain Events</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Block #</th>
+                                    <th>Event Type</th>
+                                    <th>Description</th>
+                                    <th>Timestamp</th>
+                                    <th>Block Hash</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="blockchainEventsTable">
+                                <tr>
+                                    <td colspan="6" class="text-center">Loading blockchain events...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Load blockchain stats on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadBlockchainStats();
+    loadRecentEvents();
+});
+
+function loadBlockchainStats() {
+    fetch('/api/blockchain/stats')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('totalBlocks').textContent = data.total_blocks || 0;
+                document.getElementById('genesisDate').textContent = data.genesis_timestamp ? 
+                    new Date(data.genesis_timestamp).toLocaleDateString() : 'N/A';
+                document.getElementById('latestDate').textContent = data.latest_timestamp ?
+                    new Date(data.latest_timestamp).toLocaleDateString() : 'N/A';
+                
+                // Update verification status
+                const verificationCard = document.getElementById('verificationCard');
+                const verificationStatus = document.getElementById('verificationStatus');
+                const verificationMessage = document.getElementById('verificationMessage');
+                
+                if (data.verified) {
+                    verificationCard.className = 'card stat-card bg-success text-white';
+                    verificationStatus.innerHTML = '<i class="fas fa-check-circle"></i>';
+                    verificationMessage.textContent = 'Blockchain verified';
+                } else {
+                    verificationCard.className = 'card stat-card bg-danger text-white';
+                    verificationStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                    verificationMessage.textContent = 'Verification needed';
+                }
+            }
+        })
+        .catch(error => console.error('Error loading blockchain stats:', error));
+}
+
+function verifyBlockchain() {
+    const resultDiv = document.getElementById('verificationResult');
+    resultDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying blockchain integrity...';
+    resultDiv.className = 'alert alert-info';
+    
+    fetch('/api/blockchain/verify')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.verified) {
+                    resultDiv.className = 'alert alert-success';
+                    resultDiv.innerHTML = `
+                        <h5><i class="fas fa-check-circle"></i> Blockchain Verified!</h5>
+                        <p>${data.message}</p>
+                        <small>All blocks are cryptographically intact and tamper-proof.</small>
+                    `;
+                } else {
+                    resultDiv.className = 'alert alert-danger';
+                    resultDiv.innerHTML = `
+                        <h5><i class="fas fa-exclamation-triangle"></i> Blockchain Compromised!</h5>
+                        <p>${data.message}</p>
+                        <p><strong>Corrupted blocks:</strong> ${JSON.stringify(data.corrupted_blocks, null, 2)}</p>
+                    `;
+                }
+                
+                // Reload stats
+                loadBlockchainStats();
+            } else {
+                resultDiv.className = 'alert alert-danger';
+                resultDiv.innerHTML = `<i class="fas fa-times"></i> Error: ${data.error}`;
+            }
+        })
+        .catch(error => {
+            resultDiv.className = 'alert alert-danger';
+            resultDiv.innerHTML = `<i class="fas fa-times"></i> Error verifying blockchain: ${error}`;
+        });
+}
+
+function loadRecentEvents() {
+    fetch('/api/blockchain/events?limit=50')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const tbody = document.getElementById('blockchainEventsTable');
+                
+                if (data.events.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No blockchain events found</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = data.events.map(event => `
+                    <tr>
+                        <td><span class="badge bg-primary">${event.block_index}</span></td>
+                        <td><span class="badge bg-secondary">${event.event_type}</span></td>
+                        <td>${event.description}</td>
+                        <td>${event.timestamp}</td>
+                        <td class="block-hash" title="${event.block_hash}">${event.block_hash.substring(0, 16)}...</td>
+                        <td><span class="badge bg-success"><i class="fas fa-lock"></i> Locked</span></td>
+                    </tr>
+                `).join('');
+            }
+        })
+        .catch(error => console.error('Error loading blockchain events:', error));
+}
+
+function exportBlockchain() {
+    const button = event.target;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
+    
+    fetch('/api/blockchain/export')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Create downloadable JSON file
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `blockchain_proof_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                alert('Blockchain proof exported successfully!');
+            } else {
+                alert('Error exporting blockchain: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error exporting blockchain: ' + error);
+        })
+        .finally(() => {
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-download"></i> Export Proof';
+        });
+}
+</script>
+{% endblock %}

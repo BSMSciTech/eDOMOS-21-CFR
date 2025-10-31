@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block title %}Change Control{% endblock %}
+
+{% block extra_css %}
+<style>
+.stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.stat-card.total { border-left-color: #0d6efd; }
+.stat-card.pending { border-left-color: #ffc107; }
+.stat-card.approved { border-left-color: #198754; }
+.stat-card.implemented { border-left-color: #0dcaf0; }
+.stat-card.rejected { border-left-color: #dc3545; }
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.change-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #dee2e6;
+    transition: all 0.2s ease;
+}
+
+.change-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.change-card.priority-critical { border-left-color: #dc3545; }
+.change-card.priority-high { border-left-color: #fd7e14; }
+.change-card.priority-medium { border-left-color: #ffc107; }
+.change-card.priority-low { border-left-color: #6c757d; }
+
+.section-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #0d6efd;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-exchange-alt me-2"></i>
+                Change Control Dashboard
+            </h2>
+            <p class="text-muted">21 CFR Part 11 Change Management System</p>
+        </div>
+        <div>
+            <a href="{{ url_for('create_change_request') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>New Change Request
+            </a>
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('change_control_reports') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-chart-bar me-2"></i>Reports
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md mb-3">
+            <div class="stat-card total">
+                <div class="stat-number">{{ total_changes }}</div>
+                <div class="text-muted">Total Changes</div>
+            </div>
+        </div>
+        <div class="col-md mb-3">
+            <div class="stat-card pending">
+                <div class="stat-number">{{ pending_changes }}</div>
+                <div class="text-muted">Pending</div>
+            </div>
+        </div>
+        <div class="col-md mb-3">
+            <div class="stat-card approved">
+                <div class="stat-number">{{ approved_changes }}</div>
+                <div class="text-muted">Approved</div>
+            </div>
+        </div>
+        <div class="col-md mb-3">
+            <div class="stat-card implemented">
+                <div class="stat-number">{{ implemented_changes }}</div>
+                <div class="text-muted">Implemented</div>
+            </div>
+        </div>
+        <div class="col-md mb-3">
+            <div class="stat-card rejected">
+                <div class="stat-number">{{ rejected_changes }}</div>
+                <div class="text-muted">Rejected</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Changes -->
+        <div class="col-lg-8 mb-4">
+            <div class="section-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="section-title mb-0">
+                        <i class="fas fa-list me-2"></i>Recent Change Requests
+                    </div>
+                    <a href="{{ url_for('change_control_list') }}" class="btn btn-sm btn-outline-primary">
+                        View All
+                    </a>
+                </div>
+
+                {% if changes %}
+                    {% for change in changes %}
+                    <div class="change-card priority-{{ change.priority }}">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="mb-1">
+                                    <a href="{{ url_for('view_change_request', change_id=change.id) }}" 
+                                       class="text-decoration-none">
+                                        {{ change.change_number }} - {{ change.title }}
+                                    </a>
+                                </h6>
+                                <p class="text-muted mb-2 small">
+                                    {{ change.description[:120] }}{% if change.description|length > 120 %}...{% endif %}
+                                </p>
+                                <div class="small text-muted">
+                                    <span class="me-3">
+                                        <i class="fas fa-user me-1"></i>
+                                        {{ change.requestor.username if change.requestor else 'Unknown' }}
+                                    </span>
+                                    <span class="me-3">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ change.requested_date.strftime('%Y-%m-%d') }}
+                                    </span>
+                                    <span class="me-3">
+                                        <i class="fas fa-tag me-1"></i>
+                                        {{ change.change_type|title }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <span class="badge 
+                                    {% if change.priority == 'critical' %}bg-danger
+                                    {% elif change.priority == 'high' %}bg-warning text-dark
+                                    {% elif change.priority == 'medium' %}bg-info
+                                    {% else %}bg-secondary{% endif %} mb-2">
+                                    {{ change.priority|upper }}
+                                </span>
+                                <br>
+                                <span class="badge 
+                                    {% if change.status == 'pending' %}bg-warning text-dark
+                                    {% elif change.status == 'approved' %}bg-success
+                                    {% elif change.status == 'implemented' %}bg-info
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ change.status|title }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                        <h5>No Change Requests</h5>
+                        <p class="text-muted">No change requests have been submitted yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Pending Approvals (Admin Only) -->
+            {% if current_user.is_admin and pending_approvals %}
+            <div class="section-card mb-4">
+                <div class="section-title">
+                    <i class="fas fa-clipboard-check me-2"></i>
+                    Pending Approvals
+                </div>
+                {% for change in pending_approvals %}
+                <div class="mb-3 p-3 bg-light rounded">
+                    <h6 class="mb-1">
+                        <a href="{{ url_for('view_change_request', change_id=change.id) }}" 
+                           class="text-decoration-none">
+                            {{ change.change_number }}
+                        </a>
+                    </h6>
+                    <p class="mb-2 small">{{ change.title }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            {{ change.requested_date.strftime('%Y-%m-%d') }}
+                        </small>
+                        <a href="{{ url_for('approve_change_request', change_id=change.id) }}" 
+                           class="btn btn-sm btn-primary">
+                            Review
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- My Change Requests -->
+            <div class="section-card">
+                <div class="section-title">
+                    <i class="fas fa-user-edit me-2"></i>
+                    My Change Requests
+                </div>
+                {% if my_changes %}
+                    {% for change in my_changes %}
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <h6 class="mb-1">
+                            <a href="{{ url_for('view_change_request', change_id=change.id) }}" 
+                               class="text-decoration-none">
+                                {{ change.change_number }}
+                            </a>
+                        </h6>
+                        <p class="mb-2 small">{{ change.title }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge 
+                                {% if change.status == 'pending' %}bg-warning text-dark
+                                {% elif change.status == 'approved' %}bg-success
+                                {% elif change.status == 'implemented' %}bg-info
+                                {% else %}bg-danger{% endif %}">
+                                {{ change.status|title }}
+                            </span>
+                            <small class="text-muted">
+                                {{ change.requested_date.strftime('%Y-%m-%d') }}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-folder-open fa-3x text-muted mb-2"></i>
+                        <p class="text-muted small mb-0">No change requests submitted</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="section-card">
+                <div class="section-title">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Quick Info
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="small">Approval Rate:</span>
+                        <strong>
+                            {% if total_changes > 0 %}
+                                {{ ((approved_changes + implemented_changes) / total_changes * 100)|round|int }}%
+                            {% else %}
+                                0%
+                            {% endif %}
+                        </strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" 
+                             style="width: {% if total_changes > 0 %}{{ ((approved_changes + implemented_changes) / total_changes * 100)|round|int }}%{% else %}0%{% endif %}">
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="small text-muted">
+                    <p class="mb-2">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        21 CFR Part 11 Compliant
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-signature me-2"></i>
+                        Electronic Signatures Required
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,637 @@
+{% extends "base.html" %}
+
+{% block title %}User Management - eDOMOS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <style>
+        /* Make table text visible on dark theme: headers and cells white */
+        #usersTable thead th,
+        #usersTable tbody td {
+            color: #ffffff !important;
+        }
+
+        /* Ensure header background doesn't force dark text via bootstrap utility */
+        #usersTable thead {
+            background-color: transparent !important;
+        }
+    </style>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-0">
+                            <i class="fas fa-users text-primary me-2"></i>
+                            User Management
+                        </h2>
+                        <p class="text-muted mb-0">Manage user profiles and access permissions</p>
+                    </div>
+                    <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                        <i class="fas fa-user-plus me-2"></i>Add New User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div id="alertContainer"></div>
+
+    <!-- Users Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>All Users</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="usersTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Full Name</th>
+                                    <th>Employee ID</th>
+                                    <th>Department</th>
+                                    <th>Role</th>
+                                    <th>Permissions</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr>
+                                    <td colspan="10" class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>Add New User</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="newUsername" class="form-label fw-bold">Username *</label>
+                            <input type="text" class="form-control" id="newUsername" name="username" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="newPassword" class="form-label fw-bold">Password *</label>
+                            <input type="password" class="form-control" id="newPassword" name="password" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="newFullName" class="form-label fw-bold">Full Name *</label>
+                            <input type="text" class="form-control" id="newFullName" name="full_name" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="newEmployeeId" class="form-label fw-bold">Employee ID *</label>
+                            <input type="text" class="form-control" id="newEmployeeId" name="employee_id" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="newDepartment" class="form-label fw-bold">Department *</label>
+                            <select class="form-select" id="newDepartment" name="department" required>
+                                <option value="">Select Department</option>
+                                <option value="Quality Control">Quality Control</option>
+                                <option value="Production">Production</option>
+                                <option value="Stores">Stores</option>
+                                <option value="Security">Security</option>
+                                <option value="Administration">Administration</option>
+                                <option value="IT">IT</option>
+                                <option value="HR">HR</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="newRole" class="form-label fw-bold">Role *</label>
+                            <select class="form-select" id="newRole" name="role" required>
+                                <option value="">Select Role</option>
+                                <option value="Operator">Operator</option>
+                                <option value="Supervisor">Supervisor</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Administrator">Administrator</option>
+                                <option value="Auditor">Auditor</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="newEmail" class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control" id="newEmail" name="email">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="newPhone" class="form-label fw-bold">Phone</label>
+                            <input type="tel" class="form-control" id="newPhone" name="phone">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Account Type</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="newIsAdmin" name="is_admin">
+                                <label class="form-check-label" for="newIsAdmin">
+                                    <i class="fas fa-user-shield text-danger me-1"></i>
+                                    <strong>Administrator Access</strong>
+                                </label>
+                            </div>
+                            <small class="text-muted">Grants full system access</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-key me-2"></i>Tab Access Permissions
+                            </label>
+                            <small class="text-muted d-block mb-2">Select which sections this user can access</small>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input permission-checkbox" type="checkbox" 
+                                               value="dashboard" id="newPerm_dashboard">
+                                        <label class="form-check-label" for="newPerm_dashboard">
+                                            <i class="fas fa-home text-primary me-1"></i>Dashboard
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">Main system dashboard</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input permission-checkbox" type="checkbox" 
+                                               value="controls" id="newPerm_controls">
+                                        <label class="form-check-label" for="newPerm_controls">
+                                            <i class="fas fa-sliders-h text-success me-1"></i>Controls
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">System control functions</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input permission-checkbox" type="checkbox" 
+                                               value="event_log" id="newPerm_event_log">
+                                        <label class="form-check-label" for="newPerm_event_log">
+                                            <i class="fas fa-file-alt text-info me-1"></i>Event Log
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">View event history</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input permission-checkbox" type="checkbox" 
+                                               value="report" id="newPerm_report">
+                                        <label class="form-check-label" for="newPerm_report">
+                                            <i class="fas fa-chart-bar text-warning me-1"></i>Reports
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">Generate reports</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input permission-checkbox" type="checkbox" 
+                                               value="analytics" id="newPerm_analytics">
+                                        <label class="form-check-label" for="newPerm_analytics">
+                                            <i class="fas fa-analytics text-secondary me-1"></i>Analytics
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">View analytics data</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input permission-checkbox" type="checkbox" 
+                                               value="admin" id="newPerm_admin">
+                                        <label class="form-check-label" for="newPerm_admin">
+                                            <i class="fas fa-user-shield text-danger me-1"></i>Admin Panel
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">Access admin settings</small>
+                                </div>
+                            </div>
+                            <div class="alert alert-info mt-2">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Note:</strong> Admin users automatically get access to all tabs.
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addUser()">
+                    <i class="fas fa-save me-2"></i>Create User
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title"><i class="fas fa-user-edit me-2"></i>Edit User Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId" name="user_id">
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editUsername" class="form-label fw-bold">Username</label>
+                            <input type="text" class="form-control" id="editUsername" name="username" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editFullName" class="form-label fw-bold">Full Name *</label>
+                            <input type="text" class="form-control" id="editFullName" name="full_name" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editEmployeeId" class="form-label fw-bold">Employee ID *</label>
+                            <input type="text" class="form-control" id="editEmployeeId" name="employee_id" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editDepartment" class="form-label fw-bold">Department *</label>
+                            <select class="form-select" id="editDepartment" name="department" required>
+                                <option value="Quality Control">Quality Control</option>
+                                <option value="Production">Production</option>
+                                <option value="Stores">Stores</option>
+                                <option value="Security">Security</option>
+                                <option value="Administration">Administration</option>
+                                <option value="IT">IT</option>
+                                <option value="HR">HR</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editRole" class="form-label fw-bold">Role *</label>
+                            <select class="form-select" id="editRole" name="role" required>
+                                <option value="Operator">Operator</option>
+                                <option value="Supervisor">Supervisor</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Administrator">Administrator</option>
+                                <option value="Auditor">Auditor</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editEmail" class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control" id="editEmail" name="email">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editPhone" class="form-label fw-bold">Phone</label>
+                            <input type="tel" class="form-control" id="editPhone" name="phone">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Account Status & Type</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="editIsActive" name="is_active">
+                                <label class="form-check-label" for="editIsActive">
+                                    <i class="fas fa-check-circle text-success me-1"></i>Active Account
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="editIsAdmin" name="is_admin">
+                                <label class="form-check-label" for="editIsAdmin">
+                                    <i class="fas fa-user-shield text-danger me-1"></i>
+                                    <strong>Administrator Access</strong>
+                                </label>
+                            </div>
+                            <small class="text-muted">Admins get full system access</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-key me-2"></i>Tab Access Permissions
+                            </label>
+                            <small class="text-muted d-block mb-2">Select which sections this user can access</small>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-permission-checkbox" type="checkbox" 
+                                               value="dashboard" id="editPerm_dashboard">
+                                        <label class="form-check-label" for="editPerm_dashboard">
+                                            <i class="fas fa-home text-primary me-1"></i>Dashboard
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">Main system dashboard</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-permission-checkbox" type="checkbox" 
+                                               value="controls" id="editPerm_controls">
+                                        <label class="form-check-label" for="editPerm_controls">
+                                            <i class="fas fa-sliders-h text-success me-1"></i>Controls
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">System control functions</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-permission-checkbox" type="checkbox" 
+                                               value="event_log" id="editPerm_event_log">
+                                        <label class="form-check-label" for="editPerm_event_log">
+                                            <i class="fas fa-file-alt text-info me-1"></i>Event Log
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">View event history</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-permission-checkbox" type="checkbox" 
+                                               value="report" id="editPerm_report">
+                                        <label class="form-check-label" for="editPerm_report">
+                                            <i class="fas fa-chart-bar text-warning me-1"></i>Reports
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">Generate reports</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-permission-checkbox" type="checkbox" 
+                                               value="analytics" id="editPerm_analytics">
+                                        <label class="form-check-label" for="editPerm_analytics">
+                                            <i class="fas fa-analytics text-secondary me-1"></i>Analytics
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">View analytics data</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-permission-checkbox" type="checkbox" 
+                                               value="admin" id="editPerm_admin">
+                                        <label class="form-check-label" for="editPerm_admin">
+                                            <i class="fas fa-user-shield text-danger me-1"></i>Admin Panel
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">Access admin settings</small>
+                                </div>
+                            </div>
+                            <div class="alert alert-info mt-2">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Note:</strong> Admin users automatically get access to all tabs.
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" onclick="updateUser()">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadUsers();
+});
+
+function loadUsers() {
+    fetch('/api/users')
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.getElementById('usersTableBody');
+            if (data.users && data.users.length > 0) {
+                tbody.innerHTML = data.users.map(user => `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td><strong>${user.username}</strong></td>
+                        <td>${user.full_name || '-'}</td>
+                        <td><span class="badge bg-secondary">${user.employee_id || '-'}</span></td>
+                        <td>${user.department || '-'}</td>
+                        <td><span class="badge bg-info">${user.role || '-'}</span></td>
+                        <td>
+                            ${user.permissions ? 
+                                user.permissions.split(',').map(p => 
+                                    `<span class="badge bg-primary me-1">${p}</span>`
+                                ).join('') : 
+                                '<span class="text-muted">None</span>'}
+                        </td>
+                        <td>
+                            ${user.is_active ? 
+                                '<span class="badge bg-success">Active</span>' : 
+                                '<span class="badge bg-danger">Inactive</span>'}
+                            ${user.is_admin ? '<span class="badge bg-warning ms-1">Admin</span>' : ''}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" onclick='editUser(${JSON.stringify(user)})'>
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id}, '${user.username}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center">No users found</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading users:', error);
+            document.getElementById('usersTableBody').innerHTML = 
+                '<tr><td colspan="10" class="text-center text-danger">Error loading users</td></tr>';
+        });
+}
+
+function addUser() {
+    const form = document.getElementById('addUserForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    data.is_admin = document.getElementById('newIsAdmin').checked;
+    
+    // Collect permissions from checkboxes
+    const permissions = [];
+    document.querySelectorAll('.permission-checkbox:checked').forEach(checkbox => {
+        permissions.push(checkbox.value);
+    });
+    data.permissions = permissions.join(',');
+    
+    // Validate at least one permission is selected (unless admin)
+    if (!data.is_admin && permissions.length === 0) {
+        showAlert('Please select at least one tab permission for this user', 'warning');
+        return;
+    }
+
+    fetch('/api/users', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('User created successfully!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
+            form.reset();
+            loadUsers();
+        } else {
+            showAlert('Error creating user: ' + data.error, 'danger');
+        }
+    })
+    .catch(error => {
+        showAlert('Error: ' + error.message, 'danger');
+    });
+}
+
+function editUser(user) {
+    document.getElementById('editUserId').value = user.id;
+    document.getElementById('editUsername').value = user.username;
+    document.getElementById('editFullName').value = user.full_name || '';
+    document.getElementById('editEmployeeId').value = user.employee_id || '';
+    document.getElementById('editDepartment').value = user.department || '';
+    document.getElementById('editRole').value = user.role || '';
+    document.getElementById('editEmail').value = user.email || '';
+    document.getElementById('editPhone').value = user.phone || '';
+    document.getElementById('editIsAdmin').checked = user.is_admin;
+    document.getElementById('editIsActive').checked = user.is_active;
+    
+    // Set permissions checkboxes
+    const userPermissions = user.permissions ? user.permissions.split(',') : [];
+    document.querySelectorAll('.edit-permission-checkbox').forEach(checkbox => {
+        checkbox.checked = userPermissions.includes(checkbox.value);
+    });
+
+    const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+    modal.show();
+}
+
+function updateUser() {
+    const form = document.getElementById('editUserForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    data.is_admin = document.getElementById('editIsAdmin').checked;
+    data.is_active = document.getElementById('editIsActive').checked;
+    
+    // Collect permissions from checkboxes
+    const permissions = [];
+    document.querySelectorAll('.edit-permission-checkbox:checked').forEach(checkbox => {
+        permissions.push(checkbox.value);
+    });
+    data.permissions = permissions.join(',');
+    
+    // Validate at least one permission is selected (unless admin)
+    if (!data.is_admin && permissions.length === 0) {
+        showAlert('Please select at least one tab permission for this user', 'warning');
+        return;
+    }
+
+    fetch(`/api/users/${data.user_id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('User updated successfully!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+            loadUsers();
+        } else {
+            showAlert('Error updating user: ' + data.error, 'danger');
+        }
+    })
+    .catch(error => {
+        showAlert('Error: ' + error.message, 'danger');
+    });
+}
+
+function deleteUser(userId, username) {
+    if (confirm(`Are you sure you want to delete user "${username}"?`)) {
+        fetch(`/api/users/${userId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('User deleted successfully!', 'success');
+                loadUsers();
+            } else {
+                showAlert('Error deleting user: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Error: ' + error.message, 'danger');
+        });
+    }
+}
+
+function showAlert(message, type) {
+    const alert = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    document.getElementById('alertContainer').innerHTML = alert;
+    
+    setTimeout(() => {
+        const alertElement = document.querySelector('.alert');
+        if (alertElement) {
+            alertElement.classList.remove('show');
+            setTimeout(() => alertElement.remove(), 150);
+        }
+    }, 5000);
+}
+
+// Auto-select all permissions when Admin is checked (Add User Modal)
+document.getElementById('newIsAdmin').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.permission-checkbox');
+    if (this.checked) {
+        checkboxes.forEach(cb => cb.checked = true);
+    }
+});
+
+// Auto-select all permissions when Admin is checked (Edit User Modal)
+document.getElementById('editIsAdmin').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.edit-permission-checkbox');
+    if (this.checked) {
+        checkboxes.forEach(cb => cb.checked = true);
+    }
+});
+</script>
+{% endblock %}

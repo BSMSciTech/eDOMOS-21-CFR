@@ -1,0 +1,8 @@
+# Audio File Placement Instructions
+
+Place your alarm sound file here: audio.mp3
+
+The system will automatically detect and use it for alarm notifications.
+
+Supported formats: MP3, WAV, OGG
+Recommended: MP3 format, 3-10 seconds duration

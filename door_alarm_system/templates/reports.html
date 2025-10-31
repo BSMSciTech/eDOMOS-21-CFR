@@ -1,0 +1,638 @@
+{% extends "base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-file-alt me-2"></i>Reports</h2>
+            <p class="text-muted">Generate custom reports for door alarm events</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-10 col-xl-8 mx-auto">
+            <div class="card modern-report-card">
+                <div class="card-header modern-report-header">
+                    <div class="report-header-content">
+                        <div class="report-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="report-title-section">
+                            <h5 class="mb-0 report-title">
+                                <i class="fas fa-download me-2"></i>Generate Custom Report
+                            </h5>
+                            <p class="report-subtitle mb-0">Create detailed analytics reports from your event data</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body modern-report-body">
+                    <form id="reportForm" class="modern-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="startDate" class="modern-label">
+                                    <i class="fas fa-calendar-day me-2"></i>Start Date
+                                    <span class="date-format-hint" id="startDateFormatHint"></span>
+                                </label>
+                                <div class="date-input-wrapper">
+                                    <input type="text" class="form-control modern-date-input" id="startDateDisplay" placeholder="Select date" readonly required>
+                                    <input type="date" class="form-control hidden-date-picker" id="startDate" required>
+                                    <i class="fas fa-calendar-alt date-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="endDate" class="modern-label">
+                                    <i class="fas fa-calendar-check me-2"></i>End Date
+                                    <span class="date-format-hint" id="endDateFormatHint"></span>
+                                </label>
+                                <div class="date-input-wrapper">
+                                    <input type="text" class="form-control modern-date-input" id="endDateDisplay" placeholder="Select date" readonly required>
+                                    <input type="date" class="form-control hidden-date-picker" id="endDate" required>
+                                    <i class="fas fa-calendar-alt date-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="modern-label">
+                                <i class="fas fa-filter me-2"></i>Event Types
+                            </label>
+                            <div class="event-types-grid">
+                                <div class="modern-check-card">
+                                    <input class="form-check-input modern-checkbox" type="checkbox" value="door_open" id="evtDoorOpen" checked>
+                                    <label class="form-check-label modern-check-label" for="evtDoorOpen">
+                                        <div class="check-icon door-open">
+                                            <i class="fas fa-door-open"></i>
+                                        </div>
+                                        <span>Door Open</span>
+                                    </label>
+                                </div>
+                                <div class="modern-check-card">
+                                    <input class="form-check-input modern-checkbox" type="checkbox" value="door_close" id="evtDoorClose" checked>
+                                    <label class="form-check-label modern-check-label" for="evtDoorClose">
+                                        <div class="check-icon door-close">
+                                            <i class="fas fa-door-closed"></i>
+                                        </div>
+                                        <span>Door Close</span>
+                                    </label>
+                                </div>
+                                <div class="modern-check-card">
+                                    <input class="form-check-input modern-checkbox" type="checkbox" value="alarm_triggered" id="evtAlarm" checked>
+                                    <label class="form-check-label modern-check-label" for="evtAlarm">
+                                        <div class="check-icon alarm">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                        <span>Alarm Triggered</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="modern-label">
+                                <i class="fas fa-file-export me-2"></i>Export Format
+                            </label>
+                            <select class="form-select modern-select" id="reportFormat">
+                                <option value="csv">📊 CSV (Spreadsheet)</option>
+                                <option value="json">🔗 JSON (Data)</option>
+                                <option value="pdf">📄 PDF (Document)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn modern-submit-btn">
+                                <i class="fas fa-magic me-2"></i>
+                                <span>Generate Report</span>
+                                <div class="btn-glow"></div>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modern Reports Page Styling */
+.modern-report-card {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-report-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 35px 70px -12px rgba(0, 0, 0, 0.8),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.modern-report-header {
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.9) 0%, 
+        rgba(16, 185, 129, 0.9) 50%,
+        rgba(139, 92, 246, 0.9) 100%);
+    border: none;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-report-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.8s ease;
+}
+
+.modern-report-header:hover::before {
+    left: 100%;
+}
+
+.report-header-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.report-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.report-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.report-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+.modern-report-body {
+    padding: 2.5rem;
+    background: rgba(30, 41, 59, 0.3);
+}
+
+.modern-form .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 2rem;
+}
+
+.modern-label {
+    display: block;
+    font-weight: 600;
+    color: #f8fafc;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+.date-format-hint {
+    font-size: 0.75rem;
+    color: rgba(248, 250, 252, 0.6);
+    font-weight: 400;
+    margin-left: 0.5rem;
+}
+
+.date-input-wrapper {
+    position: relative;
+}
+
+.hidden-date-picker {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+}
+
+.date-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(248, 250, 252, 0.6);
+    font-size: 1.1rem;
+    pointer-events: none;
+}
+
+.date-display {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+    color: #3b82f6;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: none;
+}
+
+.date-display.active {
+    display: block;
+}
+
+/* Modern Date Input Styling */
+.modern-date-input {
+    background: rgba(30, 41, 59, 0.8) !important;
+    border: 2px solid rgba(59, 130, 246, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 1rem 1.25rem !important;
+    color: #f8fafc !important;
+    font-size: 1rem !important;
+    transition: all 0.3s ease !important;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    width: 100%;
+}
+
+.modern-date-input:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
+    background: rgba(30, 41, 59, 0.9) !important;
+    outline: none !important;
+}
+
+.modern-date-input::-webkit-calendar-picker-indicator {
+    background-color: #f8fafc;
+    border-radius: 4px;
+    cursor: pointer;
+    filter: invert(1);
+}
+
+.modern-date-input::-webkit-datetime-edit-text {
+    color: #f8fafc !important;
+}
+
+.modern-date-input::-webkit-datetime-edit-month-field,
+.modern-date-input::-webkit-datetime-edit-day-field,
+.modern-date-input::-webkit-datetime-edit-year-field {
+    color: #f8fafc !important;
+}
+
+/* Event Types Grid */
+.event-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.modern-check-card {
+    background: rgba(30, 41, 59, 0.6);
+    border: 2px solid rgba(59, 130, 246, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-check-card:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.5);
+    transform: translateY(-2px);
+}
+
+.modern-check-card:has(.modern-checkbox:checked) {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: #3b82f6;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+.modern-checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.modern-check-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    color: #f8fafc;
+    font-weight: 500;
+    width: 100%;
+}
+
+.check-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.check-icon.door-open {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+}
+
+.check-icon.door-close {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.check-icon.alarm {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+/* Modern Select Styling */
+.modern-select {
+    background: rgba(30, 41, 59, 0.8) !important;
+    border: 2px solid rgba(59, 130, 246, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 1rem 1.25rem !important;
+    color: #f8fafc !important;
+    font-size: 1rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.modern-select:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
+    background: rgba(30, 41, 59, 0.9) !important;
+    outline: none !important;
+}
+
+.modern-select option {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    padding: 0.5rem !important;
+}
+
+/* Modern Submit Button */
+.form-actions {
+    text-align: center;
+    margin-top: 2.5rem;
+}
+
+.modern-submit-btn {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border: none;
+    border-radius: 16px;
+    padding: 1.25rem 3rem;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.modern-submit-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.6);
+}
+
+.modern-submit-btn:active {
+    transform: translateY(0);
+}
+
+.btn-glow {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.6s ease;
+}
+
+.modern-submit-btn:hover .btn-glow {
+    left: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modern-form .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .event-types-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modern-report-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .report-header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+}
+</style>
+
+<script>
+// User's date format preference
+const USER_DATE_FORMAT = '{{ user_date_format }}';
+
+// Date format conversion functions
+function formatDateDisplay(dateString, format) {
+    if (!dateString) return '';
+    
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    
+    const formatMap = {
+        'YYYY-MM-DD': `${year}-${month}-${day}`,
+        'DD/MM/YYYY': `${day}/${month}/${year}`,
+        'MM/DD/YYYY': `${month}/${day}/${year}`,
+        'DD-MM-YYYY': `${day}-${month}-${year}`
+    };
+    
+    return formatMap[format] || `${year}-${month}-${day}`;
+}
+
+function getFormatExample(format) {
+    const examples = {
+        'YYYY-MM-DD': '(YYYY-MM-DD)',
+        'DD/MM/YYYY': '(DD/MM/YYYY)',
+        'MM/DD/YYYY': '(MM/DD/YYYY)',
+        'DD-MM-YYYY': '(DD-MM-YYYY)'
+    };
+    return examples[format] || '(YYYY-MM-DD)';
+}
+
+function getPlaceholder(format) {
+    const placeholders = {
+        'YYYY-MM-DD': 'YYYY-MM-DD',
+        'DD/MM/YYYY': 'DD/MM/YYYY',
+        'MM/DD/YYYY': 'MM/DD/YYYY',
+        'DD-MM-YYYY': 'DD-MM-YYYY'
+    };
+    return placeholders[format] || 'YYYY-MM-DD';
+}
+
+// Initialize date format hints
+document.addEventListener('DOMContentLoaded', function() {
+    const formatExample = getFormatExample(USER_DATE_FORMAT);
+    const placeholder = getPlaceholder(USER_DATE_FORMAT);
+    
+    document.getElementById('startDateFormatHint').textContent = formatExample;
+    document.getElementById('endDateFormatHint').textContent = formatExample;
+    
+    // Set placeholders
+    document.getElementById('startDateDisplay').placeholder = placeholder;
+    document.getElementById('endDateDisplay').placeholder = placeholder;
+    
+    // Get elements
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    const startDateDisplayInput = document.getElementById('startDateDisplay');
+    const endDateDisplayInput = document.getElementById('endDateDisplay');
+    
+    // Update display when hidden date picker changes
+    startDateInput.addEventListener('change', function() {
+        if (this.value) {
+            const formatted = formatDateDisplay(this.value, USER_DATE_FORMAT);
+            startDateDisplayInput.value = formatted;
+        } else {
+            startDateDisplayInput.value = '';
+        }
+    });
+    
+    endDateInput.addEventListener('change', function() {
+        if (this.value) {
+            const formatted = formatDateDisplay(this.value, USER_DATE_FORMAT);
+            endDateDisplayInput.value = formatted;
+        } else {
+            endDateDisplayInput.value = '';
+        }
+    });
+    
+    // Click on display input opens hidden date picker
+    startDateDisplayInput.addEventListener('click', function() {
+        if (startDateInput.showPicker) {
+            startDateInput.showPicker();
+        } else {
+            startDateInput.click();
+        }
+    });
+    
+    endDateDisplayInput.addEventListener('click', function() {
+        if (endDateInput.showPicker) {
+            endDateInput.showPicker();
+        } else {
+            endDateInput.click();
+        }
+    });
+    
+    // Set default dates (today and 7 days ago)
+    const today = new Date();
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(today.getDate() - 7);
+    
+    const todayStr = today.toISOString().split('T')[0];
+    const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
+    
+    startDateInput.value = sevenDaysAgoStr;
+    endDateInput.value = todayStr;
+    
+    // Trigger change events to update display
+    startDateInput.dispatchEvent(new Event('change'));
+    endDateInput.dispatchEvent(new Event('change'));
+});
+
+document.getElementById('reportForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const eventTypes = [];
+    if (document.getElementById('evtDoorOpen').checked) eventTypes.push('door_open');
+    if (document.getElementById('evtDoorClose').checked) eventTypes.push('door_close');
+    if (document.getElementById('evtAlarm').checked) eventTypes.push('alarm_triggered');
+    
+    const data = {
+        start_date: document.getElementById('startDate').value,
+        end_date: document.getElementById('endDate').value,
+        event_types: eventTypes,
+        format: document.getElementById('reportFormat').value
+    };
+    
+    fetch('/api/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.csv_data) {
+            const blob = new Blob([data.csv_data], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'door_alarm_report.csv';
+            a.click();
+        } else if (data.pdf_data) {
+            const binaryString = atob(data.pdf_data);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            const blob = new Blob([bytes], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'door_alarm_report.pdf';
+            a.click();
+        } else if (data.events) {
+            const blob = new Blob([JSON.stringify(data.events, null, 2)], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'door_alarm_report.json';
+            a.click();
+        }
+    })
+    .catch(error => alert('Error generating report: ' + error));
+});
+</script>
+{% endblock %}

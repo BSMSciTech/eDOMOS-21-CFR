@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+
+{% block title %}Electronic Signatures - eDOMOS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .signature-demo-card {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border: 1px solid var(--primary-purple);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+    }
+    
+    .demo-action-card {
+        background: rgba(26, 26, 46, 0.6);
+        border: 1px solid var(--border-purple);
+        border-radius: 10px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .demo-action-card:hover {
+        border-color: var(--primary-purple);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3);
+    }
+    
+    .signature-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    .signature-log {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--border-purple);
+        border-radius: 10px;
+        padding: 1rem;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .signature-entry {
+        background: rgba(138, 43, 226, 0.1);
+        border-left: 3px solid var(--primary-purple);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-primary mb-0">
+                        <i class="fas fa-pen-fancy me-3"></i>Electronic Signatures
+                    </h2>
+                    <p class="text-muted mb-0">21 CFR Part 11 Compliant Digital Signatures</p>
+                </div>
+                <div>
+                    <span class="signature-badge">
+                        <i class="fas fa-shield-alt me-2"></i>FDA Part 11 Compliant
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compliance Notice -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info border-info">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <i class="fas fa-info-circle fa-3x text-info"></i>
+                    </div>
+                    <div class="col">
+                        <h5 class="mb-2">21 CFR Part 11 Electronic Signatures</h5>
+                        <p class="mb-0">
+                            Electronic signatures in eDOMOS comply with FDA regulations for electronic records and electronic signatures.
+                            Each signature includes: user verification (password), reason for signing, timestamp, IP address, and 
+                            cryptographic hash (SHA-256). All signatures are recorded in the immutable blockchain audit trail.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Demo Actions -->
+        <div class="col-lg-6">
+            <div class="signature-demo-card">
+                <h4 class="text-primary mb-4">
+                    <i class="fas fa-hand-pointer me-2"></i>Try Electronic Signature
+                </h4>
+                <p class="text-muted mb-4">
+                    Click any action below to test the electronic signature workflow:
+                </p>
+
+                <!-- Demo Action 1: Approve Change -->
+                <div class="demo-action-card mb-3" onclick="signDemoAction('approve_change')">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="bg-success text-white rounded-circle p-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h6 class="text-white mb-1">Approve Change Control</h6>
+                            <small class="text-muted">Sign to approve system change CC-DEMO-001</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chevron-right text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demo Action 2: Complete Training -->
+                <div class="demo-action-card mb-3" onclick="signDemoAction('complete_training')">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="bg-info text-white rounded-circle p-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h6 class="text-white mb-1">Complete Training</h6>
+                            <small class="text-muted">Attest to completing 21 CFR Part 11 training</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chevron-right text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demo Action 3: Approve SOP -->
+                <div class="demo-action-card mb-3" onclick="signDemoAction('approve_sop')">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="bg-warning text-dark rounded-circle p-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h6 class="text-white mb-1">Approve SOP</h6>
+                            <small class="text-muted">Sign to approve Standard Operating Procedure SOP-001</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chevron-right text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demo Action 4: Review Validation -->
+                <div class="demo-action-card" onclick="signDemoAction('review_validation')">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="bg-primary text-white rounded-circle p-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h6 class="text-white mb-1">Review Validation Test</h6>
+                            <small class="text-muted">Sign to confirm review of IQ validation test results</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chevron-right text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signature Requirements -->
+            <div class="signature-demo-card">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-list-check me-2"></i>Signature Requirements
+                </h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Identity Verification:</strong> Password re-entry required (§11.200)
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Reason Documentation:</strong> Meaning of signature recorded (§11.50)
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Cryptographic Hash:</strong> SHA-256 signature hash generated
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Non-Repudiation:</strong> IP address and timestamp captured
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Immutable Record:</strong> Logged in blockchain audit trail
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Signature Log -->
+        <div class="col-lg-6">
+            <div class="signature-demo-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="text-primary mb-0">
+                        <i class="fas fa-history me-2"></i>Recent Signatures
+                    </h4>
+                    <button class="btn btn-sm btn-outline-primary" onclick="refreshSignatures()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                </div>
+
+                <div class="signature-log" id="signatureLog">
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                        <p>Loading signatures...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="signature-demo-card">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-chart-bar me-2"></i>Signature Statistics
+                </h5>
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h3 class="text-primary mb-0" id="statTotal">-</h3>
+                        <small class="text-muted">Total Signatures</small>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="text-success mb-0" id="statToday">-</h3>
+                        <small class="text-muted">Today</small>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="text-info mb-0" id="statUser">-</h3>
+                        <small class="text-muted">Your Signatures</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/signature-modal.js') }}"></script>
+<script>
+// Demo action configurations
+const demoActions = {
+    approve_change: {
+        action: 'Approve Change Control Request CC-DEMO-001',
+        event_type: 'change_control',
+        event_id: 9001
+    },
+    complete_training: {
+        action: 'Complete Training Module: 21 CFR Part 11 Basics',
+        event_type: 'training',
+        event_id: 9002
+    },
+    approve_sop: {
+        action: 'Approve Standard Operating Procedure SOP-001',
+        event_type: 'sop',
+        event_id: 9003
+    },
+    review_validation: {
+        action: 'Review IQ Validation Test Results VT-2025-001',
+        event_type: 'validation',
+        event_id: 9004
+    }
+};
+
+// Show signature modal for demo action
+function signDemoAction(actionType) {
+    const config = demoActions[actionType];
+    
+    showSignatureModal({
+        action: config.action,
+        event_id: config.event_id,
+        event_type: config.event_type,
+        username: '{{ current_user.username }}',
+        onSuccess: function(signature) {
+            console.log('Signature created:', signature);
+            refreshSignatures();
+            updateStatistics();
+        },
+        onCancel: function() {
+            console.log('Signature cancelled');
+        }
+    });
+}
+
+// Load recent signatures
+async function refreshSignatures() {
+    try {
+        const response = await fetch('/api/signature/user/{{ current_user.id }}?limit=10');
+        const data = await response.json();
+        
+        const logDiv = document.getElementById('signatureLog');
+        
+        if (data.success && data.signatures.length > 0) {
+            logDiv.innerHTML = data.signatures.map(sig => `
+                <div class="signature-entry">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h6 class="text-primary mb-1">${escapeHtml(sig.action)}</h6>
+                            <small class="text-muted">
+                                <i class="fas fa-hashtag me-1"></i>${sig.signature_hash.substring(0, 16)}...
+                            </small>
+                        </div>
+                        <span class="badge bg-success">${sig.event_type}</span>
+                    </div>
+                    <p class="text-white mb-2" style="font-size: 0.9rem;">
+                        <strong>Reason:</strong> ${escapeHtml(sig.reason)}
+                    </p>
+                    <div class="row text-muted" style="font-size: 0.85rem;">
+                        <div class="col-6">
+                            <i class="fas fa-clock me-1"></i>${new Date(sig.timestamp).toLocaleString()}
+                        </div>
+                        <div class="col-6 text-end">
+                            <i class="fas fa-network-wired me-1"></i>${sig.ip_address}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            logDiv.innerHTML = `
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-inbox fa-2x mb-3"></i>
+                    <p>No signatures yet. Try signing a demo action above!</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Failed to load signatures:', error);
+        document.getElementById('signatureLog').innerHTML = `
+            <div class="text-center text-danger py-5">
+                <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                <p>Failed to load signatures</p>
+            </div>
+        `;
+    }
+}
+
+// Update statistics
+async function updateStatistics() {
+    try {
+        const response = await fetch('/api/signature/user/{{ current_user.id }}?limit=1000');
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('statTotal').textContent = data.total;
+            document.getElementById('statUser').textContent = data.count;
+            
+            // Count today's signatures
+            const today = new Date().toDateString();
+            const todayCount = data.signatures.filter(sig => 
+                new Date(sig.timestamp).toDateString() === today
+            ).length;
+            document.getElementById('statToday').textContent = todayCount;
+        }
+    } catch (error) {
+        console.error('Failed to update statistics:', error);
+    }
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    refreshSignatures();
+    updateStatistics();
+    
+    // Refresh every 30 seconds
+    setInterval(refreshSignatures, 30000);
+});
+</script>
+{% endblock %}

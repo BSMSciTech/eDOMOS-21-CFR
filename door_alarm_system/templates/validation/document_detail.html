@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+
+{% block title %}{{ document.document_number }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.detail-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.detail-row {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #6c757d;
+    min-width: 180px;
+    display: inline-block;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-pending { background: #fff3cd; color: #856404; }
+.status-submitted { background: #cfe2ff; color: #084298; }
+.status-approved { background: #d1e7dd; color: #0f5132; }
+.status-rejected { background: #f8d7da; color: #842029; }
+.status-archived { background: #e2e3e5; color: #41464b; }
+
+.type-badge {
+    padding: 0.5rem 1.25rem;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: inline-block;
+    margin-right: 1rem;
+}
+
+.type-iq { background: #198754; color: white; }
+.type-oq { background: #0d6efd; color: white; }
+.type-pq { background: #dc3545; color: white; }
+
+.action-section {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.timeline-item {
+    padding: 1rem 0;
+    border-left: 2px solid #dee2e6;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 1.25rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #0d6efd;
+}
+
+.timeline-item.completed::before {
+    background: #198754;
+}
+
+.rejection-reason {
+    background: #f8d7da;
+    border-left: 4px solid #dc3545;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="mb-4">
+        <a href="{{ url_for('validation_documents') }}" class="btn btn-outline-secondary mb-3">
+            <i class="fas fa-arrow-left me-2"></i>Back to Documents
+        </a>
+        
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-2">
+                    <span class="type-badge type-{{ document.document_type|lower }}">{{ document.document_type }}</span>
+                    {{ document.document_number }}
+                </h2>
+                <p class="text-muted mb-0">Validation Document Details</p>
+            </div>
+            <div>
+                <span class="status-badge status-{{ document.status }}">
+                    {% if document.status == 'pending' %}<i class="fas fa-clock me-2"></i>Pending Review
+                    {% elif document.status == 'submitted' %}<i class="fas fa-paper-plane me-2"></i>Submitted
+                    {% elif document.status == 'approved' %}<i class="fas fa-check-circle me-2"></i>Approved
+                    {% elif document.status == 'rejected' %}<i class="fas fa-times-circle me-2"></i>Rejected
+                    {% else %}<i class="fas fa-archive me-2"></i>Archived{% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column: Document Info -->
+        <div class="col-md-8">
+            <!-- File Information -->
+            <div class="detail-card">
+                <h5 class="mb-3">
+                    <i class="fas fa-file-pdf me-2"></i>File Information
+                </h5>
+                <div class="detail-row">
+                    <span class="detail-label">Original Filename:</span>
+                    <span>{{ document.original_filename }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">File Size:</span>
+                    <span>{{ (document.file_size / 1024)|round(2) }} KB</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Upload Date:</span>
+                    <span>{{ document.uploaded_at.strftime('%B %d, %Y at %H:%M UTC') }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Uploaded By:</span>
+                    <span>{{ document.uploader.username }} ({{ document.uploader.email }})</span>
+                </div>
+            </div>
+
+            <!-- System Information -->
+            <div class="detail-card">
+                <h5 class="mb-3">
+                    <i class="fas fa-microchip me-2"></i>System Information
+                </h5>
+                <div class="detail-row">
+                    <span class="detail-label">Equipment Serial:</span>
+                    <span>{{ document.system_id }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Software Version:</span>
+                    <span>{{ document.software_version }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Site Location:</span>
+                    <span>{{ document.site_location }}</span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            {% if document.description %}
+            <div class="detail-card">
+                <h5 class="mb-3">
+                    <i class="fas fa-align-left me-2"></i>Description
+                </h5>
+                <p class="mb-0">{{ document.description }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Notes -->
+            {% if document.notes %}
+            <div class="detail-card">
+                <h5 class="mb-3">
+                    <i class="fas fa-sticky-note me-2"></i>Notes
+                </h5>
+                <p class="mb-0">{{ document.notes }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Rejection Reason -->
+            {% if document.status == 'rejected' and document.rejection_reason %}
+            <div class="rejection-reason">
+                <h6 class="text-danger mb-2">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Rejection Reason
+                </h6>
+                <p class="mb-0">{{ document.rejection_reason }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column: Status & Actions -->
+        <div class="col-md-4">
+            <!-- Workflow Timeline -->
+            <div class="detail-card">
+                <h5 class="mb-3">
+                    <i class="fas fa-tasks me-2"></i>Workflow Status
+                </h5>
+                
+                <div class="timeline-item completed">
+                    <strong>Document Uploaded</strong>
+                    <div class="small text-muted">{{ document.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                    <div class="small">by {{ document.uploader.username }}</div>
+                </div>
+                
+                {% if document.submitted_at %}
+                <div class="timeline-item completed">
+                    <strong>Submitted for Review</strong>
+                    <div class="small text-muted">{{ document.submitted_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                </div>
+                {% else %}
+                <div class="timeline-item">
+                    <strong class="text-muted">Pending Submission</strong>
+                </div>
+                {% endif %}
+                
+                {% if document.approved_at %}
+                <div class="timeline-item completed">
+                    <strong>{% if document.status == 'approved' %}Approved{% else %}Rejected{% endif %}</strong>
+                    <div class="small text-muted">{{ document.approved_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                    <div class="small">by {{ document.approver.username }}</div>
+                </div>
+                {% else %}
+                <div class="timeline-item">
+                    <strong class="text-muted">Awaiting Approval</strong>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Actions -->
+            <div class="action-section">
+                <h6 class="mb-3">Actions</h6>
+                
+                <!-- Download Button -->
+                <a href="{{ url_for('download_validation_document', doc_id=document.id) }}" class="btn btn-secondary w-100 mb-2">
+                    <i class="fas fa-download me-2"></i>Download PDF
+                </a>
+
+                {% if current_user.is_admin %}
+                    {% if document.status == 'pending' %}
+                    <!-- Submit Button -->
+                    <button class="btn btn-primary w-100 mb-2" onclick="submitDocument()">
+                        <i class="fas fa-paper-plane me-2"></i>Submit for Approval
+                    </button>
+                    {% endif %}
+
+                    {% if document.status == 'submitted' %}
+                    <!-- Approve Button -->
+                    <button class="btn btn-success w-100 mb-2" onclick="approveDocument()">
+                        <i class="fas fa-check-circle me-2"></i>Approve Document
+                    </button>
+                    
+                    <!-- Reject Button -->
+                    <button class="btn btn-danger w-100 mb-2" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                        <i class="fas fa-times-circle me-2"></i>Reject Document
+                    </button>
+                    {% endif %}
+                {% elif current_user.id == document.uploaded_by and document.status == 'pending' %}
+                    <!-- Submit for uploader -->
+                    <button class="btn btn-primary w-100 mb-2" onclick="submitDocument()">
+                        <i class="fas fa-paper-plane me-2"></i>Submit for Approval
+                    </button>
+                {% endif %}
+            </div>
+
+            <!-- Compliance Info -->
+            <div class="detail-card mt-3">
+                <h6 class="mb-2">
+                    <i class="fas fa-shield-alt me-2"></i>Compliance
+                </h6>
+                <div class="small text-muted">
+                    <p class="mb-1">✓ FDA 21 CFR Part 11 Compliant</p>
+                    <p class="mb-1">✓ Blockchain Audit Trail</p>
+                    <p class="mb-0">✓ Immutable Record</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+{% if current_user.is_admin and document.status == 'submitted' %}
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Reject Document</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">Please provide a reason for rejecting this document:</p>
+                <textarea id="rejectionReason" class="form-control" rows="4" placeholder="Enter rejection reason..." required></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="rejectDocument()">
+                    <i class="fas fa-times-circle me-2"></i>Reject Document
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function submitDocument() {
+    if (confirm('Submit this document for approval?')) {
+        fetch('/validation/document/{{ document.id }}/submit', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Submit failed: ' + error);
+        });
+    }
+}
+
+{% if current_user.is_admin %}
+function approveDocument() {
+    if (confirm('Approve this document? This action will be recorded in the blockchain audit trail.')) {
+        fetch('/validation/document/{{ document.id }}/approve', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Approval failed: ' + error);
+        });
+    }
+}
+
+function rejectDocument() {
+    const reason = document.getElementById('rejectionReason').value.trim();
+    
+    if (!reason) {
+        alert('Please provide a rejection reason');
+        return;
+    }
+    
+    fetch('/validation/document/{{ document.id }}/reject', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({rejection_reason: reason})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Rejection failed: ' + error);
+    });
+}
+{% endif %}
+</script>
+{% endblock %}
