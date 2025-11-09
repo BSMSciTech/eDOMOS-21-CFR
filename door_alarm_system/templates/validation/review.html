@@ -5,40 +5,70 @@
 {% block extra_css %}
 <style>
 .review-section {
-    background: white;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+.review-section h2,
+.review-section h3,
+.review-section h4,
+.review-section h5,
+.review-section h6,
+.review-section p,
+.review-section label,
+.review-section strong,
+.review-section td {
+    color: #fff !important;
+}
+
+.review-section .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .section-title {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #0d6efd;
+    color: #a78bfa !important;
 }
 
 .test-summary {
-    background: #f8f9fa;
-    border-left: 4px solid #0d6efd;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    border-left: 4px solid #667eea;
     padding: 1.25rem;
     margin-bottom: 1.5rem;
+    border-radius: 8px;
+    color: #fff;
+}
+
+.test-summary h5,
+.test-summary small,
+.test-summary strong {
+    color: #fff !important;
 }
 
 .result-display {
     padding: 1.5rem;
     border-radius: 8px;
     margin-bottom: 1rem;
+    color: #fff;
 }
 
 .result-display.pass {
-    background: #d1e7dd;
-    border-left: 4px solid #198754;
+    background: rgba(0, 255, 136, 0.2);
+    border-left: 4px solid #00ff88;
 }
 
 .result-display.fail {
-    background: #f8d7da;
-    border-left: 4px solid #dc3545;
+    background: rgba(255, 107, 107, 0.2);
+    border-left: 4px solid #ff6b6b;
+}
+
+.result-display p {
+    color: #fff !important;
 }
 
 .signature-box {
@@ -47,6 +77,42 @@
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+}
+
+.review-section .form-control,
+.review-section .form-select,
+.review-section textarea {
+    background: rgba(26, 26, 46, 0.8);
+    border-color: rgba(102, 126, 234, 0.3);
+    color: #fff;
+}
+
+.review-section .form-control:focus,
+.review-section .form-select:focus,
+.review-section textarea:focus {
+    background: rgba(26, 26, 46, 0.9);
+    border-color: #667eea;
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+}
+
+.review-section .form-control::placeholder,
+.review-section textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.review-section .form-check-label {
+    color: #fff !important;
+}
+
+.review-section .table {
+    color: #fff !important;
+}
+
+.review-section .table td,
+.review-section .table th {
+    border-color: rgba(102, 126, 234, 0.2) !important;
+    color: #fff !important;
 }
 </style>
 {% endblock %}

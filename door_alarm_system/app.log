@@ -1,0 +1,77 @@
+INFO:camera_helper:Attempting to initialize USB camera on device 0
+INFO:camera_helper:✅ USB camera initialized successfully at (1920, 1080)
+pygame 2.6.1 (SDL 2.28.4, Python 3.13.5)
+Hello from the pygame community. https://www.pygame.org/contribute.html
+[DEBUG] 🔧 Starting GPIO setup...
+[DEBUG] 🔧 Not in testing mode, initializing GPIO hardware...
+[DEBUG] 🔧 Checking for lingering GPIO processes...
+[DEBUG] 🔧 Performing aggressive GPIO cleanup...
+[DEBUG] 🔧 GPIO cleanup attempt 1 completed
+[DEBUG] 🔧 GPIO cleanup attempt 2 completed
+[DEBUG] 🔧 GPIO cleanup attempt 3 completed
+[DEBUG] 🔧 GPIO mode reset to BOARD
+[DEBUG] 🔧 GPIO cleanup and mode initialization completed
+[DEBUG] ✅ GPIO pin 11 setup successful (Magnetic sensor)
+[DEBUG] ✅ GPIO pin 22 setup successful (Green LED)
+[DEBUG] ✅ GPIO pin 13 setup successful (Red LED)
+[DEBUG] ✅ GPIO pin 16 setup successful (White LED)
+[DEBUG] ✅ GPIO pin 18 setup successful (Switch)
+[DEBUG] ✅ GPIO pin 10 setup successful (Hooter Siren MOSFET)
+[DEBUG] 🔧 GPIO Setup Summary:
+  ├─ Successful pins: 6/6
+  │   ✅ Pin 11: Magnetic sensor
+  │   ✅ Pin 22: Green LED
+  │   ✅ Pin 13: Red LED
+  │   ✅ Pin 16: White LED
+  │   ✅ Pin 18: Switch
+  │   ✅ Pin 10: Hooter Siren MOSFET
+[DEBUG] 🔧 GPIO initialization completed
+[DEBUG] 🔧 GPIO setup phase completed, continuing with global variables...
+[DEBUG] ✅ GPIO hardware is available and functional
+[DEBUG] 🔧 Global variables initialized:
+  ├─ door_open: False
+  ├─ alarm_active: False
+  ├─ timer_active: False
+  └─ timer_duration: 30s
+🌐 SSL disabled - HTTP mode (default)
+💡 To enable HTTPS: USE_SSL=true python app.py
+�🚀 Starting eDOMOS-v2 Door Alarm System...
+📡 WebSocket support enabled
+🔄 Event-driven real-time updates active
+🌐 Server will be available at: http://0.0.0.0:5000
+🔌 WebSocket endpoint: ws://0.0.0.0:5000/socket.io/?EIO=4&transport=websocket&ns=/events
+============================================================
+[DEBUG] ⏰ Timer duration loaded from database: 10 seconds
+[DEBUG] 🔧 Initializing LED states...
+[DEBUG] ✅ LEDs initialized - Green: ON, Red: OFF, White: OFF
+[DEBUG] 🔧 Initializing audio system...
+[DEBUG] 🔊 Initializing audio system...
+[DEBUG] Audio file path: /home/bsm/WebApp/eDOMOS-21-CFR/eDOMOS-21-CFR/door_alarm_system/static/audio.mp3
+[DEBUG] Audio file exists: True
+[DEBUG] Audio file size: 34605 bytes
+[DEBUG] ✅ Audio preloaded into memory for instant playback
+[DEBUG] ✅ Audio initialization successful:
+  ├─ File: /home/bsm/WebApp/eDOMOS-21-CFR/eDOMOS-21-CFR/door_alarm_system/static/audio.mp3
+  ├─ Size: 34605 bytes
+  ├─ Volume: 1.0
+  ├─ Mixer initialized: (22050, -16, 2)
+  ├─ Preloaded: True
+  └─ SDL Audio Driver: alsa
+[DEBUG] 🔧 Initializing camera system...
+[DEBUG] ✅ Camera initialized successfully!
+[DEBUG]    Type: usb
+[DEBUG]    Resolution: (1920, 1080)
+[DEBUG]    Storage: static/captures
+[DEBUG] 🚪 Door monitoring loop started
+[DEBUG] 🚪 Door state change detected: None -> False
+🔍 Door monitoring thread started
+[SCHEDULER] 📧 Report scheduler thread started
+📧 Report scheduler thread started
+🔧 Starting SocketIO server with enhanced configuration...
+ * Serving Flask app 'app'
+ * Debug mode: off
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.31.227:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m

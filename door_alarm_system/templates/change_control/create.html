@@ -5,28 +5,50 @@
 {% block extra_css %}
 <style>
 .form-section {
-    background: white;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid var(--border-purple);
+    border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    border-left: 4px solid #0d6efd;
+    border-left: 4px solid var(--primary-purple);
+    box-shadow: 0 4px 16px rgba(138, 43, 226, 0.1);
 }
 
 .section-title {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #0d6efd;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin-bottom: 1rem;
 }
 
 .char-counter {
     font-size: 0.875rem;
-    color: #6c757d;
+    color: #aaa;
 }
 
 .required-label::after {
     content: " *";
-    color: #dc3545;
+    color: #e74c3c;
+}
+
+.form-control, .form-select {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-purple);
+    color: #fff;
+}
+
+.form-control:focus, .form-select:focus {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: var(--primary-purple);
+    color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(138, 43, 226, 0.25);
+}
+
+.form-label {
+    color: #fff;
 }
 </style>
 {% endblock %}
@@ -37,10 +59,10 @@
         <div class="col-lg-10">
             <!-- Header -->
             <div class="mb-4">
-                <a href="{{ url_for('change_control_dashboard') }}" class="btn btn-outline-secondary btn-sm mb-3">
+                <a href="{{ url_for('change_control_dashboard') }}" class="btn btn-outline-light btn-sm mb-3">
                     <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
                 </a>
-                <h2 class="mb-1">
+                <h2 class="mb-1 text-primary">
                     <i class="fas fa-plus-circle me-2"></i>
                     Create Change Request
                 </h2>
@@ -93,13 +115,6 @@
                         <small class="char-counter">
                             <span id="descLength">0</span> characters
                         </small>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="justification" class="form-label required-label">Business Justification</label>
-                        <textarea class="form-control" id="justification" name="justification" 
-                                  rows="4" required 
-                                  placeholder="Why is this change necessary? What problem does it solve?"></textarea>
                     </div>
                 </div>
 

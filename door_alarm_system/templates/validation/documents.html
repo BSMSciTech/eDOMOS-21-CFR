@@ -4,23 +4,25 @@
 
 {% block extra_css %}
 <style>
+/* Dark Theme for Validation Documents */
 .document-card {
-    background: white;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 8px;
     padding: 1.25rem;
     margin-bottom: 1rem;
     border-left: 4px solid #dee2e6;
     transition: all 0.2s ease;
+    color: #fff;
 }
 
 .document-card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     transform: translateY(-2px);
 }
 
-.document-card.iq { border-left-color: #198754; }
-.document-card.oq { border-left-color: #0d6efd; }
-.document-card.pq { border-left-color: #dc3545; }
+.document-card.iq { border-left-color: #00ff88; }
+.document-card.oq { border-left-color: #667eea; }
+.document-card.pq { border-left-color: #ff6b6b; }
 
 .status-badge {
     padding: 0.25rem 0.75rem;
@@ -29,38 +31,193 @@
     font-weight: 600;
 }
 
-.status-pending { background: #fff3cd; color: #856404; }
-.status-submitted { background: #cfe2ff; color: #084298; }
-.status-approved { background: #d1e7dd; color: #0f5132; }
-.status-rejected { background: #f8d7da; color: #842029; }
-.status-archived { background: #e2e3e5; color: #41464b; }
-
-.upload-zone {
-    border: 2px dashed #dee2e6;
-    border-radius: 8px;
-    padding: 2rem;
-    text-align: center;
-    background: #f8f9fa;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.status-pending { 
+    background: rgba(255, 193, 7, 0.3); 
+    color: #ffc107; 
+    border: 1px solid rgba(255, 193, 7, 0.5);
 }
-
-.upload-zone:hover {
-    border-color: #0d6efd;
-    background: #e7f1ff;
+.status-submitted { 
+    background: rgba(102, 126, 234, 0.3); 
+    color: #667eea; 
+    border: 1px solid rgba(102, 126, 234, 0.5);
 }
-
-.upload-zone.dragover {
-    border-color: #198754;
-    background: #d1e7dd;
+.status-approved { 
+    background: rgba(0, 255, 136, 0.3); 
+    color: #00ff88; 
+    border: 1px solid rgba(0, 255, 136, 0.5);
+}
+.status-rejected { 
+    background: rgba(255, 107, 107, 0.3); 
+    color: #ff6b6b; 
+    border: 1px solid rgba(255, 107, 107, 0.5);
+}
+.status-archived { 
+    background: rgba(167, 139, 250, 0.3); 
+    color: #a78bfa; 
+    border: 1px solid rgba(167, 139, 250, 0.5);
 }
 
 .filter-btn {
     margin: 0 0.25rem 0.5rem 0;
+    background: rgba(26, 26, 46, 0.6);
+    border-color: rgba(102, 126, 234, 0.3);
+    color: #fff;
+}
+
+.filter-btn:hover {
+    background: rgba(102, 126, 234, 0.3);
+    border-color: #667eea;
+    color: #fff;
 }
 
 .filter-btn.active {
     font-weight: 600;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: #fff;
+}
+
+/* Dark theme cards */
+.card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    color: #fff;
+}
+
+.card-body {
+    color: #fff;
+}
+
+.text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+h2, h5, h6 {
+    color: #fff;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #fff;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.form-select, .form-control {
+    background: rgba(26, 26, 46, 0.8);
+    border-color: rgba(102, 126, 234, 0.3);
+    color: #fff;
+}
+
+.form-select:focus, .form-control:focus {
+    background: rgba(26, 26, 46, 0.9);
+    border-color: #667eea;
+    color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-select option {
+    background: #1a1a2e;
+    color: #fff;
+}
+
+.form-control::placeholder,
+textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-label {
+    color: #fff;
+    font-weight: 500;
+}
+
+.alert-info {
+    background: rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.4);
+    color: #a78bfa;
+}
+
+.alert-info i {
+    color: #a78bfa;
+}
+
+.btn-close {
+    filter: invert(1);
+}
+
+/* Ensure modal backdrop and all modal elements are dark */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #fff;
+}
+
+.modal-header,
+.modal-footer {
+    background: rgba(26, 26, 46, 0.9);
+}
+
+.modal-title {
+    color: #fff;
+}
+
+/* Upload zone enhancements */
+.upload-zone {
+    border: 2px dashed rgba(102, 126, 234, 0.5);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(22, 33, 62, 0.9) 100%);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #fff;
+}
+
+.upload-zone:hover {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+}
+
+.upload-zone.dragover {
+    border-color: #00ff88;
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.3) 0%, rgba(0, 200, 100, 0.3) 100%);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+}
+
+/* Status summary cards */
+.card.border-warning {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.2) 0%, rgba(255, 193, 7, 0.1) 100%);
+    border-color: rgba(255, 193, 7, 0.5) !important;
+}
+
+.card.border-primary {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(102, 126, 234, 0.1) 100%);
+    border-color: rgba(102, 126, 234, 0.5) !important;
+}
+
+.card.border-success {
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 255, 136, 0.1) 100%);
+    border-color: rgba(0, 255, 136, 0.5) !important;
+}
+
+.card.border-danger {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.2) 0%, rgba(255, 107, 107, 0.1) 100%);
+    border-color: rgba(255, 107, 107, 0.5) !important;
+}
+
+.card h3 {
+    color: #fff;
 }
 </style>
 {% endblock %}
@@ -248,12 +405,12 @@
                     <div class="mb-3">
                         <label class="form-label">PDF File *</label>
                         <div class="upload-zone" id="uploadZone">
-                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
-                            <p class="mb-2">Click to browse or drag & drop PDF file</p>
-                            <small class="text-muted">Only PDF files are accepted</small>
+                            <i class="fas fa-cloud-upload-alt fa-3x mb-2" style="color: #a78bfa;"></i>
+                            <p class="mb-2" style="color: #fff; font-weight: 500;">Click to browse or drag & drop PDF file</p>
+                            <small style="color: rgba(255, 255, 255, 0.7);">Only PDF files are accepted</small>
                             <input type="file" id="fileInput" name="file" accept=".pdf" style="display:none" required>
                         </div>
-                        <div id="fileName" class="mt-2 text-success" style="display:none"></div>
+                        <div id="fileName" class="mt-2" style="display:none; color: #00ff88; font-weight: 500;"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Description (Optional)</label>

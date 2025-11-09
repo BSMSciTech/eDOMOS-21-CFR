@@ -13,17 +13,137 @@
 }
 
 .content-section {
-    background: white;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    color: #fff;
 }
 
 .section-title {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #0d6efd;
+    color: #fff;
+}
+
+.content-section .table {
+    color: #fff;
+    background: transparent !important;
+}
+
+.content-section .table td,
+.content-section .table th {
+    color: #fff;
+    border: none !important;
+    background: rgba(26, 26, 46, 0.8) !important;
+    padding: 0.75rem 1rem;
+}
+
+.content-section .table tr {
+    background: transparent !important;
+}
+
+.content-section .table tbody tr {
+    display: block;
+    margin-bottom: 0.75rem;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(26, 26, 46, 0.8) !important;
+}
+
+.content-section .table tbody td {
+    display: inline-block;
+    border: none !important;
+}
+
+.content-section .table tbody td:first-child {
+    width: 40%;
+    background: rgba(102, 126, 234, 0.2) !important;
+    border-right: 2px solid rgba(138, 43, 226, 0.3) !important;
+}
+
+.content-section .table tbody td:last-child {
+    width: 58%;
+    background: rgba(26, 26, 46, 0.8) !important;
+}
+
+.content-section .table tbody tr:hover {
+    transform: translateX(5px);
+    transition: all 0.3s ease;
+}
+
+.content-section .table strong {
+    color: #a78bfa;
+}
+
+/* Training content styling - dark theme */
+.content-section h1,
+.content-section h2,
+.content-section h3,
+.content-section h4,
+.content-section h5,
+.content-section h6 {
+    color: #a78bfa !important;
+}
+
+.content-section p,
+.content-section li,
+.content-section span,
+.content-section div {
+    color: #fff !important;
+}
+
+.content-section strong,
+.content-section b {
+    color: #fff !important;
+}
+
+.content-section hr {
+    border-color: rgba(138, 43, 226, 0.3) !important;
+}
+
+.content-section ul,
+.content-section ol {
+    color: #fff !important;
+}
+
+/* Status alerts styling - match card-style boxes */
+.content-section .alert {
+    background: rgba(26, 26, 46, 0.8) !important;
+    border: 2px solid rgba(102, 126, 234, 0.3) !important;
+    border-radius: 8px;
+    color: #fff !important;
+    padding: 1rem;
+}
+
+.content-section .alert h6 {
+    color: #a78bfa !important;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.content-section .alert p {
+    color: #fff !important;
+}
+
+.content-section .alert strong {
+    color: #a78bfa !important;
+}
+
+.content-section .alert-info {
+    border-left: 4px solid #667eea !important;
+    background: rgba(102, 126, 234, 0.1) !important;
+}
+
+.content-section .alert-warning {
+    border-left: 4px solid #ffc107 !important;
+    background: rgba(255, 193, 7, 0.1) !important;
+}
+
+.content-section .alert-success {
+    border-left: 4px solid #28a745 !important;
+    background: rgba(40, 167, 69, 0.1) !important;
 }
 
 .completion-record {
@@ -34,7 +154,7 @@
 }
 
 .completion-record.expired {
-    background: #fff3cd;
+    background: rgba(255, 193, 7, 0.2);
     border-left: 3px solid #ffc107;
 }
 

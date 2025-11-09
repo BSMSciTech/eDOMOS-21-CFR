@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Offline{% endblock %}
+
+{% block content %}
+<div class="container-fluid h-100 d-flex align-items-center justify-content-center">
+    <div class="text-center">
+        <div class="mb-4">
+            <i class="fas fa-wifi-slash fa-5x text-muted"></i>
+        </div>
+        <h1 class="h3 mb-3">You're Offline</h1>
+        <p class="text-muted mb-4">
+            It looks like you're not connected to the internet.<br>
+            Some features may not be available until you reconnect.
+        </p>
+        <div class="d-grid gap-2 d-md-block">
+            <button class="btn btn-primary" onclick="location.reload()">
+                <i class="fas fa-sync-alt"></i> Try Again
+            </button>
+            <a href="/dashboard" class="btn btn-outline-secondary">
+                <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+            </a>
+        </div>
+        
+        <div class="mt-5">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-info-circle text-info"></i> 
+                        Offline Features Available
+                    </h5>
+                    <ul class="list-unstyled text-start">
+                        <li><i class="fas fa-check text-success"></i> View cached dashboard</li>
+                        <li><i class="fas fa-check text-success"></i> Access system settings</li>
+                        <li><i class="fas fa-times text-danger"></i> Real-time door status</li>
+                        <li><i class="fas fa-times text-danger"></i> Send email alerts</li>
+                        <li><i class="fas fa-times text-danger"></i> Generate reports</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-retry connection every 30 seconds
+setInterval(function() {
+    if (navigator.onLine) {
+        location.reload();
+    }
+}, 30000);
+
+// Listen for online event
+window.addEventListener('online', function() {
+    location.reload();
+});
+</script>
+{% endblock %}

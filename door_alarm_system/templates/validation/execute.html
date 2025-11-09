@@ -13,25 +13,43 @@
 }
 
 .execution-section {
-    background: white;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+.execution-section h2,
+.execution-section h3,
+.execution-section h4,
+.execution-section h5,
+.execution-section h6,
+.execution-section p,
+.execution-section label,
+.execution-section strong,
+.execution-section td {
+    color: #fff !important;
+}
+
+.execution-section .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .section-title {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #0d6efd;
+    color: #a78bfa !important;
 }
 
 .procedure-step {
-    background: #f8f9fa;
-    border-left: 4px solid #0d6efd;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    border-left: 4px solid #667eea;
     padding: 1rem;
     margin-bottom: 0.75rem;
     border-radius: 4px;
+    color: #fff;
 }
 
 .signature-box {
@@ -40,6 +58,42 @@
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+}
+
+.execution-section .form-control,
+.execution-section .form-select,
+.execution-section textarea {
+    background: rgba(26, 26, 46, 0.8);
+    border-color: rgba(102, 126, 234, 0.3);
+    color: #fff;
+}
+
+.execution-section .form-control:focus,
+.execution-section .form-select:focus,
+.execution-section textarea:focus {
+    background: rgba(26, 26, 46, 0.9);
+    border-color: #667eea;
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+}
+
+.execution-section .form-control::placeholder,
+.execution-section textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.execution-section .form-check-label {
+    color: #fff !important;
+}
+
+.execution-section .table {
+    color: #fff !important;
+}
+
+.execution-section .table td,
+.execution-section .table th {
+    border-color: rgba(102, 126, 234, 0.2) !important;
+    color: #fff !important;
 }
 </style>
 {% endblock %}

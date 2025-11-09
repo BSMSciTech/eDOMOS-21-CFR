@@ -4,35 +4,50 @@
 
 {% block extra_css %}
 <style>
-.stat-card {
-    background: white;
-    border-radius: 8px;
+.metric-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 12px;
     padding: 1.5rem;
     text-align: center;
-    border-left: 4px solid;
-    transition: all 0.3s ease;
+    border: 1px solid rgba(138, 43, 226, 0.3);
+    transition: all 0.2s ease; /* Reduced from 0.3s */
+    will-change: transform;
 }
 
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+.metric-card:hover {
+    transform: translateY(-3px); /* Reduced from -5px */
+    box-shadow: 0 6px 16px rgba(138, 43, 226, 0.2); /* Simplified */
 }
 
-.stat-card.total { border-left-color: #0d6efd; }
-.stat-card.pending { border-left-color: #ffc107; }
-.stat-card.approved { border-left-color: #198754; }
-.stat-card.implemented { border-left-color: #0dcaf0; }
-.stat-card.rejected { border-left-color: #dc3545; }
+@media (prefers-reduced-motion: reduce) {
+    .metric-card {
+        transition: none !important;
+    }
+    .metric-card:hover {
+        transform: none !important;
+    }
+}
+
+.stat-card.total { border-left-color: #667eea; }
+.stat-card.pending { border-left-color: #f39c12; }
+.stat-card.approved { border-left-color: #27ae60; }
+.stat-card.implemented { border-left-color: #3498db; }
+.stat-card.rejected { border-left-color: #e74c3c; }
 
 .stat-number {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .change-card {
-    background: white;
-    border-radius: 8px;
+    background: rgba(26, 26, 46, 0.6);
+    border: 1px solid var(--border-purple);
+    border-radius: 10px;
     padding: 1.25rem;
     margin-bottom: 1rem;
     border-left: 4px solid #dee2e6;
@@ -40,26 +55,32 @@
 }
 
 .change-card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 16px rgba(138, 43, 226, 0.2);
+    border-color: var(--primary-purple);
 }
 
-.change-card.priority-critical { border-left-color: #dc3545; }
+.change-card.priority-critical { border-left-color: #e74c3c; }
 .change-card.priority-high { border-left-color: #fd7e14; }
-.change-card.priority-medium { border-left-color: #ffc107; }
+.change-card.priority-medium { border-left-color: #f39c12; }
 .change-card.priority-low { border-left-color: #6c757d; }
 
 .section-card {
-    background: white;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid var(--border-purple);
+    border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    box-shadow: 0 4px 16px rgba(138, 43, 226, 0.1);
 }
 
 .section-title {
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
-    color: #0d6efd;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 </style>
 {% endblock %}
@@ -69,18 +90,18 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1">
+            <h2 class="mb-1 text-primary">
                 <i class="fas fa-exchange-alt me-2"></i>
                 Change Control Dashboard
             </h2>
             <p class="text-muted">21 CFR Part 11 Change Management System</p>
         </div>
         <div>
-            <a href="{{ url_for('create_change_request') }}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>New Change Request
+            <a href="{{ url_for('create_change_request') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus-circle me-2"></i>Create New Change Request
             </a>
             {% if current_user.is_admin %}
-            <a href="{{ url_for('change_control_reports') }}" class="btn btn-outline-secondary">
+            <a href="{{ url_for('change_control_reports') }}" class="btn btn-outline-light">
                 <i class="fas fa-chart-bar me-2"></i>Reports
             </a>
             {% endif %}
@@ -129,7 +150,7 @@
                     <div class="section-title mb-0">
                         <i class="fas fa-list me-2"></i>Recent Change Requests
                     </div>
-                    <a href="{{ url_for('change_control_list') }}" class="btn btn-sm btn-outline-primary">
+                    <a href="{{ url_for('change_control_list') }}" class="btn btn-sm btn-outline-light">
                         View All
                     </a>
                 </div>
@@ -203,14 +224,14 @@
                     Pending Approvals
                 </div>
                 {% for change in pending_approvals %}
-                <div class="mb-3 p-3 bg-light rounded">
-                    <h6 class="mb-1">
+                <div class="mb-3 p-3 rounded" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-purple);">
+                    <h6 class="mb-1 text-white">
                         <a href="{{ url_for('view_change_request', change_id=change.id) }}" 
-                           class="text-decoration-none">
+                           class="text-decoration-none text-primary">
                             {{ change.change_number }}
                         </a>
                     </h6>
-                    <p class="mb-2 small">{{ change.title }}</p>
+                    <p class="mb-2 small text-muted">{{ change.title }}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">
                             {{ change.requested_date.strftime('%Y-%m-%d') }}
@@ -233,14 +254,14 @@
                 </div>
                 {% if my_changes %}
                     {% for change in my_changes %}
-                    <div class="mb-3 p-3 bg-light rounded">
-                        <h6 class="mb-1">
+                    <div class="mb-3 p-3 rounded" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-purple);">
+                        <h6 class="mb-1 text-white">
                             <a href="{{ url_for('view_change_request', change_id=change.id) }}" 
-                               class="text-decoration-none">
+                               class="text-decoration-none text-primary">
                                 {{ change.change_number }}
                             </a>
                         </h6>
-                        <p class="mb-2 small">{{ change.title }}</p>
+                        <p class="mb-2 small text-muted">{{ change.title }}</p>
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="badge 
                                 {% if change.status == 'pending' %}bg-warning text-dark

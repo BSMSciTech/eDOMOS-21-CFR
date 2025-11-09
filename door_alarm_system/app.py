@@ -10,14 +10,16 @@ import base64
 import signal
 import atexit
 import hashlib
+import ipaddress
 import pygame  # For audio alarm functionality
+import cv2  # For video streaming
 import RPi.GPIO as GPIO
 from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from datetime import datetime, timedelta, date
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session, send_file, flash, render_template_string
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, send_file, flash, render_template_string, abort, Response
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_socketio import SocketIO, emit
 from flask_wtf import FlaskForm
@@ -43,6 +45,158 @@ def resilient_email(form, field):
 from sqlalchemy import func
 from models import db, User, Setting, EventLog, EmailConfig, CompanyProfile, DoorSystemInfo, AnomalyDetection, ScheduledReport
 from config import Config
+from ai_security import analyze_event_with_ai, get_ai_dashboard_stats, ai_engine
+
+# ============================================================================
+# IP ADDRESS RESTRICTION SYSTEM
+# ============================================================================
+
+def get_client_ip():
+    """Get the real client IP address, handling proxies and load balancers"""
+    # Check for forwarded headers first (proxy/load balancer)
+    if request.headers.get('X-Forwarded-For'):
+        # X-Forwarded-For can contain multiple IPs, take the first one
+        return request.headers.get('X-Forwarded-For').split(',')[0].strip()
+    elif request.headers.get('X-Real-IP'):
+        return request.headers.get('X-Real-IP')
+    else:
+        # Direct connection
+        return request.remote_addr
+
+def is_ip_allowed(ip_address):
+    """Check if an IP address is allowed to access the system"""
+    try:
+        # Get IP restriction settings from database
+        ip_restriction_enabled = Setting.query.filter_by(key='ip_restriction_enabled').first()
+        if not ip_restriction_enabled or ip_restriction_enabled.value.lower() != 'true':
+            return True  # IP restriction disabled, allow all
+        
+        # Get whitelist and blacklist
+        whitelist_setting = Setting.query.filter_by(key='ip_whitelist').first()
+        blacklist_setting = Setting.query.filter_by(key='ip_blacklist').first()
+        
+        whitelist = whitelist_setting.value.split(',') if whitelist_setting and whitelist_setting.value else []
+        blacklist = blacklist_setting.value.split(',') if blacklist_setting and blacklist_setting.value else []
+        
+        # Clean up IP addresses (remove spaces)
+        whitelist = [ip.strip() for ip in whitelist if ip.strip()]
+        blacklist = [ip.strip() for ip in blacklist if ip.strip()]
+        
+        # Check blacklist first
+        if is_ip_in_list(ip_address, blacklist):
+            print(f"[SECURITY] ❌ IP {ip_address} blocked by blacklist")
+            return False
+        
+        # If whitelist exists and is not empty, check whitelist
+        if whitelist:
+            if is_ip_in_list(ip_address, whitelist):
+                print(f"[SECURITY] ✅ IP {ip_address} allowed by whitelist")
+                return True
+            else:
+                print(f"[SECURITY] ❌ IP {ip_address} not in whitelist")
+                return False
+        
+        # No whitelist configured, allow if not blacklisted
+        print(f"[SECURITY] ✅ IP {ip_address} allowed (no whitelist configured)")
+        return True
+        
+    except Exception as e:
+        print(f"[SECURITY ERROR] IP check failed for {ip_address}: {e}")
+        # On error, allow access to prevent lockout
+        return True
+
+def is_ip_in_list(ip_address, ip_list):
+    """Check if an IP address matches any entry in a list (supports CIDR notation)"""
+    try:
+        client_ip = ipaddress.ip_address(ip_address)
+        
+        for allowed_ip in ip_list:
+            try:
+                # Handle CIDR notation (e.g., 192.168.1.0/24)
+                if '/' in allowed_ip:
+                    network = ipaddress.ip_network(allowed_ip, strict=False)
+                    if client_ip in network:
+                        return True
+                else:
+                    # Handle single IP address
+                    if client_ip == ipaddress.ip_address(allowed_ip):
+                        return True
+            except ValueError:
+                # Invalid IP format, skip
+                continue
+        
+        return False
+        
+    except ValueError:
+        # Invalid client IP format
+        print(f"[SECURITY ERROR] Invalid IP format: {ip_address}")
+        return False
+
+def log_ip_access_attempt(ip_address, allowed, endpoint=None):
+    """Log IP access attempts for security monitoring"""
+    try:
+        status = "ALLOWED" if allowed else "BLOCKED"
+        endpoint_info = f" to {endpoint}" if endpoint else ""
+        log_event('ip_access_attempt', f'IP {ip_address} {status}{endpoint_info}')
+    except Exception as e:
+        print(f"[SECURITY ERROR] Failed to log IP access: {e}")
+
+def ip_restriction_required(f):
+    """Decorator to enforce IP restrictions on routes"""
+    from functools import wraps
+    
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        client_ip = get_client_ip()
+        endpoint = request.endpoint or 'unknown'
+        
+        if not is_ip_allowed(client_ip):
+            log_ip_access_attempt(client_ip, False, endpoint)
+            
+            # Return JSON response for API endpoints
+            if request.path.startswith('/api/'):
+                return jsonify({
+                    'error': 'Access denied from your IP address',
+                    'ip': client_ip,
+                    'message': 'Your IP address is not authorized to access this system'
+                }), 403
+            
+            # Return HTML page for regular routes
+            return render_template_string('''
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Access Denied</title>
+                <style>
+                    body { font-family: Arial, sans-serif; text-align: center; margin-top: 100px; }
+                    .error-container { max-width: 500px; margin: 0 auto; }
+                    .error-code { font-size: 72px; color: #dc3545; margin-bottom: 20px; }
+                    .error-message { font-size: 24px; color: #333; margin-bottom: 10px; }
+                    .error-details { color: #666; margin-bottom: 30px; }
+                    .ip-address { font-family: monospace; background: #f8f9fa; padding: 5px 10px; border-radius: 3px; }
+                </style>
+            </head>
+            <body>
+                <div class="error-container">
+                    <div class="error-code">403</div>
+                    <div class="error-message">Access Denied</div>
+                    <div class="error-details">
+                        Your IP address <span class="ip-address">{{ ip }}</span> is not authorized to access this system.
+                    </div>
+                    <p>If you believe this is an error, please contact your system administrator.</p>
+                </div>
+            </body>
+            </html>
+            ''', ip=client_ip), 403
+        
+        # Only log BLOCKED attempts, not every successful access (reduces noise)
+        # Successful access logging is disabled to prevent audit trail pollution
+        # If you need to re-enable: uncomment the line below
+        # log_ip_access_attempt(client_ip, True, endpoint)
+        
+        return f(*args, **kwargs)
+    
+    return decorated_function
 
 # Initialize camera module
 from camera_helper import initialize_camera_manager, capture_event_image
@@ -329,7 +483,8 @@ if not os.environ.get('TESTING'):
             (22, GPIO.OUT, None, "Green LED"),
             (13, GPIO.OUT, None, "Red LED"), 
             (16, GPIO.OUT, None, "White LED"),
-            (18, GPIO.IN, GPIO.PUD_UP, "Switch")
+            (18, GPIO.IN, GPIO.PUD_UP, "Switch"),
+            (10, GPIO.OUT, None, "Hooter Siren MOSFET")
         ]
         
         successful_pins = []
@@ -418,9 +573,14 @@ timer_active = False
 timer_duration = 30  # Default 30 seconds
 alarm_volume = 1.0  # Default alarm volume (0.0 to 1.0) - MAXIMUM VOLUME
 
+# Camera system
+camera_manager = None
+
 # Hardware pin assignments
 # Door sensor is connected to GPIO pin 11 (BOARD numbering used in setup)
 DOOR_SENSOR_PIN = 11
+# Hooter siren MOSFET control pin (connects to IRLZ44N gate via 10kΩ resistor)
+HOOTER_PIN = 10
 
 # Thread management for graceful shutdown
 shutdown_flag = threading.Event()
@@ -658,6 +818,9 @@ def activate_alarm_led_and_audio():
     else:
         print("[DEBUG] 🔴 GPIO not available - would turn ON white LED")
     
+    # Activate 12V hooter siren
+    activate_hooter()
+    
     # Immediately start audio (no conditional checks - always play when LED is on)
     print("[DEBUG] 🎵 AUDIO LINKED TO WHITE LED - Starting alarm sound...")
     
@@ -689,10 +852,13 @@ def activate_alarm_led_and_audio():
     threading.Thread(target=monitor_alarm_audio, daemon=True, name="AlarmAudioMonitor").start()
 
 def deactivate_alarm_led_and_audio():
-    """Turn OFF white LED and stop audio - linked together"""
+    """Turn OFF white LED, deactivate hooter siren, and stop audio - linked together"""
     
     # Stop audio first
     stop_alarm_audio()
+    
+    # Deactivate 12V hooter siren
+    deactivate_hooter()
     
     # Turn off white LED
     if gpio_available:
@@ -703,6 +869,37 @@ def deactivate_alarm_led_and_audio():
             print(f"[DEBUG] ⚠️ GPIO error during white LED deactivation: {gpio_error}")
     else:
         print("[DEBUG] ⚫ TESTING mode - would turn OFF white LED")
+
+# 🔊 HOOTER SIREN CONTROL FUNCTIONS
+def activate_hooter():
+    """Turn ON 12V hooter siren via MOSFET"""
+    if gpio_available:
+        try:
+            GPIO.output(HOOTER_PIN, GPIO.HIGH)  # Turn on MOSFET gate (activates hooter)
+            print(f"[DEBUG] 🔊 HOOTER SIREN ON (Pin {HOOTER_PIN}) - 12V ALARM ACTIVATED")
+        except Exception as gpio_error:
+            print(f"[DEBUG] ⚠️ GPIO error during hooter activation: {gpio_error}")
+    else:
+        print(f"[DEBUG] 🔊 TESTING mode - would turn ON hooter siren (Pin {HOOTER_PIN})")
+
+def deactivate_hooter():
+    """Turn OFF 12V hooter siren via MOSFET"""
+    if gpio_available:
+        try:
+            GPIO.output(HOOTER_PIN, GPIO.LOW)  # Turn off MOSFET gate (deactivates hooter)
+            print(f"[DEBUG] 🔇 HOOTER SIREN OFF (Pin {HOOTER_PIN}) - 12V ALARM DEACTIVATED")
+        except Exception as gpio_error:
+            print(f"[DEBUG] ⚠️ GPIO error during hooter deactivation: {gpio_error}")
+    else:
+        print(f"[DEBUG] 🔇 TESTING mode - would turn OFF hooter siren (Pin {HOOTER_PIN})")
+
+def test_hooter():
+    """Test hooter siren with 2-second activation"""
+    print("[DEBUG] 🔊 Testing hooter siren...")
+    activate_hooter()
+    time.sleep(2)  # 2-second test
+    deactivate_hooter()
+    print("[DEBUG] ✅ Hooter test completed")
 
 print("[DEBUG] 🔧 Global variables initialized:")
 print(f"  ├─ door_open: {door_open}")
@@ -830,6 +1027,7 @@ def init_system():
         # Initialize camera system
         print("[DEBUG] 🔧 Initializing camera system...")
         try:
+            global camera_manager
             camera_config = app.config.get('CAMERA_CONFIG', {})
             camera_manager = initialize_camera_manager(camera_config)
             camera_status = camera_manager.get_status()
@@ -846,6 +1044,7 @@ def init_system():
         except Exception as camera_error:
             print(f"[WARNING] ⚠️  Camera initialization failed: {camera_error}")
             print("[DEBUG] 🔧 Continuing without camera (non-critical)...")
+            camera_manager = None
 
 # ============================================================================
 # ANOMALY DETECTION SYSTEM
@@ -1317,6 +1516,29 @@ def log_event(event_type, description):
                 if event_type in ['door_open', 'door_close', 'alarm_triggered']:
                     detect_anomalies(event_type, event.id)
                 
+                # AI ANALYSIS - Analyze event with AI Security Engine
+                try:
+                    ai_analysis = analyze_event_with_ai({
+                        'timestamp': now_ist,
+                        'event_type': event_type,
+                        'description': description,
+                        'event_id': event.id
+                    })
+                    print(f"[AI] ✅ Event analyzed:")
+                    print(f"[AI]    Anomaly: {ai_analysis['anomaly_detected']} ({ai_analysis['anomaly_confidence']}%)")
+                    print(f"[AI]    Threat Level: {ai_analysis['threat_level']} ({ai_analysis['threat_confidence']}%)")
+                    print(f"[AI]    Reason: {ai_analysis['anomaly_reason']}")
+                    
+                    # Store AI analysis in event metadata
+                    event.ai_metadata = json.dumps({
+                        'ai_analysis': ai_analysis,
+                        'ai_processed': True
+                    })
+                    db.session.commit()
+                    
+                except Exception as ai_error:
+                    print(f"[AI] ⚠️ AI analysis failed: {ai_error}")
+                
                 # Refresh event from database to get updated image fields
                 db.session.refresh(event)
                 
@@ -1479,6 +1701,19 @@ class CreateUserForm(FlaskForm):
 def index():
     return redirect(url_for('login'))
 
+# PWA Routes
+@app.route('/manifest.json')
+def manifest():
+    return send_file('static/manifest.json', mimetype='application/manifest+json')
+
+@app.route('/sw.js')
+def service_worker():
+    return send_file('static/sw.js', mimetype='application/javascript')
+
+@app.route('/offline')
+def offline():
+    return render_template('offline.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -1488,9 +1723,25 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
+            # Check if user account is active
+            if not user.is_active:
+                flash('Your account has been deactivated. Please contact the administrator.', 'danger')
+                return render_template('login.html', form=form)
+            
+            # Check if password reset is required (21 CFR Part 11 Compliance)
+            if user.password_reset_required:
+                login_user(user, remember=True)
+                session['force_password_change'] = True
+                flash('You must change your password before continuing.', 'warning')
+                return redirect(url_for('change_password_required'))
+            
             login_user(user, remember=True)
             session.permanent = True
             app.permanent_session_lifetime = timedelta(minutes=30)
+            
+            # Update last login time
+            user.last_login = datetime.utcnow()
+            db.session.commit()
             
             # Check if admin needs onboarding
             if user.is_admin:
@@ -1501,6 +1752,56 @@ def login():
             return redirect(url_for('dashboard'))
         return render_template('login.html', form=form, error='Invalid username or password')
     return render_template('login.html', form=form)
+
+@app.route('/change-password-required', methods=['GET', 'POST'])
+@login_required
+def change_password_required():
+    """Force user to change password (21 CFR Part 11 Compliance)"""
+    if not session.get('force_password_change'):
+        return redirect(url_for('dashboard'))
+    
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        # Validate current password
+        if not current_user.check_password(current_password):
+            flash('Current password is incorrect.', 'danger')
+            return render_template('change_password_required.html')
+        
+        # Validate new password
+        if len(new_password) < 8:
+            flash('New password must be at least 8 characters long.', 'danger')
+            return render_template('change_password_required.html')
+        
+        if new_password != confirm_password:
+            flash('New passwords do not match.', 'danger')
+            return render_template('change_password_required.html')
+        
+        if new_password == current_password:
+            flash('New password must be different from current password.', 'danger')
+            return render_template('change_password_required.html')
+        
+        # Update password
+        current_user.set_password(new_password)
+        current_user.password_reset_required = False
+        session.pop('force_password_change', None)
+        db.session.commit()
+        
+        # Log password change
+        log_event('password_changed', f'User {current_user.username} changed password (forced)')
+        add_to_blockchain(
+            event_type='password_changed',
+            user_id=current_user.id,
+            details=f'User {current_user.username} completed required password change'
+        )
+        
+        flash('Password changed successfully! You can now access the system.', 'success')
+        return redirect(url_for('dashboard'))
+    
+    return render_template('change_password_required.html')
+
 
 @app.route('/logout')
 @login_required
@@ -1835,6 +2136,7 @@ def training_reports():
                          modules=modules,
                          total_completions=total_completions,
                          expired_count=expired_count,
+                         now=datetime.now(),
                          title='Training Reports')
 
 
@@ -1851,17 +2153,30 @@ def change_control_dashboard():
     # Get all change requests
     changes = ChangeControl.query.order_by(ChangeControl.requested_date.desc()).all()
     
+    # Define pending statuses (multi-level approval)
+    pending_statuses = ['pending', 'pending_supervisor', 'pending_manager', 'pending_director', 'pending_admin']
+    
     # Get statistics
     total_changes = len(changes)
-    pending_changes = len([c for c in changes if c.status == 'pending'])
+    pending_changes = len([c for c in changes if c.status in pending_statuses])
     approved_changes = len([c for c in changes if c.status == 'approved'])
     implemented_changes = len([c for c in changes if c.status == 'implemented'])
     rejected_changes = len([c for c in changes if c.status == 'rejected'])
     
-    # Get user's pending approvals (if admin)
+    # Get user's pending approvals based on their approval level
+    # Check approval_level FIRST (more specific), then fall back to is_admin
     pending_approvals = []
-    if current_user.is_admin:
-        pending_approvals = [c for c in changes if c.status == 'pending']
+    if current_user.approval_level == 'supervisor':
+        pending_approvals = [c for c in changes if c.status == 'pending_supervisor']
+    elif current_user.approval_level == 'manager':
+        pending_approvals = [c for c in changes if c.status in ['pending_supervisor', 'pending_manager']]
+    elif current_user.approval_level == 'director':
+        pending_approvals = [c for c in changes if c.status in ['pending_supervisor', 'pending_manager', 'pending_director']]
+    elif current_user.approval_level == 'admin' or current_user.is_admin:
+        pending_approvals = [c for c in changes if c.status in pending_statuses]
+    else:
+        # Users with no specific approval level see nothing
+        pending_approvals = []
     
     # Get user's submitted changes
     my_changes = [c for c in changes if c.requested_by == current_user.id]
@@ -1915,15 +2230,24 @@ def view_change_request(change_id):
     
     change = ChangeControl.query.get_or_404(change_id)
     
-    # Check if user can approve (admin only)
-    can_approve = current_user.is_admin and change.status == 'pending'
+    # Check approval permissions based on status and user level
+    can_approve_supervisor = (current_user.approval_level in ['supervisor', 'manager', 'director', 'admin'] 
+                             and change.status == 'pending_supervisor')
+    can_approve_manager = (current_user.approval_level in ['manager', 'director', 'admin'] 
+                          and change.status == 'pending_manager')
+    can_approve_director = (current_user.approval_level in ['director', 'admin'] 
+                           and change.status == 'pending_director')
+    can_approve_admin = (current_user.is_admin and change.status == 'pending_admin')
     
     # Check if user can implement (admin only, approved changes)
     can_implement = current_user.is_admin and change.status == 'approved'
     
     return render_template('change_control/detail.html',
                          change=change,
-                         can_approve=can_approve,
+                         can_approve_supervisor=can_approve_supervisor,
+                         can_approve_manager=can_approve_manager,
+                         can_approve_director=can_approve_director,
+                         can_approve_admin=can_approve_admin,
                          can_implement=can_implement,
                          title=f'Change Request {change.change_number}')
 
@@ -1941,7 +2265,6 @@ def create_change_request():
             description = request.form.get('description')
             change_type = request.form.get('change_type')
             priority = request.form.get('priority')
-            justification = request.form.get('justification')
             impact_assessment = request.form.get('impact_assessment')
             affected_systems = request.form.get('affected_systems')
             rollback_plan = request.form.get('rollback_plan')
@@ -1949,7 +2272,7 @@ def create_change_request():
             version_after = request.form.get('version_after')
             
             # Validate required fields
-            if not all([title, description, change_type, priority, justification]):
+            if not all([title, description, change_type, priority]):
                 flash('Please fill in all required fields.', 'danger')
                 return redirect(url_for('create_change_request'))
             
@@ -1968,9 +2291,8 @@ def create_change_request():
                 description=description,
                 change_type=change_type,
                 priority=priority,
-                justification=justification,
                 requested_by=current_user.id,
-                status='pending',
+                status='pending_supervisor',
                 impact_assessment=impact_assessment,
                 affected_systems=affected_systems,
                 rollback_plan=rollback_plan,
@@ -2080,6 +2402,323 @@ def approve_change_request(change_id):
                          title=f'Approve Change Request {change.change_number}')
 
 
+@app.route('/change-control/request/<int:change_id>/approve-supervisor', methods=['GET', 'POST'])
+@login_required
+def approve_supervisor_change_request(change_id):
+    """Supervisor approval with electronic signature"""
+    from models import ChangeControl, ElectronicSignature
+    
+    change = ChangeControl.query.get_or_404(change_id)
+    
+    # Check approval level
+    if current_user.approval_level not in ['supervisor', 'manager', 'director', 'admin']:
+        flash('Access denied. Supervisor level or higher required.', 'danger')
+        return redirect(url_for('view_change_request', change_id=change_id))
+    
+    if change.status != 'pending_supervisor':
+        flash('This change request is not awaiting supervisor approval.', 'warning')
+        return redirect(url_for('view_change_request', change_id=change_id))
+    
+    if request.method == 'POST':
+        try:
+            action = request.form.get('action')
+            password = request.form.get('password')
+            signature_reason = request.form.get('signature_reason')
+            comments = request.form.get('comments')
+            
+            if not current_user.check_password(password):
+                flash('Invalid password. Electronic signature failed.', 'danger')
+                return redirect(url_for('approve_supervisor_change_request', change_id=change_id))
+            
+            if not signature_reason:
+                flash('Signature reason is required per 21 CFR §11.200(a).', 'danger')
+                return redirect(url_for('approve_supervisor_change_request', change_id=change_id))
+            
+            approved_date = datetime.utcnow()
+            signature_data = f"{current_user.username}:{password}:{approved_date.isoformat()}:supervisor_approval"
+            signature_hash = hashlib.sha256(signature_data.encode()).hexdigest()
+            
+            signature = ElectronicSignature(
+                user_id=current_user.id,
+                event_type='supervisor_approval',
+                action=f'{action.capitalize()} change request {change.change_number} (Supervisor)',
+                reason=signature_reason,
+                signature_hash=signature_hash,
+                ip_address=request.remote_addr
+            )
+            db.session.add(signature)
+            db.session.flush()
+            
+            if action == 'approve':
+                change.status = 'pending_manager'
+                change.supervisor_approved_by = current_user.id
+                change.supervisor_approved_date = approved_date
+                change.supervisor_signature_id = signature.id
+            else:
+                change.status = 'rejected'
+                
+            if comments:
+                change.description += f"\n\n--- Supervisor Comments ---\n{comments}"
+            
+            db.session.commit()
+            
+            add_to_blockchain(
+                event_type='supervisor_approval',
+                user_id=current_user.id,
+                details=f'Change request {change.change_number} {action}ed by supervisor {current_user.username}'
+            )
+            
+            flash(f'Supervisor approval {action}ed successfully!', 'success')
+            return redirect(url_for('view_change_request', change_id=change.id))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error processing approval: {str(e)}', 'danger')
+            return redirect(url_for('approve_supervisor_change_request', change_id=change_id))
+    
+    return render_template('change_control/approve.html',
+                         change=change,
+                         approval_level='Supervisor',
+                         title=f'Supervisor Approval - {change.change_number}')
+
+
+@app.route('/change-control/request/<int:change_id>/approve-manager', methods=['GET', 'POST'])
+@login_required
+def approve_manager_change_request(change_id):
+    """Manager approval with electronic signature"""
+    from models import ChangeControl, ElectronicSignature
+    
+    change = ChangeControl.query.get_or_404(change_id)
+    
+    if current_user.approval_level not in ['manager', 'director', 'admin']:
+        flash('Access denied. Manager level or higher required.', 'danger')
+        return redirect(url_for('view_change_request', change_id=change_id))
+    
+    if change.status != 'pending_manager':
+        flash('This change request is not awaiting manager approval.', 'warning')
+        return redirect(url_for('view_change_request', change_id=change_id))
+    
+    if request.method == 'POST':
+        try:
+            action = request.form.get('action')
+            password = request.form.get('password')
+            signature_reason = request.form.get('signature_reason')
+            comments = request.form.get('comments')
+            
+            if not current_user.check_password(password):
+                flash('Invalid password. Electronic signature failed.', 'danger')
+                return redirect(url_for('approve_manager_change_request', change_id=change_id))
+            
+            if not signature_reason:
+                flash('Signature reason is required per 21 CFR §11.200(a).', 'danger')
+                return redirect(url_for('approve_manager_change_request', change_id=change_id))
+            
+            approved_date = datetime.utcnow()
+            signature_data = f"{current_user.username}:{password}:{approved_date.isoformat()}:manager_approval"
+            signature_hash = hashlib.sha256(signature_data.encode()).hexdigest()
+            
+            signature = ElectronicSignature(
+                user_id=current_user.id,
+                event_type='manager_approval',
+                action=f'{action.capitalize()} change request {change.change_number} (Manager)',
+                reason=signature_reason,
+                signature_hash=signature_hash,
+                ip_address=request.remote_addr
+            )
+            db.session.add(signature)
+            db.session.flush()
+            
+            if action == 'approve':
+                change.status = 'pending_director'
+                change.manager_approved_by = current_user.id
+                change.manager_approved_date = approved_date
+                change.manager_signature_id = signature.id
+            else:
+                change.status = 'rejected'
+                
+            if comments:
+                change.description += f"\n\n--- Manager Comments ---\n{comments}"
+            
+            db.session.commit()
+            
+            add_to_blockchain(
+                event_type='manager_approval',
+                user_id=current_user.id,
+                details=f'Change request {change.change_number} {action}ed by manager {current_user.username}'
+            )
+            
+            flash(f'Manager approval {action}ed successfully!', 'success')
+            return redirect(url_for('view_change_request', change_id=change.id))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error processing approval: {str(e)}', 'danger')
+            return redirect(url_for('approve_manager_change_request', change_id=change_id))
+    
+    return render_template('change_control/approve.html',
+                         change=change,
+                         approval_level='Manager',
+                         title=f'Manager Approval - {change.change_number}')
+
+
+@app.route('/change-control/request/<int:change_id>/approve-director', methods=['GET', 'POST'])
+@login_required
+def approve_director_change_request(change_id):
+    """Director approval with electronic signature"""
+    from models import ChangeControl, ElectronicSignature
+    
+    change = ChangeControl.query.get_or_404(change_id)
+    
+    if current_user.approval_level not in ['director', 'admin']:
+        flash('Access denied. Director level or higher required.', 'danger')
+        return redirect(url_for('view_change_request', change_id=change_id))
+    
+    if change.status != 'pending_director':
+        flash('This change request is not awaiting director approval.', 'warning')
+        return redirect(url_for('view_change_request', change_id=change_id))
+    
+    if request.method == 'POST':
+        try:
+            action = request.form.get('action')
+            password = request.form.get('password')
+            signature_reason = request.form.get('signature_reason')
+            comments = request.form.get('comments')
+            
+            if not current_user.check_password(password):
+                flash('Invalid password. Electronic signature failed.', 'danger')
+                return redirect(url_for('approve_director_change_request', change_id=change_id))
+            
+            if not signature_reason:
+                flash('Signature reason is required per 21 CFR §11.200(a).', 'danger')
+                return redirect(url_for('approve_director_change_request', change_id=change_id))
+            
+            approved_date = datetime.utcnow()
+            signature_data = f"{current_user.username}:{password}:{approved_date.isoformat()}:director_approval"
+            signature_hash = hashlib.sha256(signature_data.encode()).hexdigest()
+            
+            signature = ElectronicSignature(
+                user_id=current_user.id,
+                event_type='director_approval',
+                action=f'{action.capitalize()} change request {change.change_number} (Director)',
+                reason=signature_reason,
+                signature_hash=signature_hash,
+                ip_address=request.remote_addr
+            )
+            db.session.add(signature)
+            db.session.flush()
+            
+            if action == 'approve':
+                change.status = 'pending_admin'
+                change.director_approved_by = current_user.id
+                change.director_approved_date = approved_date
+                change.director_signature_id = signature.id
+            else:
+                change.status = 'rejected'
+                
+            if comments:
+                change.description += f"\n\n--- Director Comments ---\n{comments}"
+            
+            db.session.commit()
+            
+            add_to_blockchain(
+                event_type='director_approval',
+                user_id=current_user.id,
+                details=f'Change request {change.change_number} {action}ed by director {current_user.username}'
+            )
+            
+            flash(f'Director approval {action}ed successfully!', 'success')
+            return redirect(url_for('view_change_request', change_id=change.id))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error processing approval: {str(e)}', 'danger')
+            return redirect(url_for('approve_director_change_request', change_id=change_id))
+    
+    return render_template('change_control/approve.html',
+                         change=change,
+                         approval_level='Director',
+                         title=f'Director Approval - {change.change_number}')
+
+
+@app.route('/change-control/request/<int:change_id>/approve-admin', methods=['GET', 'POST'])
+@login_required
+def approve_admin_change_request(change_id):
+    """Final admin approval with electronic signature"""
+    from models import ChangeControl, ElectronicSignature
+    
+    if not current_user.is_admin:
+        flash('Access denied. Admin privileges required.', 'danger')
+        return redirect(url_for('view_change_request', change_id=change_id))
+    
+    change = ChangeControl.query.get_or_404(change_id)
+    
+    if change.status != 'pending_admin':
+        flash('This change request is not awaiting admin approval.', 'warning')
+        return redirect(url_for('view_change_request', change_id=change_id))
+    
+    if request.method == 'POST':
+        try:
+            action = request.form.get('action')
+            password = request.form.get('password')
+            signature_reason = request.form.get('signature_reason')
+            comments = request.form.get('comments')
+            
+            if not current_user.check_password(password):
+                flash('Invalid password. Electronic signature failed.', 'danger')
+                return redirect(url_for('approve_admin_change_request', change_id=change_id))
+            
+            if not signature_reason:
+                flash('Signature reason is required per 21 CFR §11.200(a).', 'danger')
+                return redirect(url_for('approve_admin_change_request', change_id=change_id))
+            
+            approved_date = datetime.utcnow()
+            signature_data = f"{current_user.username}:{password}:{approved_date.isoformat()}:admin_approval"
+            signature_hash = hashlib.sha256(signature_data.encode()).hexdigest()
+            
+            signature = ElectronicSignature(
+                user_id=current_user.id,
+                event_type='admin_approval',
+                action=f'{action.capitalize()} change request {change.change_number} (Admin)',
+                reason=signature_reason,
+                signature_hash=signature_hash,
+                ip_address=request.remote_addr
+            )
+            db.session.add(signature)
+            db.session.flush()
+            
+            if action == 'approve':
+                change.status = 'approved'
+                change.admin_approved_by = current_user.id
+                change.admin_approved_date = approved_date
+                change.admin_signature_id = signature.id
+            else:
+                change.status = 'rejected'
+                
+            if comments:
+                change.description += f"\n\n--- Admin Comments ---\n{comments}"
+            
+            db.session.commit()
+            
+            add_to_blockchain(
+                event_type='admin_approval',
+                user_id=current_user.id,
+                details=f'Change request {change.change_number} {action}ed by admin {current_user.username}'
+            )
+            
+            flash(f'Admin approval {action}ed successfully!', 'success')
+            return redirect(url_for('view_change_request', change_id=change.id))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error processing approval: {str(e)}', 'danger')
+            return redirect(url_for('approve_admin_change_request', change_id=change_id))
+    
+    return render_template('change_control/approve.html',
+                         change=change,
+                         approval_level='Admin',
+                         title=f'Admin Approval - {change.change_number}')
+
+
 @app.route('/change-control/request/<int:change_id>/implement', methods=['GET', 'POST'])
 @login_required
 def implement_change_request(change_id):
@@ -2182,6 +2821,12 @@ def change_control_reports():
         func.count(ChangeControl.id)
     ).group_by(ChangeControl.status).all()
     
+    # Convert to dict and calculate total pending count (multi-level approval)
+    status_dict = dict(status_stats) if status_stats else {}
+    pending_statuses = ['pending', 'pending_supervisor', 'pending_manager', 'pending_director', 'pending_admin']
+    total_pending = sum([status_dict.get(status, 0) for status in pending_statuses])
+    status_dict['pending'] = total_pending  # Add combined pending count
+    
     # Type breakdown
     type_stats = db.session.query(
         ChangeControl.change_type,
@@ -2213,11 +2858,12 @@ def change_control_reports():
     
     return render_template('change_control/reports.html',
                          changes=changes,
-                         status_stats=dict(status_stats),
-                         type_stats=dict(type_stats),
-                         priority_stats=dict(priority_stats),
-                         monthly_stats=monthly_stats,
+                         status_stats=status_dict,
+                         type_stats=dict(type_stats) if type_stats else {},
+                         priority_stats=dict(priority_stats) if priority_stats else {},
+                         monthly_stats=list(monthly_stats) if monthly_stats else [],
                          avg_implementation_days=round(avg_implementation_days, 1),
+                         now=datetime.now(),
                          title='Change Control Reports')
 
 
@@ -2849,6 +3495,7 @@ def upload_validation_document():
     """Upload completed IQ/OQ/PQ PDF document"""
     from models import ValidationDocument, DoorSystemInfo
     from werkzeug.utils import secure_filename
+    from blockchain_helper import add_blockchain_event
     import os
     
     if not current_user.is_admin:
@@ -2991,6 +3638,7 @@ def view_validation_document(doc_id):
 def download_validation_document(doc_id):
     """Download uploaded validation document"""
     from models import ValidationDocument
+    from blockchain_helper import add_blockchain_event
     import os
     
     doc = ValidationDocument.query.get_or_404(doc_id)
@@ -3023,6 +3671,7 @@ def download_validation_document(doc_id):
 def approve_validation_document(doc_id):
     """Approve a validation document (Admin/QA only)"""
     from models import ValidationDocument
+    from blockchain_helper import add_blockchain_event
     
     if not current_user.is_admin:
         return jsonify({'success': False, 'message': 'Admin access required'}), 403
@@ -3058,6 +3707,7 @@ def approve_validation_document(doc_id):
 def reject_validation_document(doc_id):
     """Reject a validation document (Admin/QA only)"""
     from models import ValidationDocument
+    from blockchain_helper import add_blockchain_event
     
     if not current_user.is_admin:
         return jsonify({'success': False, 'message': 'Admin access required'}), 403
@@ -3098,6 +3748,7 @@ def reject_validation_document(doc_id):
 def submit_validation_document(doc_id):
     """Submit document for approval"""
     from models import ValidationDocument
+    from blockchain_helper import add_blockchain_event
     
     doc = ValidationDocument.query.get_or_404(doc_id)
     
@@ -3133,6 +3784,7 @@ def submit_validation_document(doc_id):
 
 @app.route('/dashboard')
 @login_required
+@ip_restriction_required
 def dashboard():
     # Get user permissions
     permissions = current_user.permissions.split(',') if current_user.permissions else ['dashboard']
@@ -3168,6 +3820,42 @@ def dashboard():
         last_event=last_event_str,
         uptime=uptime_data
     )
+
+@app.route('/api/ai/stats')
+@login_required
+def get_ai_stats():
+    """Get AI security statistics"""
+    try:
+        ai_stats = get_ai_dashboard_stats()
+        return jsonify({
+            'success': True,
+            'ai_stats': ai_stats
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/ai/analysis/<int:event_id>')
+@login_required
+def get_event_ai_analysis(event_id):
+    """Get AI analysis for a specific event"""
+    try:
+        event = EventLog.query.get_or_404(event_id)
+        metadata = json.loads(event.ai_metadata) if event.ai_metadata else {}
+        ai_analysis = metadata.get('ai_analysis', {})
+        
+        return jsonify({
+            'success': True,
+            'event_id': event_id,
+            'ai_analysis': ai_analysis
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 @app.route('/event-log')
 @login_required
@@ -3237,6 +3925,7 @@ def admin_onboarding():
 
 @app.route('/admin')
 @login_required
+@ip_restriction_required
 def admin_panel():
     if not current_user.is_admin:
         return redirect(url_for('dashboard'))
@@ -3262,17 +3951,30 @@ def admin_panel():
     business_hours_start = f"{int(bh_start_setting.value):02d}:00" if bh_start_setting else "09:00"
     business_hours_end = f"{int(bh_end_setting.value):02d}:00" if bh_end_setting else "17:00"
     
+    # Get IP restriction settings
+    ip_settings = {}
+    ip_keys = ['ip_restriction_enabled', 'ip_whitelist', 'ip_blacklist']
+    for key in ip_keys:
+        setting = Setting.query.filter_by(key=key).first()
+        ip_settings[key] = setting.value if setting else ''
+    
+    # Get current user's IP address
+    current_ip = get_client_ip()
+    
     return render_template('admin_streamlined.html', 
         users=users, 
         create_form=create_form, 
         settings_form=settings_form,
         business_hours_start=business_hours_start,
         business_hours_end=business_hours_end,
-        permissions=current_user.permissions.split(',')
+        permissions=current_user.permissions.split(','),
+        ip_settings=ip_settings,
+        current_ip=current_ip
     )
 
 @app.route('/admin/create-user', methods=['POST'])
 @login_required
+@ip_restriction_required
 def create_user():
     if not current_user.is_admin:
         flash('Permission denied', 'error')
@@ -3342,67 +4044,116 @@ def create_user():
 
 @app.route('/admin/settings', methods=['POST'])
 @login_required
+@ip_restriction_required
 def admin_settings():
     if not current_user.is_admin:
         return jsonify({'error': 'Permission denied'}), 403
     try:
-        form = AdminSettingsForm()
-        if form.validate_on_submit():
-            # Save email configuration
-            email_config = EmailConfig.query.first()
-            if not email_config:
-                email_config = EmailConfig()
-                
-            email_config.sender_email = form.sender_email.data
-            email_config.app_password = form.app_password.data
-            email_config.recipient_emails = form.recipient_emails.data
-            email_config.is_configured = True
-            
-            db.session.add(email_config)
-            
-            # Save timer setting
-            timer_setting = Setting.query.filter_by(key='timer_duration').first()
-            if timer_setting:
-                timer_setting.value = str(form.timer_duration.data)
-            else:
-                timer_setting = Setting(key='timer_duration', value=str(form.timer_duration.data))
-                db.session.add(timer_setting)
-            
-            # Save business hours settings if provided
-            if 'business_hours_start' in request.form:
-                bh_start = request.form.get('business_hours_start')
-                try:
-                    hour = int(bh_start.split(':')[0])
-                    bh_start_setting = Setting.query.filter_by(key='business_hours_start').first()
-                    if bh_start_setting:
-                        bh_start_setting.value = str(hour)
+        print(f"[DEBUG] Admin settings form data: {request.form}")
+        
+        # Handle different types of settings updates based on form content
+        settings_updated = False
+        
+        # Check if this is a timer-only submission
+        if 'timer_duration' in request.form and request.form.get('timer_duration'):
+            try:
+                timer_value = int(request.form.get('timer_duration'))
+                if timer_value > 0:  # Basic validation
+                    timer_setting = Setting.query.filter_by(key='timer_duration').first()
+                    old_value = timer_setting.value if timer_setting else '30'  # Default value
+                    
+                    if timer_setting:
+                        timer_setting.value = str(timer_value)
+                        print(f"[DEBUG] Updated existing timer setting from {old_value}s to {timer_value}s")
                     else:
-                        bh_start_setting = Setting(key='business_hours_start', value=str(hour))
-                        db.session.add(bh_start_setting)
-                except:
-                    pass
-            
-            if 'business_hours_end' in request.form:
-                bh_end = request.form.get('business_hours_end')
-                try:
-                    hour = int(bh_end.split(':')[0])
-                    bh_end_setting = Setting.query.filter_by(key='business_hours_end').first()
-                    if bh_end_setting:
-                        bh_end_setting.value = str(hour)
-                    else:
-                        bh_end_setting = Setting(key='business_hours_end', value=str(hour))
-                        db.session.add(bh_end_setting)
-                except:
-                    pass
+                        timer_setting = Setting(key='timer_duration', value=str(timer_value))
+                        db.session.add(timer_setting)
+                        print(f"[DEBUG] Created new timer setting: {timer_value}s")
+                    
+                    # Update global timer_duration variable for immediate effect
+                    global timer_duration
+                    timer_duration = timer_value
+                    print(f"[DEBUG] Global timer_duration updated to: {timer_duration}")
+                    
+                    # Unified logging with detailed information
+                    log_event('timer_setting_changed', 
+                             f'Timer duration changed from {old_value}s to {timer_value}s (via Admin Panel)')
+                    
+                    settings_updated = True
+                    flash('Timer settings saved successfully!', 'success')
+                else:
+                    flash('Timer duration must be greater than 0', 'error')
+            except ValueError:
+                flash('Invalid timer duration value', 'error')
+        
+        # Handle email configuration if all email fields are present
+        if all(field in request.form for field in ['sender_email', 'app_password', 'recipient_emails']):
+            if all(request.form.get(field) for field in ['sender_email', 'app_password', 'recipient_emails']):
+                email_config = EmailConfig.query.first()
+                if not email_config:
+                    email_config = EmailConfig()
+                    
+                email_config.sender_email = request.form.get('sender_email')
+                email_config.app_password = request.form.get('app_password')
+                email_config.recipient_emails = request.form.get('recipient_emails')
+                email_config.is_configured = True
                 
+                db.session.add(email_config)
+                settings_updated = True
+                flash('Email settings saved successfully!', 'success')
+                print(f"[DEBUG] Email settings updated")
+            
+        # Handle business hours settings if provided
+        if 'business_hours_start' in request.form:
+            bh_start = request.form.get('business_hours_start')
+            try:
+                hour = int(bh_start.split(':')[0])
+                bh_start_setting = Setting.query.filter_by(key='business_hours_start').first()
+                if bh_start_setting:
+                    bh_start_setting.value = str(hour)
+                else:
+                    bh_start_setting = Setting(key='business_hours_start', value=str(hour))
+                    db.session.add(bh_start_setting)
+                settings_updated = True
+                print(f"[DEBUG] Business hours start updated to: {hour}")
+            except (ValueError, IndexError):
+                flash('Invalid business hours start time', 'error')
+        
+        if 'business_hours_end' in request.form:
+            bh_end = request.form.get('business_hours_end')
+            try:
+                hour = int(bh_end.split(':')[0])
+                bh_end_setting = Setting.query.filter_by(key='business_hours_end').first()
+                if bh_end_setting:
+                    bh_end_setting.value = str(hour)
+                else:
+                    bh_end_setting = Setting(key='business_hours_end', value=str(hour))
+                    db.session.add(bh_end_setting)
+                settings_updated = True
+                print(f"[DEBUG] Business hours end updated to: {hour}")
+            except (ValueError, IndexError):
+                flash('Invalid business hours end time', 'error')
+        
+        # Commit changes if any settings were updated
+        if settings_updated:
             db.session.commit()
-            log_event('settings_changed', 'Admin updated system settings')
+            
+            # Log specific non-timer settings changes
+            settings_changed = []
+            if 'sender_email' in request.form and request.form.get('sender_email'):
+                settings_changed.append('email configuration')
+            if 'business_hours_start' in request.form:
+                settings_changed.append('business hours')
+            
+            # Only log generic message for non-timer settings
+            if settings_changed:
+                log_event('admin_settings_changed', 
+                         f'Admin updated: {", ".join(settings_changed)}')
+            
+            print(f"[DEBUG] Settings committed to database successfully")
         else:
-            # If form did not validate, collect errors and flash to user
-            if form.errors:
-                for field, errs in form.errors.items():
-                    for err in errs:
-                        flash(f"{field}: {err}", 'error')
+            flash('No valid settings found to update', 'warning')
+            
     except Exception as e:
         # Rollback and log full traceback without exposing internals to the user
         db.session.rollback()
@@ -3412,6 +4163,101 @@ def admin_settings():
         flash('An unexpected error occurred while saving settings. See server logs for details.', 'error')
     
     return redirect(url_for('admin_panel'))
+
+@app.route('/admin/ip-settings', methods=['POST'])
+@login_required
+@ip_restriction_required
+def ip_settings():
+    """Handle IP restriction settings"""
+    if not current_user.is_admin:
+        flash('Access denied', 'error')
+        return redirect(url_for('dashboard'))
+    
+    try:
+        # Get form data
+        ip_restriction_enabled = 'ip_restriction_enabled' in request.form
+        ip_whitelist = request.form.get('ip_whitelist', '').strip()
+        ip_blacklist = request.form.get('ip_blacklist', '').strip()
+        
+        # Validate IP addresses
+        validation_errors = []
+        
+        # Validate whitelist IPs
+        if ip_whitelist:
+            for ip_line in ip_whitelist.split('\n'):
+                ip_line = ip_line.strip()
+                if ip_line and not validate_ip_or_network(ip_line):
+                    validation_errors.append(f"Invalid whitelist entry: {ip_line}")
+        
+        # Validate blacklist IPs
+        if ip_blacklist:
+            for ip_line in ip_blacklist.split('\n'):
+                ip_line = ip_line.strip()
+                if ip_line and not validate_ip_or_network(ip_line):
+                    validation_errors.append(f"Invalid blacklist entry: {ip_line}")
+        
+        # If there are validation errors, show them and don't save
+        if validation_errors:
+            for error in validation_errors:
+                flash(error, 'error')
+            return redirect(url_for('admin_panel'))
+        
+        # Check if user's current IP would be blocked
+        current_ip = get_client_ip()
+        if ip_restriction_enabled and ip_whitelist:
+            # Clean up whitelist
+            whitelist = [ip.strip() for ip in ip_whitelist.split('\n') if ip.strip()]
+            if not is_ip_in_list(current_ip, whitelist):
+                flash(f'Warning: Your current IP ({current_ip}) is not in the whitelist. You may be locked out!', 'error')
+                return redirect(url_for('admin_panel'))
+        
+        # Save settings to database
+        settings = [
+            ('ip_restriction_enabled', 'true' if ip_restriction_enabled else 'false'),
+            ('ip_whitelist', ip_whitelist),
+            ('ip_blacklist', ip_blacklist)
+        ]
+        
+        for key, value in settings:
+            setting = Setting.query.filter_by(key=key).first()
+            if setting:
+                setting.value = value
+            else:
+                setting = Setting(key=key, value=value)
+                db.session.add(setting)
+        
+        db.session.commit()
+        
+        # Log the change
+        status = "enabled" if ip_restriction_enabled else "disabled"
+        whitelist_count = len([ip for ip in ip_whitelist.split('\n') if ip.strip()]) if ip_whitelist else 0
+        blacklist_count = len([ip for ip in ip_blacklist.split('\n') if ip.strip()]) if ip_blacklist else 0
+        
+        log_event('ip_restrictions_updated', 
+                 f'IP restrictions {status} by admin. Whitelist: {whitelist_count} entries, Blacklist: {blacklist_count} entries')
+        
+        flash(f'IP restriction settings saved successfully. Status: {status}', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"[ERROR] Failed to save IP settings: {e}")
+        flash('Failed to save IP restriction settings', 'error')
+    
+    return redirect(url_for('admin_panel'))
+
+def validate_ip_or_network(ip_string):
+    """Validate if a string is a valid IP address or CIDR network"""
+    try:
+        # Try to parse as IP address first
+        ipaddress.ip_address(ip_string)
+        return True
+    except ValueError:
+        try:
+            # Try to parse as network (CIDR notation)
+            ipaddress.ip_network(ip_string, strict=False)
+            return True
+        except ValueError:
+            return False
 
 @app.route('/api/users/<int:user_id>', methods=['PUT', 'DELETE'])
 @login_required
@@ -4013,11 +4859,26 @@ def update_settings():
     data = request.get_json()
     if 'timer_duration' in data:
         setting = Setting.query.filter_by(key='timer_duration').first()
+        old_value = setting.value if setting else '30'  # Default value
+        new_value = str(data['timer_duration'])
+        
         if setting:
-            setting.value = str(data['timer_duration'])
-            db.session.commit()
-            log_event('setting_changed', f'Timer duration changed to {data["timer_duration"]} seconds')
-            return jsonify({'success': True})
+            setting.value = new_value
+        else:
+            setting = Setting(key='timer_duration', value=new_value)
+            db.session.add(setting)
+            
+        db.session.commit()
+        
+        # Unified logging with detailed information
+        log_event('timer_setting_changed', 
+                 f'Timer duration changed from {old_value}s to {new_value}s (via Dashboard)')
+        
+        # Update global variable for immediate effect
+        global timer_duration
+        timer_duration = int(new_value)
+        
+        return jsonify({'success': True})
     return jsonify({'error': 'Invalid setting'}), 400
 
 @app.route('/api/backup')
@@ -4058,6 +4919,33 @@ def test_event():
         
     except Exception as e:
         print(f"[ERROR] Test event failed: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/test-hooter', methods=['POST'])
+@login_required
+def test_hooter_api():
+    """Test endpoint for 12V hooter siren"""
+    if not current_user.is_admin:
+        return jsonify({'error': 'Admin access required'}), 403
+        
+    try:
+        print("[API] 🔊 Hooter test requested by admin")
+        
+        # Run hooter test in background thread to avoid blocking
+        def run_hooter_test():
+            test_hooter()
+            log_event('test_event', 'Hooter siren test completed via admin panel')
+        
+        threading.Thread(target=run_hooter_test, daemon=True).start()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Hooter test started (2-second activation)',
+            'duration': '2 seconds'
+        })
+        
+    except Exception as e:
+        print(f"[ERROR] Hooter test failed: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/report', methods=['POST'])
@@ -5397,8 +6285,9 @@ def api_user_detail(user_id):
                 user.permissions = data['permissions']
             if 'is_active' in data:
                 user.is_active = bool(data['is_active'])
-            if 'password' in data and data['password']:
-                user.set_password(data['password'])
+            # REMOVED: Direct password setting (21 CFR Part 11 Compliance)
+            # Admins cannot set user passwords directly per §11.300(b)
+            # Use password reset functionality instead
             
             db.session.commit()
             
@@ -5434,6 +6323,58 @@ def api_user_detail(user_id):
             db.session.rollback()
             print(f"[ERROR] Delete user error: {e}")
             return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/users/<int:user_id>/reset-password', methods=['POST'])
+@login_required
+def api_reset_user_password(user_id):
+    """Reset user password (Admin only - 21 CFR Part 11 Compliant)"""
+    if not current_user.is_admin:
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    try:
+        import secrets
+        
+        # Generate a secure temporary password (12 characters)
+        temp_password = secrets.token_urlsafe(12)[:12]
+        
+        # Set temporary password
+        user.set_password(temp_password)
+        
+        # Mark that user must change password on next login
+        user.password_reset_required = True
+        
+        # Generate a reset token with expiration (24 hours)
+        user.password_reset_token = secrets.token_urlsafe(32)
+        user.password_reset_expires = datetime.utcnow() + timedelta(hours=24)
+        
+        db.session.commit()
+        
+        # Log the password reset action (audit trail)
+        log_event('password_reset', f'Password reset initiated for user {user.username} by admin {current_user.username}')
+        add_to_blockchain(
+            event_type='password_reset_admin',
+            user_id=current_user.id,
+            details=f'Admin {current_user.username} reset password for {user.username}'
+        )
+        
+        return jsonify({
+            'success': True,
+            'message': f'Temporary password generated for {user.username}',
+            'temporary_password': temp_password,
+            'username': user.username,
+            'note': 'User will be required to change password on next login'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"[ERROR] Password reset error: {e}")
+        return jsonify({'error': str(e)}), 500
+
 
 # ==================== USER PROFILE & PREFERENCES ROUTES ====================
 
@@ -6782,6 +7723,116 @@ def start_monitoring():
 
 # Remove duplicate cleanup function as we already have one above
 
+# ============================================================================
+# LIVE VIDEO STREAMING ENDPOINTS
+# ============================================================================
+
+def generate_camera_frames():
+    """Generate camera frames for MJPEG streaming"""
+    global camera_manager
+    
+    if not camera_manager or not camera_manager.camera_available:
+        # Return a placeholder frame if camera is not available
+        import numpy as np
+        placeholder = np.zeros((480, 640, 3), dtype=np.uint8)
+        cv2.putText(placeholder, 'Camera Not Available', (150, 240), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        
+        ret, buffer = cv2.imencode('.jpg', placeholder)
+        if ret:
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+        return
+    
+    try:
+        while True:
+            if camera_manager.camera_type == 'usb':
+                ret, frame = camera_manager.camera.read()
+                if not ret:
+                    break
+                    
+                # Resize frame for better streaming performance
+                frame = cv2.resize(frame, (640, 480))
+                
+                # Add timestamp overlay
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                cv2.putText(frame, f"Live Feed - {timestamp}", (10, 30),
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                
+                # Add door status overlay
+                door_status = "OPEN" if door_open else "CLOSED"
+                color = (0, 0, 255) if door_open else (0, 255, 0)
+                cv2.putText(frame, f"Door: {door_status}", (10, 60),
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+                
+                # Encode frame as JPEG
+                ret, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
+                if ret:
+                    yield (b'--frame\r\n'
+                           b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+                           
+    except Exception as e:
+        print(f"[ERROR] Camera streaming error: {e}")
+
+@app.route('/api/camera/stream')
+def video_stream():
+    """MJPEG video streaming endpoint"""
+    return Response(generate_camera_frames(),
+                   mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/api/camera/snapshot')
+def camera_snapshot():
+    """Get a single camera snapshot"""
+    global camera_manager
+    
+    try:
+        if not camera_manager or not camera_manager.camera_available:
+            return jsonify({'error': 'Camera not available'}), 503
+            
+        # Capture a frame
+        if camera_manager.camera_type == 'usb':
+            ret, frame = camera_manager.camera.read()
+            if not ret:
+                return jsonify({'error': 'Failed to capture frame'}), 500
+                
+            # Add timestamp
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            cv2.putText(frame, timestamp, (10, 30),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            
+            # Encode as base64 for JSON response
+            ret, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
+            if ret:
+                import base64
+                img_data = base64.b64encode(buffer).decode('utf-8')
+                return jsonify({
+                    'success': True,
+                    'image': f"data:image/jpeg;base64,{img_data}",
+                    'timestamp': timestamp,
+                    'door_status': 'open' if door_open else 'closed'
+                })
+        
+        return jsonify({'error': 'Failed to capture snapshot'}), 500
+        
+    except Exception as e:
+        print(f"[ERROR] Snapshot error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/camera/status')
+def camera_status():
+    """Get camera availability status"""
+    global camera_manager
+    
+    status = {
+        'available': camera_manager.camera_available if camera_manager else False,
+        'type': camera_manager.camera_type if camera_manager else None,
+        'resolution': camera_manager.resolution if camera_manager else None,
+        'door_status': 'open' if door_open else 'closed',
+        'alarm_status': 'active' if alarm_active else 'inactive'
+    }
+    
+    return jsonify(status)
+
 if __name__ == '__main__':
     atexit.register(cleanup_and_exit)
     
@@ -6848,7 +7899,7 @@ if __name__ == '__main__':
                 port=5000, 
                 debug=False,
                 use_reloader=False,  # Prevent double initialization
-                log_output=False,     # Disable SocketIO logging to prevent WSGI errors
+                log_output=True,      # Enable SocketIO logging for proper network binding
                 allow_unsafe_werkzeug=True,  # Allow development server
                 ssl_context=ssl_context  # SSL context with certificate and key
             )
@@ -6860,7 +7911,7 @@ if __name__ == '__main__':
                 port=5000, 
                 debug=False,
                 use_reloader=False,  # Prevent double initialization
-                log_output=False,     # Disable SocketIO logging to prevent WSGI errors
+                log_output=True,      # Enable SocketIO logging for proper network binding
                 allow_unsafe_werkzeug=True  # Allow development server
             )
     except KeyboardInterrupt:

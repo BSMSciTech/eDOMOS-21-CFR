@@ -8,7 +8,7 @@ class DashboardRealTime {
         this.socket = null;
         this.isConnected = false;
         this.updateInterval = null;
-        this.pollingRate = 3000; // 3 seconds fallback polling
+        this.pollingRate = 5000; // Optimized: Increased from 3000ms to 5000ms for better performance
         this.lastEventId = 0;
         this.connectionRetries = 0;
         this.maxRetries = 5;
@@ -323,22 +323,31 @@ class DashboardRealTime {
         // Add updating class
         element.classList.add('counter-updating');
         
-        // Animate the counter
-        const increment = newValue > currentValue ? 1 : -1;
-        const steps = Math.abs(newValue - currentValue);
-        const stepTime = Math.max(50, 300 / steps); // Animation duration ~300ms
+        // Optimized: Use requestAnimationFrame instead of setInterval for smoother performance
+        const startTime = performance.now();
+        const duration = 500; // Fixed duration for consistent performance
+        const startValue = currentValue;
         
-        let current = currentValue;
-        const counter = setInterval(() => {
-            current += increment;
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Ease out quad for natural deceleration
+            const easeProgress = progress * (2 - progress);
+            const current = Math.round(startValue + (newValue - startValue) * easeProgress);
+            
             element.textContent = current;
             
-            if (current === newValue) {
-                clearInterval(counter);
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                element.textContent = newValue;
                 element.classList.remove('counter-updating');
                 this.addUpdateAnimation(element);
             }
-        }, stepTime);
+        };
+        
+        requestAnimationFrame(animate);
     }
     
     addUpdateAnimation(element) {
@@ -347,7 +356,7 @@ class DashboardRealTime {
         element.classList.add('updated');
         setTimeout(() => {
             element.classList.remove('updated');
-        }, 1000);
+        }, 800); // Reduced from 1000ms
     }
     
     // Polling fallback system

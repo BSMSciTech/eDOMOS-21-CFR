@@ -232,9 +232,57 @@
                                     <small class="text-muted ms-4">Access admin settings</small>
                                 </div>
                             </div>
-                            <div class="alert alert-info mt-2">
+                            
+                            <!-- 21 CFR Part 11 Compliance Permissions -->
+                            <h6 class="text-primary mt-4 mb-3">
+                                <i class="fas fa-certificate me-2"></i>21 CFR Part 11 Compliance
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input permission-checkbox" type="checkbox" 
+                                               value="training" id="newPerm_training">
+                                        <label class="form-check-label" for="newPerm_training">
+                                            <i class="fas fa-graduation-cap text-info me-1"></i>Training Management
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">Access training modules and records</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input permission-checkbox" type="checkbox" 
+                                               value="change_control" id="newPerm_change_control">
+                                        <label class="form-check-label" for="newPerm_change_control">
+                                            <i class="fas fa-exchange-alt text-warning me-1"></i>Change Control
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">Create and manage change requests</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input permission-checkbox" type="checkbox" 
+                                               value="validation" id="newPerm_validation">
+                                        <label class="form-check-label" for="newPerm_validation">
+                                            <i class="fas fa-check-circle text-success me-1"></i>Validation (IQ/OQ/PQ)
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">Access validation tests and documentation</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input permission-checkbox" type="checkbox" 
+                                               value="blockchain" id="newPerm_blockchain">
+                                        <label class="form-check-label" for="newPerm_blockchain">
+                                            <i class="fas fa-link text-secondary me-1"></i>Blockchain Audit Trail
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">View blockchain verification and compliance reports</small>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info mt-3">
                                 <i class="fas fa-info-circle me-2"></i>
-                                <strong>Note:</strong> Admin users automatically get access to all tabs.
+                                <strong>Note:</strong> Admin users automatically get access to all tabs and compliance features.
                             </div>
                         </div>
                     </div>
@@ -402,9 +450,57 @@
                                     <small class="text-muted ms-4">Access admin settings</small>
                                 </div>
                             </div>
-                            <div class="alert alert-info mt-2">
+                            
+                            <!-- 21 CFR Part 11 Compliance Permissions -->
+                            <h6 class="text-primary mt-4 mb-3">
+                                <i class="fas fa-certificate me-2"></i>21 CFR Part 11 Compliance
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-permission-checkbox" type="checkbox" 
+                                               value="training" id="editPerm_training">
+                                        <label class="form-check-label" for="editPerm_training">
+                                            <i class="fas fa-graduation-cap text-info me-1"></i>Training Management
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">Access training modules and records</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-permission-checkbox" type="checkbox" 
+                                               value="change_control" id="editPerm_change_control">
+                                        <label class="form-check-label" for="editPerm_change_control">
+                                            <i class="fas fa-exchange-alt text-warning me-1"></i>Change Control
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">Create and manage change requests</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-permission-checkbox" type="checkbox" 
+                                               value="validation" id="editPerm_validation">
+                                        <label class="form-check-label" for="editPerm_validation">
+                                            <i class="fas fa-check-circle text-success me-1"></i>Validation (IQ/OQ/PQ)
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">Access validation tests and documentation</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input edit-permission-checkbox" type="checkbox" 
+                                               value="blockchain" id="editPerm_blockchain">
+                                        <label class="form-check-label" for="editPerm_blockchain">
+                                            <i class="fas fa-link text-secondary me-1"></i>Blockchain Audit Trail
+                                        </label>
+                                    </div>
+                                    <small class="text-muted ms-4">View blockchain verification and compliance reports</small>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info mt-3">
                                 <i class="fas fa-info-circle me-2"></i>
-                                <strong>Note:</strong> Admin users automatically get access to all tabs.
+                                <strong>Note:</strong> Admin users automatically get access to all tabs and compliance features.
                             </div>
                         </div>
                     </div>
@@ -451,12 +547,16 @@ function loadUsers() {
                                 '<span class="badge bg-success">Active</span>' : 
                                 '<span class="badge bg-danger">Inactive</span>'}
                             ${user.is_admin ? '<span class="badge bg-warning ms-1">Admin</span>' : ''}
+                            ${user.password_reset_required ? '<span class="badge bg-info ms-1">Reset Required</span>' : ''}
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-warning" onclick='editUser(${JSON.stringify(user)})'>
+                            <button class="btn btn-sm btn-warning" onclick='editUser(${JSON.stringify(user)})' title="Edit User">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id}, '${user.username}')">
+                            <button class="btn btn-sm btn-info" onclick="resetPassword(${user.id}, '${user.username}')" title="Reset Password">
+                                <i class="fas fa-key"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id}, '${user.username}')" title="Delete User">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>
@@ -597,6 +697,140 @@ function deleteUser(userId, username) {
             showAlert('Error: ' + error.message, 'danger');
         });
     }
+}
+
+function resetPassword(userId, username) {
+    if (confirm(`Reset password for user "${username}"?\n\nThis will:\n• Generate a temporary password\n• Force user to change password on next login\n• Log the action for audit compliance (21 CFR Part 11)`)) {
+        fetch(`/api/users/${userId}/reset-password`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showPasswordResetModal(data.username, data.temporary_password);
+                loadUsers(); // Reload to show "Reset Required" badge
+            } else {
+                showAlert('Error resetting password: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Error: ' + error.message, 'danger');
+        });
+    }
+}
+
+function showPasswordResetModal(username, tempPassword) {
+    // Create modal HTML
+    const modalHTML = `
+        <div class="modal fade" id="passwordResetModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 1px solid rgba(124, 58, 237, 0.3);">
+                    <div class="modal-header" style="border-bottom: 1px solid rgba(124, 58, 237, 0.3);">
+                        <h5 class="modal-title" style="color: #a78bfa;">
+                            <i class="fas fa-key me-2"></i>Password Reset Successful
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning" style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: #fbbf24;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>SECURITY NOTICE:</strong> This password will only be shown once!
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label" style="color: #c4b5fd;">Username:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" value="${username}" readonly 
+                                       style="background: rgba(124, 58, 237, 0.1); border: 1px solid rgba(124, 58, 237, 0.3); color: #e0e7ff;">
+                                <button class="btn btn-outline-secondary" onclick="copyToClipboard('${username}', 'Username')" 
+                                        style="border-color: rgba(124, 58, 237, 0.3); color: #a78bfa;">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label" style="color: #c4b5fd;">Temporary Password:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="tempPasswordField" value="${tempPassword}" readonly 
+                                       style="background: rgba(124, 58, 237, 0.1); border: 1px solid rgba(124, 58, 237, 0.3); color: #e0e7ff; font-family: monospace; font-size: 1.1em; font-weight: bold;">
+                                <button class="btn btn-outline-secondary" onclick="copyToClipboard('${tempPassword}', 'Password')" 
+                                        style="border-color: rgba(124, 58, 237, 0.3); color: #a78bfa;">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd;">
+                            <strong><i class="fas fa-info-circle me-2"></i>How to Share Securely:</strong>
+                            <ol class="mb-0 mt-2" style="padding-left: 20px;">
+                                <li><strong>In Person:</strong> Show the password on your screen, user writes it down</li>
+                                <li><strong>Phone/Video Call:</strong> Read the password verbally while on call</li>
+                                <li><strong>Secure Messaging:</strong> Use encrypted messaging app (Signal, WhatsApp)</li>
+                                <li><strong>Email (Not Recommended):</strong> Only if other methods unavailable - delete after confirmation</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="alert alert-danger" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5;">
+                            <strong><i class="fas fa-shield-alt me-2"></i>User Requirements:</strong>
+                            <ul class="mb-0 mt-2" style="padding-left: 20px;">
+                                <li>User MUST change password on next login</li>
+                                <li>Temporary password expires in 24 hours</li>
+                                <li>New password must be different from temporary</li>
+                                <li>Action logged for 21 CFR Part 11 compliance</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="border-top: 1px solid rgba(124, 58, 237, 0.3);">
+                        <button type="button" class="btn btn-secondary" onclick="closePasswordResetModal()">
+                            <i class="fas fa-times me-2"></i>Close
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="copyToClipboard('${tempPassword}', 'Password')" 
+                                style="background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%); border: none;">
+                            <i class="fas fa-copy me-2"></i>Copy Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('passwordResetModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('passwordResetModal'));
+    modal.show();
+}
+
+function closePasswordResetModal() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('passwordResetModal'));
+    if (modal) {
+        modal.hide();
+    }
+    // Remove modal from DOM after closing
+    setTimeout(() => {
+        const modalElement = document.getElementById('passwordResetModal');
+        if (modalElement) {
+            modalElement.remove();
+        }
+    }, 300);
+}
+
+function copyToClipboard(text, label) {
+    navigator.clipboard.writeText(text).then(() => {
+        showAlert(`${label} copied to clipboard!`, 'success');
+    }).catch(() => {
+        showAlert(`Failed to copy ${label}. Please copy manually.`, 'warning');
+    });
 }
 
 function showAlert(message, type) {

@@ -829,6 +829,117 @@ function processEvent(data) {
             console.warn('⚠️ No dashboard data to update (no statistics, door_status, or alarm_status)');
         }
         
+        // Audio Alert Integration - Trigger alarm sounds for security events
+        if (data.event && window.mobileAudioManager) {
+            const eventType = data.event.event_type;
+            console.log('🔊 Checking audio alert trigger for event:', eventType);
+            
+            // Get user's preferred ringtone from localStorage
+            const preferredRingtone = localStorage.getItem('edomos_default_ringtone') || 'urgent';
+            
+            // Different audio behavior for different events
+            if (eventType === 'alarm_triggered' || data.alarm_status === 'Active') {
+                // ALARM TRIGGERED: Play continuously until door closes (1 hour max safety timeout)
+                console.log('🚨 TRIGGERING CONTINUOUS ALARM for:', eventType);
+                
+                window.mobileAudioManager.playAlarmRingtone(preferredRingtone, 3600000, true) // 1 hour (3600 seconds) continuous until door closes, mark as triggered alarm
+                    .then(played => {
+                        if (played) {
+                            console.log('✅ Continuous alarm sound triggered successfully');
+                        } else {
+                            console.warn('⚠️ Continuous alarm sound failed to play');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('❌ Continuous alarm error:', error);
+                    });
+                
+                // Show urgent notification for alarms
+                if (window.mobileAudioManager.showNotification) {
+                    window.mobileAudioManager.showNotification(
+                        '🚨 eDOMOS SECURITY ALARM!',
+                        `ALARM TRIGGERED - ${data.event.description} - ${new Date().toLocaleTimeString()}`,
+                        true // persistent
+                    );
+                }
+                
+            } else if (eventType === 'door_open' || eventType === 'door_opened') {
+                // DOOR OPEN: Play single door beep sound (different from alarm)
+                console.log('🚪 TRIGGERING SINGLE DOOR OPEN SOUND for:', eventType);
+                
+                // Use a simple beep sound for door open
+                const doorOpenSoundType = 'default'; // Default beep sound for door open
+                window.mobileAudioManager.playAlarmRingtone(doorOpenSoundType, 2000, false) // 2 seconds only (no loop), not triggered alarm
+                    .then(played => {
+                        if (played) {
+                            console.log('✅ Door open beep played once (default beep)');
+                        } else {
+                            console.warn('⚠️ Door open sound failed to play');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('❌ Door open sound error:', error);
+                    });
+                
+                // Show brief notification for door open
+                if (window.mobileAudioManager.showNotification) {
+                    window.mobileAudioManager.showNotification(
+                        '� Door Opened',
+                        `Door opened at ${new Date().toLocaleTimeString()}`,
+                        false // not persistent
+                    );
+                }
+                
+            } else if (eventType === 'door_close' || eventType === 'door_closed') {
+                // DOOR CLOSE: Stop any playing alarms first, then play close sound
+                console.log('🚪 DOOR CLOSED - Stopping any active alarms and playing close sound');
+                
+                // First: Stop any continuously playing alarms
+                if (window.mobileAudioManager && window.mobileAudioManager.hasActiveTriggeredAlarm()) {
+                    console.log('� Auto-stopping active alarm due to door close');
+                    window.mobileAudioManager.stopAlarm();
+                    
+                    // Brief delay before playing close sound
+                    setTimeout(() => {
+                        playDoorCloseSound();
+                    }, 500);
+                } else {
+                    // No active alarm, play close sound immediately
+                    playDoorCloseSound();
+                }
+                
+                function playDoorCloseSound() {
+                    // Use a gentler sound for door close
+                    const closeSoundType = 'gentle';
+                    if (window.mobileAudioManager.playSingleSound) {
+                        window.mobileAudioManager.playSingleSound(closeSoundType, true)
+                            .then(played => {
+                                if (played) {
+                                    console.log('✅ Door close sound played once (single)');
+                                } else {
+                                    console.warn('⚠️ Door close sound failed to play');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('❌ Door close sound error:', error);
+                            });
+                    } else {
+                        // Fallback: short duration play (no loop for < 5 seconds)
+                        window.mobileAudioManager.playAlarmRingtone(closeSoundType, 1500, false); // Not a triggered alarm
+                    }
+                }
+                
+                // Show brief notification for door close
+                if (window.mobileAudioManager.showNotification) {
+                    window.mobileAudioManager.showNotification(
+                        '🚪 Door Secured',
+                        `Door closed at ${new Date().toLocaleTimeString()}`,
+                        false // not persistent
+                    );
+                }
+            }
+        }
+        
         // Toast notifications disabled - no popups for events
         if (data.event) {
             console.log('📢 Event received (no notification shown):', data.event.event_type, '(via ' + source + ')');

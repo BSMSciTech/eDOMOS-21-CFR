@@ -1,9 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="U                <ul class="navbar-nav">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>eDomos - {% block title %}{% endblock %}</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Professional Door Alarm Management System with 21 CFR Part 11 Compliance">
+    <meta name="theme-color" content="#4a90e2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="eDOMOS">
+    <meta name="msapplication-TileColor" content="#1a1a2e">
+    <meta name="msapplication-config" content="/static/browserconfig.xml">
+    
+    <!-- PWA Links -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/icon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='icons/icon-16x16.png') }}">
+    
     <!-- Preload FontAwesome for faster loading -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
@@ -13,6 +29,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}?v=2.2">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/modern.css') }}?v=2.2">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}?v=1.0">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -21,17 +38,14 @@
         <div class="container-fluid">
             <a class="navbar-brand professional-brand" href="{{ url_for('dashboard') }}">
                 <div class="brand-logo">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 2C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V4C20 2.89543 19.1046 2 18 2H6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M12 2V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="15.5" cy="8.5" r="1" fill="currentColor"/>
-                        <path d="M8 8H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M8 6H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
+                    <div class="logo-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="logo-pulse"></div>
                 </div>
                 <div class="brand-text">
-                    <span class="brand-main">eDomos</span>
+                    <span class="brand-main">e<span class="brand-highlight">DOMOS</span></span>
+                    <span class="brand-tagline">Door Monitoring System</span>
                 </div>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -89,42 +103,8 @@
                     </li>
                     {% endif %}
                     
-                    <!-- Quality & Compliance (Admin Only) -->
-                    {% if current_user.is_admin %}
-                    <li class="nav-item dropdown mx-2">
-                        <a class="nav-link nav-link-vertical dropdown-toggle" href="#" id="qualityDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-certificate nav-icon"></i>
-                            <span class="nav-text">Quality</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="qualityDropdown">
-                            <li class="dropdown-header">
-                                <i class="fas fa-shield-alt me-2"></i>Quality Management System
-                            </li>
-                            <li><a class="dropdown-item" href="{{ url_for('validation_dashboard') }}">
-                                <i class="fas fa-vial me-2"></i>Validation Testing (IQ/OQ/PQ)
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('change_control_dashboard') }}">
-                                <i class="fas fa-exchange-alt me-2"></i>Change Control
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('training_dashboard') }}">
-                                <i class="fas fa-graduation-cap me-2"></i>Training Management
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li class="dropdown-header">
-                                <i class="fas fa-pen-fancy me-2"></i>21 CFR Part 11
-                            </li>
-                            <li><a class="dropdown-item" href="{{ url_for('electronic_signatures') }}">
-                                <i class="fas fa-signature me-2"></i>Electronic Signatures
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('blockchain') }}">
-                                <i class="fas fa-list-alt me-2"></i>Audit Trail
-                            </a></li>
-                        </ul>
-                    </li>
-                    {% endif %}
-                    
-                    <!-- Blockchain (Admin Only) -->
-                    {% if current_user.is_admin %}
+                    <!-- Blockchain -->
+                    {% if current_user.is_admin or 'blockchain' in permissions %}
                     <li class="nav-item dropdown mx-2">
                         <a class="nav-link nav-link-vertical dropdown-toggle" href="#" id="blockchainDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-link nav-icon"></i>
@@ -132,18 +112,71 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="blockchainDropdown">
                             <li class="dropdown-header">
-                                <i class="fas fa-cubes me-2"></i>Technical Verification
+                                <i class="fas fa-cubes me-2"></i>Audit Trail
                             </li>
                             <li><a class="dropdown-item" href="{{ url_for('blockchain') }}">
                                 <i class="fas fa-chart-line me-2"></i>Verification Dashboard
                             </a></li>
+                            {% if current_user.is_admin %}
                             <li><a class="dropdown-item" href="{{ url_for('blockchain_demo') }}">
                                 <i class="fas fa-desktop me-2"></i>Customer Demo
                             </a></li>
+                            {% endif %}
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ url_for('hipaa_compliance') }}">
                                 <i class="fas fa-certificate me-2"></i>Compliance Report
                             </a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- 21 CFR Part 11 Compliance -->
+                    {% if current_user.is_admin or 'electronic_signatures' in permissions or 'training' in permissions or 'change_control' in permissions or 'validation' in permissions %}
+                    <li class="nav-item dropdown mx-2">
+                        <a class="nav-link nav-link-vertical dropdown-toggle" href="#" id="complianceDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-certificate nav-icon"></i>
+                            <span class="nav-text">21 CFR Part 11</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="complianceDropdown">
+                            <li class="dropdown-header">
+                                <i class="fas fa-file-signature me-2"></i>Compliance Management
+                            </li>
+                            {% if current_user.is_admin or 'training' in permissions %}
+                            <li><a class="dropdown-item" href="{{ url_for('training_dashboard') }}">
+                                <i class="fas fa-graduation-cap me-2"></i>Training Management
+                            </a></li>
+                            {% endif %}
+                            {% if current_user.is_admin or 'change_control' in permissions %}
+                            <li><a class="dropdown-item" href="{{ url_for('change_control_dashboard') }}">
+                                <i class="fas fa-exchange-alt me-2"></i>Change Control
+                            </a></li>
+                            {% endif %}
+                            {% if current_user.is_admin or 'validation' in permissions %}
+                            <li><a class="dropdown-item" href="{{ url_for('validation_dashboard') }}">
+                                <i class="fas fa-check-circle me-2"></i>Validation (IQ/OQ/PQ)
+                            </a></li>
+                            {% endif %}
+                            {% if current_user.is_admin or 'training' in permissions or 'change_control' in permissions or 'validation' in permissions %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="dropdown-header">
+                                <i class="fas fa-file-pdf me-2"></i>Documentation
+                            </li>
+                            {% if current_user.is_admin or 'validation' in permissions %}
+                            <li><a class="dropdown-item" href="{{ url_for('validation_reports') }}">
+                                <i class="fas fa-file-alt me-2"></i>Validation Reports
+                            </a></li>
+                            {% endif %}
+                            {% if current_user.is_admin or 'training' in permissions %}
+                            <li><a class="dropdown-item" href="{{ url_for('training_reports') }}">
+                                <i class="fas fa-clipboard-check me-2"></i>Training Records
+                            </a></li>
+                            {% endif %}
+                            {% if current_user.is_admin or 'change_control' in permissions %}
+                            <li><a class="dropdown-item" href="{{ url_for('change_control_reports') }}">
+                                <i class="fas fa-history me-2"></i>Change History
+                            </a></li>
+                            {% endif %}
+                            {% endif %}
                         </ul>
                     </li>
                     {% endif %}
@@ -286,6 +319,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
     <script src="{{ url_for('static', filename='js/socket.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pwa.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/mobile-audio.js') }}"></script>
     
     <script>
         // Real-time WebSocket functionality (event-driven updates)
@@ -1175,6 +1210,35 @@
         document.getElementById('changePasswordForm').reset();
         document.getElementById('passwordStrength').innerHTML = '';
         document.getElementById('passwordAlert').classList.add('d-none');
+    });
+    
+    // Navigation menu scroll indicator for mobile/tablet
+    document.addEventListener('DOMContentLoaded', function() {
+        const navCollapse = document.querySelector('.navbar-collapse');
+        
+        if (navCollapse && window.innerWidth <= 992) {
+            navCollapse.addEventListener('scroll', function() {
+                const scrollTop = this.scrollTop;
+                const scrollHeight = this.scrollHeight;
+                const clientHeight = this.clientHeight;
+                
+                // Check if scrolled to bottom (with 10px threshold)
+                if (scrollTop + clientHeight >= scrollHeight - 10) {
+                    this.classList.add('scrolled-bottom');
+                } else {
+                    this.classList.remove('scrolled-bottom');
+                }
+            });
+            
+            // Check initial state
+            const scrollHeight = navCollapse.scrollHeight;
+            const clientHeight = navCollapse.clientHeight;
+            
+            // If content doesn't overflow, hide the indicator
+            if (scrollHeight <= clientHeight + 10) {
+                navCollapse.classList.add('scrolled-bottom');
+            }
+        }
     });
     </script>
     

@@ -5,24 +5,69 @@
 {% block extra_css %}
 <style>
 .approval-section {
-    background: white;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid var(--border-purple);
+    border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    box-shadow: 0 4px 16px rgba(138, 43, 226, 0.1);
+}
+
+.approval-section h6 {
+    color: #fff;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.approval-section p {
+    color: #ddd;
+}
+
+.approval-section label {
+    color: #fff;
+}
+
+.approval-section .form-check-label {
+    color: #fff !important;
+}
+
+.approval-section .text-success {
+    color: #27ae60 !important;
+}
+
+.approval-section .text-danger {
+    color: #e74c3c !important;
 }
 
 .section-title {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #0d6efd;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .change-summary {
-    background: #f8f9fa;
-    border-left: 4px solid #0d6efd;
+    background: rgba(26, 26, 46, 0.6);
+    border: 1px solid var(--border-purple);
+    border-left: 4px solid var(--primary-purple);
     padding: 1.25rem;
     margin-bottom: 1.5rem;
+    border-radius: 8px;
+}
+
+.change-summary h5 {
+    color: #fff;
+}
+
+.change-summary .text-muted {
+    color: #aaa !important;
+}
+
+.change-summary strong {
+    color: #fff;
 }
 
 .signature-box {
@@ -51,12 +96,12 @@
             <!-- Header -->
             <div class="mb-4">
                 <a href="{{ url_for('view_change_request', change_id=change.id) }}" 
-                   class="btn btn-outline-secondary btn-sm mb-3">
+                   class="btn btn-outline-light btn-sm mb-3">
                     <i class="fas fa-arrow-left me-2"></i>Back to Change Request
                 </a>
-                <h2 class="mb-1">
+                <h2 class="mb-1 text-primary">
                     <i class="fas fa-clipboard-check me-2"></i>
-                    Review Change Request
+                    {% if approval_level %}{{ approval_level }} {% endif %}Review Change Request
                 </h2>
                 <p class="text-muted">{{ change.change_number }} - Electronic Signature Required</p>
             </div>

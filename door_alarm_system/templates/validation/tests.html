@@ -5,14 +5,14 @@
 {% block extra_css %}
 <style>
 .filter-section {
-    background: white;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 2rem;
 }
 
 .test-card {
-    background: white;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1rem;
@@ -22,25 +22,134 @@
 
 .test-card:hover {
     transform: translateX(5px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .test-card.iq {
-    border-left-color: #0d6efd;
+    border-left-color: #667eea;
 }
 
 .test-card.oq {
-    border-left-color: #198754;
+    border-left-color: #00ff88;
 }
 
 .test-card.pq {
-    border-left-color: #0dcaf0;
+    border-left-color: #ff6b6b;
+}
+
+.test-card h5,
+.test-card p,
+.test-card a,
+.test-card small,
+.test-card strong {
+    color: #fff !important;
+}
+
+.test-card .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .signature-indicator {
     display: inline-block;
     margin-right: 0.5rem;
 }
+
+.filter-section,
+.filter-section label,
+.filter-section strong {
+    color: #fff !important;
+}
+
+.filter-section .form-control,
+.filter-section .form-select {
+    background: rgba(26, 26, 46, 0.8);
+    border-color: rgba(102, 126, 234, 0.3);
+    color: #fff;
+}
+
+.filter-section .form-control:focus,
+.filter-section .form-select:focus {
+    background: rgba(26, 26, 46, 0.9);
+    border-color: #667eea;
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+}
+
+.filter-section .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.filter-section select option {
+    background: #1a1a2e;
+    color: #fff;
+}
+
+/* Override statistics cards */
+.bg-light {
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%) !important;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.bg-light h3,
+.bg-light small {
+    color: #fff !important;
+}
+
+/* Dark theme enhancements */
+.report-section h6,
+.report-section p,
+.report-section strong,
+.report-section td,
+.report-section th,
+.report-section label {
+    color: #fff !important;
+}
+
+.report-section .text-muted {
+    color: #aaa !important;
+}
+
+.report-section a {
+    color: #667eea !important;
+}
+
+.report-section .table {
+    background: transparent !important;
+    color: #fff !important;
+}
+
+.report-section .table thead th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-color: rgba(138, 43, 226, 0.5) !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    padding: 12px !important;
+}
+
+.report-section .table tbody td {
+    border-color: rgba(138, 43, 226, 0.2) !important;
+    color: #fff !important;
+    background: transparent !important;
+}
+
+.report-section .table-hover tbody tr:hover {
+    background: rgba(102, 126, 234, 0.1) !important;
+}
+
+.report-section .card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+    border: 1px solid var(--border-purple) !important;
+}
+
+.report-section .card-body {
+    color: #fff !important;
+}
+
+.report-section .card-body h3,
+.report-section .card-body p {
+    color: #fff !important;
+}
+
 </style>
 {% endblock %}
 

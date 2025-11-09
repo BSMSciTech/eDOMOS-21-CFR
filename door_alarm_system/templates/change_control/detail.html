@@ -7,27 +7,62 @@
 .change-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 2rem;
     margin-bottom: 2rem;
+    box-shadow: 0 8px 24px rgba(138, 43, 226, 0.3);
 }
 
 .info-section {
-    background: white;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+    border: 1px solid var(--border-purple) !important;
+    border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    box-shadow: 0 4px 16px rgba(138, 43, 226, 0.1);
+}
+
+.info-section h6 {
+    color: #fff !important;
+}
+
+.info-section p {
+    color: #ddd !important;
+}
+
+.info-section strong {
+    color: #fff !important;
+}
+
+.info-section small {
+    color: #aaa !important;
+}
+
+.info-section .table {
+    background: transparent !important;
+    color: #fff !important;
+    margin-bottom: 0 !important;
+}
+
+.info-section .table td,
+.info-section .table th {
+    border-color: rgba(138, 43, 226, 0.3) !important;
+    color: #fff !important;
+    background: transparent !important;
 }
 
 .section-title {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #0d6efd;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .timeline-item {
-    border-left: 3px solid #dee2e6;
+    border-left: 3px solid var(--border-purple);
     padding-left: 1.5rem;
     padding-bottom: 1.5rem;
     position: relative;
@@ -37,8 +72,8 @@
     content: '';
     width: 12px;
     height: 12px;
-    background: white;
-    border: 3px solid #0d6efd;
+    background: #1a1a2e;
+    border: 3px solid var(--primary-purple);
     border-radius: 50%;
     position: absolute;
     left: -7.5px;
@@ -49,11 +84,29 @@
     border-left-color: transparent;
 }
 
+.timeline-item h6 {
+    color: #fff !important;
+}
+
+.timeline-item small {
+    color: #aaa !important;
+}
+
+.timeline-item p {
+    color: #ddd !important;
+}
+
 .signature-box {
-    background: #f8f9fa;
-    border-left: 4px solid #198754;
+    background: rgba(39, 174, 96, 0.2);
+    border: 1px solid #27ae60;
+    border-left: 4px solid #27ae60;
     padding: 1rem;
     margin-top: 1rem;
+    border-radius: 8px;
+}
+
+.signature-box strong, .signature-box p {
+    color: #fff;
 }
 </style>
 {% endblock %}
@@ -61,7 +114,7 @@
 {% block content %}
 <div class="container">
     <!-- Back Button -->
-    <a href="{{ url_for('change_control_dashboard') }}" class="btn btn-outline-secondary btn-sm mb-3">
+    <a href="{{ url_for('change_control_dashboard') }}" class="btn btn-outline-light btn-sm mb-3">
         <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
     </a>
 
@@ -69,6 +122,9 @@
     <div class="change-header">
         <div class="d-flex justify-content-between align-items-start">
             <div>
+                <h5 class="mb-1 opacity-75">
+                    <i class="fas fa-file-alt me-2"></i>Change Request Details
+                </h5>
                 <h2 class="mb-2">{{ change.change_number }}</h2>
                 <h4 class="mb-3">{{ change.title }}</h4>
                 <div class="d-flex gap-3 flex-wrap">
@@ -97,12 +153,15 @@
                 </span>
                 <br><br>
                 <span class="badge 
-                    {% if change.status == 'pending' %}bg-warning text-dark
+                    {% if change.status == 'pending_supervisor' %}bg-warning text-dark
+                    {% elif change.status == 'pending_manager' %}bg-warning text-dark
+                    {% elif change.status == 'pending_director' %}bg-warning text-dark
+                    {% elif change.status == 'pending_admin' %}bg-warning text-dark
                     {% elif change.status == 'approved' %}bg-success
                     {% elif change.status == 'implemented' %}bg-info
                     {% else %}bg-danger{% endif %}" 
                     style="font-size: 1rem; padding: 0.5rem 1rem;">
-                    {{ change.status|title }}
+                    {{ change.status.replace('_', ' ')|title }}
                 </span>
             </div>
         </div>
@@ -162,6 +221,7 @@
                     <i class="fas fa-history me-2"></i>Change Timeline
                 </div>
 
+                <!-- Requested -->
                 <div class="timeline-item">
                     <h6>Change Requested</h6>
                     <p class="mb-1">
@@ -172,31 +232,105 @@
                     </small>
                 </div>
 
-                {% if change.approved_date %}
+                <!-- Supervisor Approval -->
+                {% if change.supervisor_approved_date %}
                 <div class="timeline-item">
-                    <h6>
-                        {% if change.status == 'rejected' %}Change Rejected{% else %}Change Approved{% endif %}
-                    </h6>
+                    <h6>Supervisor Approval</h6>
                     <p class="mb-1">
-                        By {{ change.approver.username if change.approver else 'Unknown' }}
+                        By {{ change.supervisor_approver.username if change.supervisor_approver else 'Unknown' }}
                     </p>
                     <small class="text-muted">
-                        {{ change.approved_date.strftime('%Y-%m-%d %H:%M:%S') }}
+                        {{ change.supervisor_approved_date.strftime('%Y-%m-%d %H:%M:%S') }}
                     </small>
                     
-                    {% if change.approval_signature %}
+                    {% if change.supervisor_signature %}
                     <div class="signature-box">
                         <i class="fas fa-signature me-2"></i>
                         <strong>Electronic Signature:</strong>
                         <br>
-                        <small>Hash: {{ change.approval_signature.signature_hash[:16] }}...</small>
+                        <small>Hash: {{ change.supervisor_signature.signature_hash[:16] }}...</small>
                         <br>
-                        <small>Reason: {{ change.approval_signature.reason }}</small>
+                        <small>Reason: {{ change.supervisor_signature.reason }}</small>
                     </div>
                     {% endif %}
                 </div>
                 {% endif %}
 
+                <!-- Manager Approval -->
+                {% if change.manager_approved_date %}
+                <div class="timeline-item">
+                    <h6>Manager Approval</h6>
+                    <p class="mb-1">
+                        By {{ change.manager_approver.username if change.manager_approver else 'Unknown' }}
+                    </p>
+                    <small class="text-muted">
+                        {{ change.manager_approved_date.strftime('%Y-%m-%d %H:%M:%S') }}
+                    </small>
+                    
+                    {% if change.manager_signature %}
+                    <div class="signature-box">
+                        <i class="fas fa-signature me-2"></i>
+                        <strong>Electronic Signature:</strong>
+                        <br>
+                        <small>Hash: {{ change.manager_signature.signature_hash[:16] }}...</small>
+                        <br>
+                        <small>Reason: {{ change.manager_signature.reason }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Director Approval -->
+                {% if change.director_approved_date %}
+                <div class="timeline-item">
+                    <h6>Director Approval</h6>
+                    <p class="mb-1">
+                        By {{ change.director_approver.username if change.director_approver else 'Unknown' }}
+                    </p>
+                    <small class="text-muted">
+                        {{ change.director_approved_date.strftime('%Y-%m-%d %H:%M:%S') }}
+                    </small>
+                    
+                    {% if change.director_signature %}
+                    <div class="signature-box">
+                        <i class="fas fa-signature me-2"></i>
+                        <strong>Electronic Signature:</strong>
+                        <br>
+                        <small>Hash: {{ change.director_signature.signature_hash[:16] }}...</small>
+                        <br>
+                        <small>Reason: {{ change.director_signature.reason }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Admin Approval -->
+                {% if change.admin_approved_date %}
+                <div class="timeline-item">
+                    <h6>
+                        {% if change.status == 'rejected' %}Change Rejected{% else %}Admin Approval{% endif %}
+                    </h6>
+                    <p class="mb-1">
+                        By {{ change.admin_approver.username if change.admin_approver else 'Unknown' }}
+                    </p>
+                    <small class="text-muted">
+                        {{ change.admin_approved_date.strftime('%Y-%m-%d %H:%M:%S') }}
+                    </small>
+                    
+                    {% if change.admin_signature %}
+                    <div class="signature-box">
+                        <i class="fas fa-signature me-2"></i>
+                        <strong>Electronic Signature:</strong>
+                        <br>
+                        <small>Hash: {{ change.admin_signature.signature_hash[:16] }}...</small>
+                        <br>
+                        <small>Reason: {{ change.admin_signature.reason }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Implementation -->
                 {% if change.implemented_date %}
                 <div class="timeline-item">
                     <h6>Change Implemented</h6>
@@ -229,10 +363,31 @@
                     <i class="fas fa-tasks me-2"></i>Actions
                 </div>
 
-                {% if can_approve %}
-                <a href="{{ url_for('approve_change_request', change_id=change.id) }}" 
+                {% if can_approve_supervisor %}
+                <a href="{{ url_for('approve_supervisor_change_request', change_id=change.id) }}" 
                    class="btn btn-primary w-100 mb-2">
-                    <i class="fas fa-clipboard-check me-2"></i>Review & Approve
+                    <i class="fas fa-clipboard-check me-2"></i>Supervisor Approval
+                </a>
+                {% endif %}
+
+                {% if can_approve_manager %}
+                <a href="{{ url_for('approve_manager_change_request', change_id=change.id) }}" 
+                   class="btn btn-primary w-100 mb-2">
+                    <i class="fas fa-clipboard-check me-2"></i>Manager Approval
+                </a>
+                {% endif %}
+
+                {% if can_approve_director %}
+                <a href="{{ url_for('approve_director_change_request', change_id=change.id) }}" 
+                   class="btn btn-primary w-100 mb-2">
+                    <i class="fas fa-clipboard-check me-2"></i>Director Approval
+                </a>
+                {% endif %}
+
+                {% if can_approve_admin %}
+                <a href="{{ url_for('approve_admin_change_request', change_id=change.id) }}" 
+                   class="btn btn-primary w-100 mb-2">
+                    <i class="fas fa-clipboard-check me-2"></i>Admin Approval
                 </a>
                 {% endif %}
 
@@ -279,11 +434,14 @@
                         <td><strong>Status:</strong></td>
                         <td>
                             <span class="badge 
-                                {% if change.status == 'pending' %}bg-warning text-dark
+                                {% if change.status == 'pending_supervisor' %}bg-warning text-dark
+                                {% elif change.status == 'pending_manager' %}bg-warning text-dark
+                                {% elif change.status == 'pending_director' %}bg-warning text-dark
+                                {% elif change.status == 'pending_admin' %}bg-warning text-dark
                                 {% elif change.status == 'approved' %}bg-success
                                 {% elif change.status == 'implemented' %}bg-info
                                 {% else %}bg-danger{% endif %}">
-                                {{ change.status|title }}
+                                {{ change.status.replace('_', ' ')|title }}
                             </span>
                         </td>
                     </tr>
@@ -315,7 +473,7 @@
                     <p class="mb-2">
                         <i class="fas fa-signature text-success me-2"></i>
                         Electronic Signatures: 
-                        {{ (1 if change.approval_signature else 0) + (1 if change.implementation_signature else 0) }}
+                        {{ (1 if change.supervisor_signature else 0) + (1 if change.manager_signature else 0) + (1 if change.director_signature else 0) + (1 if change.admin_signature else 0) + (1 if change.implementation_signature else 0) }}
                     </p>
                     <p class="mb-0">
                         <i class="fas fa-link text-success me-2"></i>

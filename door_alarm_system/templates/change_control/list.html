@@ -5,15 +5,22 @@
 {% block extra_css %}
 <style>
 .filters-section {
-    background: white;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid var(--border-purple);
+    border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    box-shadow: 0 4px 16px rgba(138, 43, 226, 0.1);
+}
+
+.filters-section label {
+    color: #fff;
 }
 
 .change-row {
-    background: white;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid var(--border-purple);
+    border-radius: 10px;
     padding: 1.25rem;
     margin-bottom: 1rem;
     border-left: 4px solid #dee2e6;
@@ -21,8 +28,17 @@
 }
 
 .change-row:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 16px rgba(138, 43, 226, 0.3);
     transform: translateY(-2px);
+    border-color: var(--primary-purple);
+}
+
+.change-row h6, .change-row p, .change-row strong {
+    color: #fff;
+}
+
+.change-row .text-muted {
+    color: #aaa !important;
 }
 
 .change-row.priority-critical { border-left-color: #dc3545; }
@@ -37,7 +53,7 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1">
+            <h2 class="mb-1 text-primary">
                 <i class="fas fa-list me-2"></i>
                 Change Requests
             </h2>

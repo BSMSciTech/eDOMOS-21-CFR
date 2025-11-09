@@ -79,13 +79,17 @@
                         {{ settings_form.hidden_tag() }}
                         
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Business Hours Start</label>
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-clock me-2 text-info"></i>Business Hours Start
+                            </label>
                             <input type="time" class="form-control" id="businessHoursStart" name="business_hours_start" value="{{ business_hours_start or '09:00' }}" style="border: 2px solid var(--border-medium)">
                             <small class="text-muted">Start of normal business hours (24-hour format)</small>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Business Hours End</label>
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-clock me-2 text-info"></i>Business Hours End
+                            </label>
                             <input type="time" class="form-control" id="businessHoursEnd" name="business_hours_end" value="{{ business_hours_end or '17:00' }}" style="border: 2px solid var(--border-medium)">
                             <small class="text-muted">End of normal business hours (24-hour format)</small>
                         </div>
@@ -281,6 +285,117 @@
             </div>
         </div>
     </div>
+
+    <!-- IP Address Restriction Section -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header" style="background: var(--gradient-security); color: white;">
+                    <h5 class="mb-0">
+                        <i class="fas fa-network-wired me-2"></i>IP Address Restrictions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('ip_settings') }}">
+                        
+                        <!-- Enable/Disable IP Restrictions -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="form-check form-switch">
+                                    <input type="checkbox" class="form-check-input" id="ip_restriction_enabled" 
+                                           name="ip_restriction_enabled" 
+                                           {% if ip_settings.get('ip_restriction_enabled', 'false').lower() == 'true' %}checked{% endif %}>
+                                    <label class="form-check-label fw-bold" for="ip_restriction_enabled">
+                                        <i class="fas fa-shield-alt me-2"></i>Enable IP Address Restrictions
+                                    </label>
+                                    <div class="form-text">
+                                        When enabled, only IP addresses in the whitelist (if configured) will be allowed to access the system.
+                                        Blacklisted IPs will always be blocked.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current IP Address Display -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="alert alert-info d-flex align-items-center">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <div>
+                                        <strong>Your current IP address:</strong> 
+                                        <code id="current-ip">{{ current_ip }}</code>
+                                        <br>
+                                        <small class="text-muted">Make sure to include your IP in the whitelist before enabling restrictions to avoid being locked out.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- IP Whitelist -->
+                            <div class="col-md-6 mb-3">
+                                <label for="ip_whitelist" class="form-label fw-bold">
+                                    <i class="fas fa-check-circle text-success me-2"></i>IP Whitelist
+                                </label>
+                                <textarea name="ip_whitelist" id="ip_whitelist" 
+                                          class="form-control" rows="6" 
+                                          placeholder="192.168.1.100&#10;10.0.0.0/24&#10;172.16.0.1"
+                                          style="border: 2px solid var(--border-medium); font-family: monospace;">{{ ip_settings.get('ip_whitelist', '') }}</textarea>
+                                <div class="form-text">
+                                    Enter allowed IP addresses, one per line. Supports single IPs (192.168.1.100) and CIDR notation (192.168.1.0/24).
+                                    If empty, all IPs are allowed (except blacklisted ones).
+                                </div>
+                            </div>
+
+                            <!-- IP Blacklist -->
+                            <div class="col-md-6 mb-3">
+                                <label for="ip_blacklist" class="form-label fw-bold">
+                                    <i class="fas fa-times-circle text-danger me-2"></i>IP Blacklist
+                                </label>
+                                <textarea name="ip_blacklist" id="ip_blacklist" 
+                                          class="form-control" rows="6" 
+                                          placeholder="192.168.1.50&#10;10.0.0.0/8&#10;172.16.1.100"
+                                          style="border: 2px solid var(--border-medium); font-family: monospace;">{{ ip_settings.get('ip_blacklist', '') }}</textarea>
+                                <div class="form-text">
+                                    Enter blocked IP addresses, one per line. These IPs will always be denied access.
+                                    Supports single IPs and CIDR notation.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <button type="button" class="btn btn-sm btn-outline-success" onclick="addCurrentIP('whitelist')">
+                                        <i class="fas fa-plus me-1"></i>Add Current IP to Whitelist
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-info" onclick="addLocalNetwork()">
+                                        <i class="fas fa-home me-1"></i>Add Local Network (192.168.0.0/16)
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-warning" onclick="clearList('whitelist')">
+                                        <i class="fas fa-eraser me-1"></i>Clear Whitelist
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearList('blacklist')">
+                                        <i class="fas fa-eraser me-1"></i>Clear Blacklist
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Save Button -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save me-2"></i>Save IP Restrictions
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <style>
@@ -291,33 +406,53 @@
 }
 
 .hover-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
 
 .card-header.bg-primary,
 .card-header.bg-success,
 .card-header.bg-warning,
 .card-header.bg-danger {
-    color: white !important;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
 }
 
-.input-group-text {
-    background-color: var(--gray-100);
-    border: 2px solid var(--border-medium);
-    border-left: none;
+.card-header.bg-info {
+    background: linear-gradient(135deg, var(--info) 0%, #0dcaf0 100%) !important;
 }
 
-.form-control:focus + .input-group-text {
-    border-color: var(--primary-500);
+/* Enhanced gradient styles */
+:root {
+    --gradient-security: linear-gradient(135deg, #6f42c1 0%, #495057 100%);
 }
 
-.table td {
-    padding: 0.75rem 0.5rem;
+/* Time input styling with enhanced clock icons */
+input[type="time"] {
+    position: relative;
 }
 
-.table td:first-child {
-    width: 50%;
+input[type="time"]::-webkit-calendar-picker-indicator {
+    background: #007bff;
+    border-radius: 50%;
+    color: white;
+    font-size: 14px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+    background: #0056b3;
+    cursor: pointer;
+}
+
+/* For Firefox */
+input[type="time"]::-moz-calendar-picker {
+    background: #007bff;
+    border-radius: 50%;
+    color: white;
 }
 </style>
 
@@ -329,6 +464,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if (urlParams.get('success') === 'true') {
         showAlert('Settings saved successfully!', 'success');
     }
+    
+    // Check for flash messages and display them
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                showAlert('{{ message }}', '{{ 'success' if category == 'success' else 'danger' if category == 'error' else 'warning' }}');
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     
     // Form validation
     const forms = document.querySelectorAll('form');
@@ -356,6 +500,48 @@ function showAlert(message, type) {
     setTimeout(() => {
         alertDiv.remove();
     }, 5000);
+}
+
+// IP Management Functions
+function addCurrentIP(listType) {
+    const currentIP = document.getElementById('current-ip').textContent;
+    const textarea = document.getElementById(`ip_${listType}`);
+    const currentValue = textarea.value.trim();
+    
+    // Check if IP is already in the list
+    if (currentValue.includes(currentIP)) {
+        showAlert(`Current IP ${currentIP} is already in the ${listType}`, 'warning');
+        return;
+    }
+    
+    // Add the IP to the list
+    const newValue = currentValue ? `${currentValue}\n${currentIP}` : currentIP;
+    textarea.value = newValue;
+    showAlert(`Added current IP ${currentIP} to ${listType}`, 'success');
+}
+
+function addLocalNetwork() {
+    const textarea = document.getElementById('ip_whitelist');
+    const localNetwork = '192.168.0.0/16';
+    const currentValue = textarea.value.trim();
+    
+    // Check if local network is already in the list
+    if (currentValue.includes(localNetwork)) {
+        showAlert('Local network 192.168.0.0/16 is already in the whitelist', 'warning');
+        return;
+    }
+    
+    // Add the local network to the whitelist
+    const newValue = currentValue ? `${currentValue}\n${localNetwork}` : localNetwork;
+    textarea.value = newValue;
+    showAlert('Added local network 192.168.0.0/16 to whitelist', 'success');
+}
+
+function clearList(listType) {
+    if (confirm(`Are you sure you want to clear the ${listType}? This action cannot be undone.`)) {
+        document.getElementById(`ip_${listType}`).value = '';
+        showAlert(`${listType.charAt(0).toUpperCase() + listType.slice(1)} cleared`, 'info');
+    }
 }
 </script>
 {% endblock %}

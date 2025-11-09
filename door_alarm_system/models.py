@@ -17,14 +17,25 @@ class User(UserMixin, db.Model):
     employee_id = db.Column(db.String(50))  # Removed unique=True for SQLite compatibility
     department = db.Column(db.String(100))
     role = db.Column(db.String(100))
+    approval_level = db.Column(db.String(20), default='user')  # 'user', 'supervisor', 'manager', 'director', 'admin'
     email = db.Column(db.String(120))
     phone = db.Column(db.String(20))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
     is_active = db.Column(db.Boolean, default=True)
     
+    # Password Management Fields (21 CFR Part 11 Compliance)
+    password_reset_required = db.Column(db.Boolean, default=False)  # Force password change on next login
+    password_reset_token = db.Column(db.String(100))  # Temporary password token
+    password_reset_expires = db.Column(db.DateTime)  # Token expiration
+    password_changed_at = db.Column(db.DateTime)  # Last password change date
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
+        self.password_changed_at = datetime.utcnow()
+        self.password_reset_required = False  # Clear reset flag when password is changed
+        self.password_reset_token = None  # Clear any temporary tokens
+        self.password_reset_expires = None
     
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -39,10 +50,14 @@ class User(UserMixin, db.Model):
             'role': self.role,
             'email': self.email,
             'phone': self.phone,
+            'permissions': self.permissions,
+            'approval_level': self.approval_level,
             'is_admin': self.is_admin,
             'is_active': self.is_active,
+            'password_reset_required': self.password_reset_required,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else None,
-            'last_login': self.last_login.strftime('%Y-%m-%d %H:%M:%S') if self.last_login else None
+            'last_login': self.last_login.strftime('%Y-%m-%d %H:%M:%S') if self.last_login else None,
+            'password_changed_at': self.password_changed_at.strftime('%Y-%m-%d %H:%M:%S') if self.password_changed_at else None
         }
 
 class CompanyProfile(db.Model):
@@ -120,6 +135,9 @@ class EventLog(db.Model):
     image_hash = db.Column(db.String(64))   # SHA-256 hash for verification
     image_timestamp = db.Column(db.DateTime)  # When image was captured
     
+    # AI Analysis metadata (JSON string)
+    ai_metadata = db.Column(db.Text)  # Stores AI analysis results
+    
     def to_dict(self):
         return {
             'id': self.id,
@@ -129,7 +147,8 @@ class EventLog(db.Model):
             'image_path': self.image_path,
             'image_hash': self.image_hash,
             'image_timestamp': self.image_timestamp.strftime('%Y-%m-%d %H:%M:%S') if self.image_timestamp else None,
-            'has_image': bool(self.image_path)
+            'has_image': bool(self.image_path),
+            'ai_metadata': self.ai_metadata
         }
 
 class BlockchainEventLog(db.Model):
@@ -514,13 +533,32 @@ class ChangeControl(db.Model):
     requested_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     requested_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     
-    # Approval workflow
-    status = db.Column(db.String(20), default='pending')  # 'pending', 'approved', 'rejected', 'implemented'
+    # Multi-level approval workflow (5 levels)
+    status = db.Column(db.String(30), default='pending_supervisor')  
+    # Status values: 'pending_supervisor', 'pending_manager', 'pending_director', 'pending_admin', 
+    #                'approved', 'rejected', 'implemented'
+    
+    # Level 1: Supervisor approval
+    supervisor_approved_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+    supervisor_approved_date = db.Column(db.DateTime)
+    supervisor_signature_id = db.Column(db.Integer, db.ForeignKey('electronic_signature.id'))
+    
+    # Level 2: Manager approval
+    manager_approved_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+    manager_approved_date = db.Column(db.DateTime)
+    manager_signature_id = db.Column(db.Integer, db.ForeignKey('electronic_signature.id'))
+    
+    # Level 3: Director approval
+    director_approved_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+    director_approved_date = db.Column(db.DateTime)
+    director_signature_id = db.Column(db.Integer, db.ForeignKey('electronic_signature.id'))
+    
+    # Level 4: Admin/VP approval (final approval)
     approved_by = db.Column(db.Integer, db.ForeignKey('user.id'))
     approved_date = db.Column(db.DateTime)
     approval_signature_id = db.Column(db.Integer, db.ForeignKey('electronic_signature.id'))
     
-    # Implementation details
+    # Level 5: Implementation (by Admin/authorized personnel)
     implemented_by = db.Column(db.Integer, db.ForeignKey('user.id'))
     implemented_date = db.Column(db.DateTime)
     implementation_signature_id = db.Column(db.Integer, db.ForeignKey('electronic_signature.id'))
@@ -536,8 +574,14 @@ class ChangeControl(db.Model):
     
     # Relationships
     requestor = db.relationship('User', foreign_keys=[requested_by])
+    supervisor_approver = db.relationship('User', foreign_keys=[supervisor_approved_by])
+    manager_approver = db.relationship('User', foreign_keys=[manager_approved_by])
+    director_approver = db.relationship('User', foreign_keys=[director_approved_by])
     approver = db.relationship('User', foreign_keys=[approved_by])
     implementer = db.relationship('User', foreign_keys=[implemented_by])
+    supervisor_signature = db.relationship('ElectronicSignature', foreign_keys=[supervisor_signature_id])
+    manager_signature = db.relationship('ElectronicSignature', foreign_keys=[manager_signature_id])
+    director_signature = db.relationship('ElectronicSignature', foreign_keys=[director_signature_id])
     approval_signature = db.relationship('ElectronicSignature', foreign_keys=[approval_signature_id])
     implementation_signature = db.relationship('ElectronicSignature', foreign_keys=[implementation_signature_id])
     
@@ -560,6 +604,37 @@ class ChangeControl(db.Model):
             'implemented_date': self.implemented_date.strftime('%Y-%m-%d %H:%M:%S') if self.implemented_date else None,
             'version_before': self.version_before,
             'version_after': self.version_after
+        }
+
+
+class ChangeControlChecklistItem(db.Model):
+    """
+    Customizable checklist items for change control approval process
+    Allows each company to define their own review criteria
+    """
+    __tablename__ = 'change_control_checklist_item'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    item_text = db.Column(db.String(200), nullable=False)  # "GMP impact assessed"
+    description = db.Column(db.Text)  # Optional detailed explanation
+    is_active = db.Column(db.Boolean, default=True)  # Can disable without deleting
+    display_order = db.Column(db.Integer, default=0)  # Sort order on the form
+    change_type = db.Column(db.String(50))  # Optional: Only show for specific types (null = show for all)
+    is_required = db.Column(db.Boolean, default=False)  # Future: Could make some mandatory
+    created_date = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<ChecklistItem {self.id}: {self.item_text}>'
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'item_text': self.item_text,
+            'description': self.description,
+            'is_active': self.is_active,
+            'display_order': self.display_order,
+            'change_type': self.change_type,
+            'is_required': self.is_required
         }
 
 

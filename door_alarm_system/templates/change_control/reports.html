@@ -5,17 +5,44 @@
 {% block extra_css %}
 <style>
 .report-section {
-    background: white;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+    border: 1px solid var(--border-purple) !important;
+    border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    box-shadow: 0 4px 16px rgba(138, 43, 226, 0.1);
+}
+
+.report-section h6, 
+.report-section p, 
+.report-section strong,
+.report-section td,
+.report-section th,
+.report-section label {
+    color: #fff !important;
+}
+
+.report-section .text-muted {
+    color: #aaa !important;
+}
+
+.report-section a {
+    color: #667eea !important;
+    text-decoration: none;
+}
+
+.report-section a:hover {
+    color: #764ba2 !important;
 }
 
 .section-title {
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
-    color: #0d6efd;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .stat-card {
@@ -36,6 +63,55 @@
     position: relative;
     height: 300px;
 }
+
+/* Table styling */
+.report-section .table {
+    background: transparent !important;
+    color: #fff !important;
+}
+
+.report-section .table thead th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-color: rgba(138, 43, 226, 0.5) !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    padding: 12px !important;
+}
+
+.report-section .table tbody td {
+    border-color: rgba(138, 43, 226, 0.2) !important;
+    color: #fff !important;
+    background: transparent !important;
+}
+
+.report-section .table-hover tbody tr:hover {
+    background: rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Card styling for priority section */
+.report-section .card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+    border: 1px solid var(--border-purple) !important;
+}
+
+.report-section .card-body {
+    color: #fff !important;
+}
+
+.report-section .card-body h3,
+.report-section .card-body p {
+    color: #fff !important;
+}
+
+/* Progress bars */
+.progress {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.progress-bar {
+    color: #fff !important;
+    font-weight: 600;
+}
 </style>
 {% endblock %}
 
@@ -44,10 +120,10 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <a href="{{ url_for('change_control_dashboard') }}" class="btn btn-outline-secondary btn-sm mb-3">
+            <a href="{{ url_for('change_control_dashboard') }}" class="btn btn-outline-light btn-sm mb-3">
                 <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
             </a>
-            <h2 class="mb-1">
+            <h2 class="mb-1 text-primary">
                 <i class="fas fa-chart-bar me-2"></i>
                 Change Control Reports
             </h2>

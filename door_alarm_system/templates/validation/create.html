@@ -5,50 +5,83 @@
 {% block extra_css %}
 <style>
 .form-section {
-    background: white;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    border-left: 4px solid #0d6efd;
+    border-left: 4px solid #667eea;
+    color: #fff;
 }
 
 .section-title {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #0d6efd;
+    color: #a78bfa;
     margin-bottom: 1rem;
 }
 
-/* Fix label visibility */
+/* Form labels and text */
 .form-label {
-    color: #212529 !important;
+    color: #fff !important;
 }
 
 .form-label strong {
-    color: #212529 !important;
+    color: #fff !important;
+}
+
+h2, h3, h4, h5, h6 {
+    color: #fff !important;
+}
+
+.text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .test-type-card {
-    border: 2px solid #dee2e6;
+    border: 2px solid rgba(102, 126, 234, 0.3);
     border-radius: 8px;
     padding: 1rem;
     cursor: pointer;
     transition: all 0.2s ease;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%);
+    color: #fff;
 }
 
 .test-type-card:hover {
-    border-color: #0d6efd;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-color: #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .test-type-card.selected {
-    border-color: #0d6efd;
-    background: #cfe2ff;
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
 }
 
 .test-type-card h5,
 .test-type-card p {
-    color: #212529 !important;
+    color: #fff !important;
+}
+
+.form-control, .form-select, textarea {
+    background: rgba(26, 26, 46, 0.8);
+    border-color: rgba(102, 126, 234, 0.3);
+    color: #fff;
+}
+
+.form-control:focus, .form-select:focus, textarea:focus {
+    background: rgba(26, 26, 46, 0.9);
+    border-color: #667eea;
+    color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-select option {
+    background: #1a1a2e;
+    color: #fff;
 }
 </style>
 {% endblock %}

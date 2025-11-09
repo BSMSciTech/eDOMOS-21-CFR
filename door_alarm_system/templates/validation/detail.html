@@ -13,32 +13,57 @@
 }
 
 .info-section {
-    background: white;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+.info-section h2,
+.info-section h3,
+.info-section h4,
+.info-section h5,
+.info-section h6,
+.info-section p,
+.info-section label,
+.info-section strong,
+.info-section small,
+.info-section td {
+    color: #fff !important;
+}
+
+.info-section .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .section-title {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #0d6efd;
+    color: #a78bfa !important;
 }
 
 .timeline-item {
-    border-left: 3px solid #dee2e6;
+    border-left: 3px solid rgba(102, 126, 234, 0.5);
     padding-left: 1.5rem;
     padding-bottom: 1.5rem;
     position: relative;
+    color: #fff;
+}
+
+.timeline-item h6,
+.timeline-item p,
+.timeline-item small {
+    color: #fff !important;
 }
 
 .timeline-item::before {
     content: '';
     width: 12px;
     height: 12px;
-    background: white;
-    border: 3px solid #0d6efd;
+    background: #1a1a2e;
+    border: 3px solid #667eea;
     border-radius: 50%;
     position: absolute;
     left: -7.5px;
@@ -50,26 +75,49 @@
 }
 
 .signature-box {
-    background: #f8f9fa;
-    border-left: 4px solid #198754;
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 200, 100, 0.2) 100%);
+    border-left: 4px solid #00ff88;
     padding: 1rem;
     margin-top: 1rem;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.signature-box strong,
+.signature-box small {
+    color: #fff !important;
 }
 
 .result-box {
     padding: 1.5rem;
     border-radius: 8px;
     margin-bottom: 1rem;
+    color: #fff;
 }
 
 .result-box.pass {
-    background: #d1e7dd;
-    border-left: 4px solid #198754;
+    background: rgba(0, 255, 136, 0.2);
+    border-left: 4px solid #00ff88;
 }
 
 .result-box.fail {
-    background: #f8d7da;
-    border-left: 4px solid #dc3545;
+    background: rgba(255, 107, 107, 0.2);
+    border-left: 4px solid #ff6b6b;
+}
+
+.result-box h6,
+.result-box p {
+    color: #fff !important;
+}
+
+.info-section .table {
+    color: #fff !important;
+}
+
+.info-section .table td,
+.info-section .table th {
+    border-color: rgba(102, 126, 234, 0.2) !important;
+    color: #fff !important;
 }
 </style>
 {% endblock %}
